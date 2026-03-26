@@ -6,12 +6,17 @@ use App\Domain\Depreciation\Models\ParametroDepreciacao;
 use App\Domain\Depreciation\Requests\StoreParametroDepreciacaoRequest;
 use App\Domain\Depreciation\Requests\UpdateParametroDepreciacaoRequest;
 use App\Domain\Depreciation\Resources\ParametroDepreciacaoResource;
+use App\Domain\Depreciation\Services\DepreciacaoService;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 class ParametroDepreciacaoController extends Controller
 {
+    public function __construct(private readonly DepreciacaoService $depreciacaoService)
+    {
+    }
+
     public function index(Request $request)
     {
         $query = ParametroDepreciacao::query()->orderBy('empresa_id');
@@ -30,6 +35,11 @@ class ParametroDepreciacaoController extends Controller
     public function store(StoreParametroDepreciacaoRequest $request): ParametroDepreciacaoResource
     {
         $parametro = ParametroDepreciacao::query()->create($request->safe()->except('empresa_metodo'));
+        $this->depreciacaoService->aplicarDepreciacaoAutomaticaPorEmpresa(
+            (int) $parametro->empresa_id,
+            (int) $parametro->metodo_depreciacao_id,
+            now()->toDateString(),
+        );
 
         return new ParametroDepreciacaoResource($parametro);
     }
@@ -44,6 +54,11 @@ class ParametroDepreciacaoController extends Controller
         ParametroDepreciacao $parametroDepreciacao
     ): ParametroDepreciacaoResource {
         $parametroDepreciacao->update($request->safe()->except('empresa_metodo'));
+        $this->depreciacaoService->aplicarDepreciacaoAutomaticaPorEmpresa(
+            (int) $parametroDepreciacao->empresa_id,
+            (int) $parametroDepreciacao->metodo_depreciacao_id,
+            now()->toDateString(),
+        );
 
         return new ParametroDepreciacaoResource($parametroDepreciacao->fresh());
     }

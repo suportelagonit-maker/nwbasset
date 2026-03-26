@@ -17,6 +17,8 @@ use App\Domain\Dashboard\Controllers\DashboardPatrimonialController;
 use App\Domain\Depreciation\Controllers\DepreciacaoBemController;
 use App\Domain\Depreciation\Controllers\MetodoDepreciacaoController;
 use App\Domain\Depreciation\Controllers\ParametroDepreciacaoController;
+use App\Domain\Depreciation\Controllers\RegraDepreciacaoTipoBemController;
+use App\Domain\Depreciation\Controllers\TipoBemPatrimonialController;
 use App\Domain\Inventory\Controllers\ConciliacaoPatrimonialController;
 use App\Domain\Inventory\Controllers\DivergenciaInventarioController;
 use App\Domain\Inventory\Controllers\InventarioController;
@@ -101,6 +103,9 @@ Route::prefix('v1')->group(function (): void {
         });
 
         Route::middleware(['empresa.context', 'role.permission:depreciacoes'])->group(function (): void {
+            Route::get('tipos-bens-patrimoniais', [TipoBemPatrimonialController::class, 'index']);
+            Route::apiResource('regras-depreciacao', RegraDepreciacaoTipoBemController::class)
+                ->parameters(['regras-depreciacao' => 'regra_depreciacao']);
             Route::apiResource('parametros-depreciacao', ParametroDepreciacaoController::class)
                 ->parameters(['parametros-depreciacao' => 'parametro_depreciacao']);
             Route::apiResource('depreciacoes', DepreciacaoBemController::class)

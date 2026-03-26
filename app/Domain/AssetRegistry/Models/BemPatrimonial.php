@@ -7,6 +7,7 @@ use App\Domain\AssetMovements\Models\HistoricoLocalizacaoBem;
 use App\Domain\AssetMovements\Models\ResponsabilidadeBem;
 use App\Domain\AssetMovements\Models\TransferenciaBem;
 use App\Domain\Depreciation\Models\DepreciacaoBem;
+use App\Domain\Depreciation\Models\ParametroDepreciacaoBem;
 use App\Domain\Inventory\Models\DivergenciaInventario;
 use App\Domain\Inventory\Models\InventarioItem;
 use App\Domain\Organization\Models\Departamento;
@@ -115,6 +116,13 @@ class BemPatrimonial extends Model
     public function depreciacoes(): HasMany
     {
         return $this->hasMany(DepreciacaoBem::class, 'bem_patrimonial_id');
+    }
+
+    public function parametrosDepreciacao(): HasMany
+    {
+        return $this->hasMany(ParametroDepreciacaoBem::class, 'bem_patrimonial_id')
+            ->orderByDesc('ativo')
+            ->orderByDesc('id');
     }
 
     public function inventarioItens(): HasMany

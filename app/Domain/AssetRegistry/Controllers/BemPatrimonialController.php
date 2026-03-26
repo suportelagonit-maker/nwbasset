@@ -7,14 +7,17 @@ use App\Domain\AssetRegistry\Models\BemPatrimonial;
 use App\Domain\AssetRegistry\Requests\StoreBemPatrimonialRequest;
 use App\Domain\AssetRegistry\Requests\UpdateBemPatrimonialRequest;
 use App\Domain\AssetRegistry\Resources\BemPatrimonialResource;
+use App\Domain\Depreciation\Services\DepreciacaoService;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 class BemPatrimonialController extends Controller
 {
-    public function __construct(private readonly LogOperacaoPatrimonialService $logOperacaoPatrimonialService)
-    {
+    public function __construct(
+        private readonly LogOperacaoPatrimonialService $logOperacaoPatrimonialService,
+        private readonly DepreciacaoService $depreciacaoService,
+    ) {
     }
 
     public function index(Request $request)
@@ -37,13 +40,31 @@ class BemPatrimonialController extends Controller
 
     public function store(StoreBemPatrimonialRequest $request): BemPatrimonialResource
     {
+        $dados = $request->validated();
+        $regraDepreciacao = $this->depreciacaoService->obterRegraPadraoPorTipoBem(
+            (int) $dados['empresa_id'],
+            $dados['categoria'] ?? null,
+        );
+        $valorAquisicao = (float) ($dados['valor_aquisicao'] ?? 0);
+        $valorResidualInformado = array_key_exists('valor_residual', $dados) && $dados['valor_residual'] !== null;
+        $valorResidualPadrao = $regraDepreciacao
+            ? round($valorAquisicao * ((float) $regraDepreciacao->valor_residual_percentual / 100), 2)
+            : 0;
+        $vidaUtilInformada = array_key_exists('vida_util_anos', $dados) && (int) $dados['vida_util_anos'] > 0
+            ? (int) $dados['vida_util_anos']
+            : null;
+
         $bem = BemPatrimonial::query()->create([
-            ...$request->validated(),
-            'valor_aquisicao' => $request->validated()['valor_aquisicao'] ?? 0,
-            'valor_residual' => $request->validated()['valor_residual'] ?? 0,
-            'status_bem' => $request->validated()['status_bem'] ?? 'ativo',
-            'estado_conservacao' => $request->validated()['estado_conservacao'] ?? 'bom',
+            ...$dados,
+            'valor_aquisicao' => $valorAquisicao,
+            'valor_residual' => $valorResidualInformado ? (float) $dados['valor_residual'] : $valorResidualPadrao,
+            'vida_util_anos' => $vidaUtilInformada ?? $regraDepreciacao?->vida_util_anos,
+            'status_bem' => $dados['status_bem'] ?? 'ativo',
+            'estado_conservacao' => $dados['estado_conservacao'] ?? 'bom',
         ]);
+
+        $usuarioId = $request->user()?->id ? (int) $request->user()->id : null;
+        $this->depreciacaoService->herdarRegraDepreciacaoParaBem($bem, $usuarioId);
 
         $this->logOperacaoPatrimonialService->registrar(
             'CADASTRO_BEM',

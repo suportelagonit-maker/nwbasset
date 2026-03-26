@@ -13,6 +13,8 @@ use App\Domain\AssetRegistry\Models\BemPatrimonial;
 use App\Domain\Auth\Models\Usuario;
 use App\Domain\Depreciation\Models\DepreciacaoBem;
 use App\Domain\Depreciation\Models\ParametroDepreciacao;
+use App\Domain\Depreciation\Models\ParametroDepreciacaoBem;
+use App\Domain\Depreciation\Models\RegraDepreciacaoTipoBem;
 use App\Domain\Inventory\Models\Inventario;
 use App\Domain\Shared\Services\CodigoCadastroService;
 use Illuminate\Database\Eloquent\Model;
@@ -119,6 +121,16 @@ class Empresa extends Model
     public function parametrosDepreciacao(): HasMany
     {
         return $this->hasMany(ParametroDepreciacao::class, 'empresa_id');
+    }
+
+    public function parametrosDepreciacaoBens(): HasMany
+    {
+        return $this->hasMany(ParametroDepreciacaoBem::class, 'empresa_id');
+    }
+
+    public function regrasDepreciacaoTiposBens(): HasMany
+    {
+        return $this->hasMany(RegraDepreciacaoTipoBem::class, 'empresa_id');
     }
 
     public function depreciacoesBens(): HasMany
