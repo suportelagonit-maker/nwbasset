@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 
 import { useEffect, useMemo, useState } from 'react';
 
@@ -159,7 +159,7 @@ export default function DepartamentoManagement({ empresaId }: { empresaId: numbe
 
       setDepartamentos(payload?.data ?? []);
     } catch (fetchError) {
-      setError(fetchError instanceof Error ? fetchError.message : 'NÃ£o foi possÃ­vel consultar os departamentos.');
+      setError(fetchError instanceof Error ? fetchError.message : 'Não foi possível consultar os departamentos.');
     } finally {
       setLoading(false);
     }
@@ -294,7 +294,7 @@ export default function DepartamentoManagement({ empresaId }: { empresaId: numbe
 
     if (!response.ok || !payload?.data) {
       const firstError = payload?.errors ? Object.values(payload.errors).flat().find(Boolean) : null;
-      setError(firstError ?? payload?.message ?? 'NÃ£o foi possÃ­vel salvar o departamento.');
+      setError(firstError ?? payload?.message ?? 'Não foi possível salvar o departamento.');
       return;
     }
 
@@ -321,7 +321,7 @@ export default function DepartamentoManagement({ empresaId }: { empresaId: numbe
         }
 
         if (!response.ok) {
-          setError(payload?.message ?? 'NÃ£o foi possÃ­vel excluir o departamento.');
+          setError(payload?.message ?? 'Não foi possível excluir o departamento.');
           return;
         }
 
@@ -388,17 +388,17 @@ export default function DepartamentoManagement({ empresaId }: { empresaId: numbe
               Atualizar
             </button>
           </div>
-        </div>`r`n`r`n        <div className="mt-6 overflow-hidden rounded-[24px] border border-[var(--line)]">
+        </div>        <div className="mt-6 overflow-hidden rounded-[24px] border border-[var(--line)]">
           <div className="overflow-x-auto">
             <table className="min-w-full border-collapse">
               <thead>
                 <tr className="bg-[#f8fafc] text-left text-xs uppercase tracking-[0.16em] text-[var(--muted)]">
                   <th className="px-4 py-4">Departamento</th>
-                  <th className="px-4 py-4">Codigo</th>
+                  <th className="px-4 py-4">Código</th>
                   <th className="px-4 py-4">Unidade</th>
                   <th className="px-4 py-4">Filial</th>
                   <th className="px-4 py-4">Status</th>
-                  <th className="px-4 py-4 text-right">Acoes</th>
+                  <th className="px-4 py-4 text-right">Ações</th>
                 </tr>
               </thead>
               <tbody>
@@ -425,7 +425,7 @@ export default function DepartamentoManagement({ empresaId }: { empresaId: numbe
                           <div>
                             <p className="font-semibold">{departamento.nome}</p>
                             <p className="mt-1 text-xs text-[var(--muted)]">
-                              ID {departamento.id} {departamento.descricao ? `| ${departamento.descricao}` : '| Sem descricao informada'}
+                              ID {departamento.id} {departamento.descricao ? `| ${departamento.descricao}` : '| Sem descri??o informada'}
                             </p>
                           </div>
                         </div>
@@ -521,7 +521,7 @@ export default function DepartamentoManagement({ empresaId }: { empresaId: numbe
                   </label>
 
                   <label className="admin-field">
-                    Codigo do cadastro
+                    Código do cadastro
                     <input type="text" value={selectedDepartamento?.codigo ?? ''} disabled placeholder="Gerado automaticamente ao salvar" className="admin-input" />
                   </label>
 
@@ -534,7 +534,7 @@ export default function DepartamentoManagement({ empresaId }: { empresaId: numbe
                   </label>
 
                   <label className="admin-field md:col-span-2">
-                    Descricao
+                    Descrição
                     <textarea value={form.descricao} onChange={(event) => updateField('descricao', event.target.value)} disabled={isReadOnly} rows={4} className="admin-textarea" />
                   </label>
                 </div>
@@ -546,7 +546,7 @@ export default function DepartamentoManagement({ empresaId }: { empresaId: numbe
               <div className="admin-modal-footer -mx-3 px-3 md:-mx-3.5 md:px-3.5">
                 <div className="flex justify-end">
                 <button type="button" onClick={() => void handleSubmit()} className="admin-btn-primary">
-                  {modalMode === 'edit' ? 'Salvar alteracoes' : 'Cadastrar departamento'}
+                  {modalMode === 'edit' ? 'Salvar altera??es' : 'Cadastrar departamento'}
                 </button>
                 </div>
               </div>
@@ -567,4 +567,7 @@ export default function DepartamentoManagement({ empresaId }: { empresaId: numbe
     </>
   );
 }
+
+
+
 

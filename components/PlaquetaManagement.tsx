@@ -516,7 +516,7 @@ export default function PlaquetaManagement({ empresaId, empresaNome, empresaLogo
       codigo_barras_conteudo: scanCandidate.rawValue,
       numero_plaqueta: current.numero_plaqueta || scanCandidate.numeroPlaqueta,
     }));
-    setMessage(`Leitura confirmada. Código: ${scanCandidate.rawValue} · Plaqueta: ${scanCandidate.numeroPlaqueta}.`);
+    setMessage(`Leitura confirmada. código: ${scanCandidate.rawValue} · Plaqueta: ${scanCandidate.numeroPlaqueta}.`);
     setError(null);
     setScannerError(null);
     setScanCandidate(null);
@@ -563,7 +563,7 @@ export default function PlaquetaManagement({ empresaId, empresaNome, empresaLogo
 
   async function startScannerWithZxing() {
     if (!videoRef.current) {
-      throw new Error('Nao foi possivel iniciar a camera.');
+      throw new Error('Não foi possivel iniciar a camera.');
     }
 
     const hints = new Map<DecodeHintType, unknown>();
@@ -663,7 +663,7 @@ export default function PlaquetaManagement({ empresaId, empresaNome, empresaLogo
             const scanCtx = scanCanvas.getContext('2d', { willReadFrequently: true });
 
             if (!scanCtx) {
-              throw new Error('Nao foi possivel processar a imagem da camera.');
+              throw new Error('Não foi possivel processar a imagem da camera.');
             }
 
             scanCtx.drawImage(video, safeX, safeY, safeWidth, safeHeight, 0, 0, safeWidth, safeHeight);
@@ -718,7 +718,7 @@ export default function PlaquetaManagement({ empresaId, empresaNome, empresaLogo
 
     try {
       if (!navigator.mediaDevices?.getUserMedia) {
-        throw new Error('Este navegador não possui suporte à câmera.');
+        throw new Error('Este navegador Não possui suporte · câmera.');
       }
 
       try {
@@ -907,7 +907,7 @@ export default function PlaquetaManagement({ empresaId, empresaNome, empresaLogo
               <thead>
                 <tr className="border-b border-[var(--line)] text-left text-[11px] uppercase tracking-[0.18em] text-[var(--muted)]">
                   <th className="pb-4 pr-4 font-semibold">Plaqueta</th>
-                  <th className="pb-4 pr-4 font-semibold">Código de barras</th>
+                  <th className="pb-4 pr-4 font-semibold">código de barras</th>
                   <th className="pb-4 pr-4 font-semibold">Bem vinculado</th>
                   <th className="pb-4 pr-4 font-semibold">Status</th>
                   <th className="pb-4 font-semibold text-right">Ações</th>
@@ -930,7 +930,7 @@ export default function PlaquetaManagement({ empresaId, empresaNome, empresaLogo
                   plaquetas.map((plaqueta) => (
                     <tr key={plaqueta.id} className="border-b border-[rgba(226,232,240,0.7)] text-sm text-[var(--ink)] last:border-b-0">
                       <td className="py-4 pr-4">
-                        <p className="font-semibold">Patrimônio {plaqueta.numero_plaqueta}</p>
+                        <p className="font-semibold">patrimônio {plaqueta.numero_plaqueta}</p>
                         <p className="text-xs text-[var(--muted)]">ID {plaqueta.id}</p>
                       </td>
                       <td className="py-4 pr-4">
@@ -1020,7 +1020,7 @@ export default function PlaquetaManagement({ empresaId, empresaNome, empresaLogo
             <div className="modal-body space-y-4">
               <div className="grid gap-4 md:grid-cols-2">
                 <label className="admin-field">
-                  <span className="admin-field-label">Número visível da plaqueta</span>
+                  <span className="admin-field-label">número visóvel da plaqueta</span>
                   <input
                     className="admin-input"
                     value={createForm.numero_plaqueta}
@@ -1029,7 +1029,7 @@ export default function PlaquetaManagement({ empresaId, empresaNome, empresaLogo
                   />
                 </label>
                 <label className="admin-field">
-                  <span className="admin-field-label">Código de barras impresso</span>
+                  <span className="admin-field-label">código de barras impresso</span>
                   <input
                     className="admin-input"
                     value={createForm.codigo_barras_conteudo}
@@ -1126,7 +1126,7 @@ export default function PlaquetaManagement({ empresaId, empresaNome, empresaLogo
                 <p className="modal-kicker">Leitor de código de barras</p>
                 <h3 className="modal-title">Escanear etiqueta física</h3>
                 <p className="modal-subtitle">
-                  Aponte a câmera para o código de barras da etiqueta impressa. O campo será preenchido automaticamente.
+                  Aponte a câmera para o código de barras da etiqueta impressa. O campo ser? preenchido automaticamente.
                 </p>
               </div>
               <button
@@ -1145,11 +1145,11 @@ export default function PlaquetaManagement({ empresaId, empresaNome, empresaLogo
               {scanCandidate ? (
                 <div className="space-y-3 rounded-2xl border border-[var(--line)] bg-[rgba(248,250,252,0.9)] p-4">
                   <div>
-                    <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[var(--muted)]">Código lido</p>
+                    <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[var(--muted)]">código lido</p>
                     <p className="mt-1 text-base font-semibold text-[var(--ink)]">{scanCandidate.rawValue}</p>
                   </div>
                   <div>
-                    <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[var(--muted)]">Número da plaqueta identificado</p>
+                    <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[var(--muted)]">número da plaqueta identificado</p>
                     <p className="mt-1 text-base font-semibold text-[var(--ink)]">{scanCandidate.numeroPlaqueta}</p>
                   </div>
                 </div>
@@ -1164,7 +1164,7 @@ export default function PlaquetaManagement({ empresaId, empresaNome, empresaLogo
                     </div>
                   ) : (
                     <p className="text-sm text-[var(--muted)]">
-                      A leitura só é aceita quando identificar ao menos 4 dígitos numéricos da plaqueta.
+                      A leitura só · aceita quando identificar ao menos 4 dígitos numéricos da plaqueta.
                     </p>
                   )}
                 </>
@@ -1276,3 +1276,5 @@ export default function PlaquetaManagement({ empresaId, empresaNome, empresaLogo
     </>
   );
 }
+
+

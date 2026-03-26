@@ -72,3 +72,5 @@ export default function GraficoEvolucaoPatrimonio({ data }: GraficoEvolucaoPatri
     </section>
   );
 }
+
+

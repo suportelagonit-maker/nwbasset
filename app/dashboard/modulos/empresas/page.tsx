@@ -26,3 +26,4 @@ export default async function EmpresasPage() {
 
   return <EmpresaManagement initialEmpresas={initialEmpresas} />;
 }
+

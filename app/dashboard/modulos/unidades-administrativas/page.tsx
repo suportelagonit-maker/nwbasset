@@ -12,3 +12,4 @@ export default async function UnidadesAdministrativasPage() {
 
   return <UnidadeAdministrativaManagement empresaId={session.empresaId} />;
 }
+

@@ -149,7 +149,7 @@ export const moduleCrudConfig: Record<string, ModuleConfig> = {
       {
         key: 'identificacao',
         label: 'Identificação',
-        description: 'Cadastre tombo, série e informações principais do bem.',
+        description: 'Cadastre tombo, sórie e informações principais do bem.',
         fields: ['numero_tombo', 'numero_serie', 'descricao', 'categoria', 'marca', 'modelo'],
         compactSummary: true,
         formGridClassName: 'sm:grid-cols-2 xl:grid-cols-3',
@@ -179,7 +179,7 @@ export const moduleCrudConfig: Record<string, ModuleConfig> = {
       { name: 'local_id', label: 'Local', type: 'select', valueType: 'number', lookupKey: 'locais', disabled: (form) => !form.departamento_id, filterOption: (option, form) => String(option.filial_id ?? '') === String(form.filial_id ?? '') && String(option.unidade_administrativa_id ?? '') === String(form.unidade_administrativa_id ?? '') && String(option.departamento_id ?? '') === String(form.departamento_id ?? '') },
       { name: 'responsavel_id', label: 'Responsável', type: 'select', valueType: 'number', lookupKey: 'responsaveis', filterOption: (option, form) => !form.filial_id || String(option.filial_id ?? '') === String(form.filial_id ?? '') },
       { name: 'numero_tombo', label: 'Número do tombo', type: 'text', required: true },
-      { name: 'numero_serie', label: 'Número de série', type: 'text' },
+      { name: 'numero_serie', label: 'Número de sórie', type: 'text' },
       { name: 'descricao', label: 'Descrição', type: 'textarea', required: true },
       { name: 'categoria', label: 'Categoria', type: 'text' },
       { name: 'marca', label: 'Marca', type: 'text' },
@@ -350,7 +350,7 @@ export const moduleCrudConfig: Record<string, ModuleConfig> = {
       { name: 'destino_local_id', label: 'Destino local', type: 'select', valueType: 'number', lookupKey: 'locais', disabled: (form) => !form.destino_departamento_id, filterOption: (option, form) => String(option.filial_id ?? '') === String(form.filial_id ?? '') && String(option.unidade_administrativa_id ?? '') === String(form.destino_unidade_administrativa_id ?? '') && String(option.departamento_id ?? '') === String(form.destino_departamento_id ?? '') },
       { name: 'data_transferencia', label: 'Data da transferência', type: 'date' },
       { name: 'motivo', label: 'Motivo', type: 'text' },
-      { name: 'observacoes', label: 'Observacoes', type: 'textarea' },
+      { name: 'observacoes', label: 'Observações', type: 'textarea' },
     ],
     columns: [
       { label: 'Transferência', render: (item, context) => primaryCell(context.getLookupLabel('bens', item.bem_patrimonial_id), `ID ${item.id} | ${item.data_transferencia ?? 'Sem data'}`) },
@@ -454,9 +454,9 @@ export const moduleCrudConfig: Record<string, ModuleConfig> = {
   'parametros-depreciacao': {
     key: 'parametros-depreciacao',
     label: 'Parâmetros de Depreciação',
-    summary: 'Parâmetros padrão de depreciação por empresa',
+    summary: 'Parâmetros legados de depreciação (mantidos para compatibilidade)',
     endpoint: 'parametros-depreciacao',
-    createLabel: 'Novo parâmetro',
+    createLabel: 'Configurar parâmetro',
     emptyMessage: 'Nenhum parâmetro de depreciação cadastrado.',
     lookups: [metodoLookup],
     fields: [
@@ -474,16 +474,17 @@ export const moduleCrudConfig: Record<string, ModuleConfig> = {
   },
   depreciacoes: {
     key: 'depreciacoes',
-    label: 'Depreciacoes',
-    summary: 'Registros de depreciacao patrimonial',
+    label: 'Depreciações',
+    summary: 'Registros de depreciação patrimonial',
     endpoint: 'depreciacoes',
-    createLabel: 'Nova depreciacao',
-    emptyMessage: 'Nenhuma depreciacao cadastrada.',
+    createLabel: 'Nova depreciação',
+    allowCreate: false,
+    emptyMessage: 'Nenhuma depreciação cadastrada.',
     lookups: [bemLookup, metodoLookup],
     fields: [
       { name: 'empresa_id', label: 'Empresa', type: 'number', hidden: true, valueType: 'number', defaultValue: ({ empresaId }) => String(empresaId ?? '') },
       { name: 'bem_patrimonial_id', label: 'Bem patrimonial', type: 'select', valueType: 'number', lookupKey: 'bens' },
-      { name: 'metodo_depreciacao_id', label: 'Metodo de depreciacao', type: 'select', valueType: 'number', lookupKey: 'metodos' },
+      { name: 'metodo_depreciacao_id', label: 'Método de depreciação', type: 'select', valueType: 'number', lookupKey: 'metodos' },
       { name: 'valor_aquisicao', label: 'Valor de aquisicao', type: 'number' },
       { name: 'valor_residual', label: 'Valor residual', type: 'number' },
       { name: 'vida_util_anos', label: 'Vida util (anos)', type: 'number', valueType: 'number' },
@@ -491,9 +492,9 @@ export const moduleCrudConfig: Record<string, ModuleConfig> = {
     ],
     columns: [
       { label: 'Depreciacao', render: (item, context) => primaryCell(context.getLookupLabel('bens', item.bem_patrimonial_id), `ID ${item.id} | ${item.data_calculo ?? 'Sem data'}`) },
-      { label: 'Metodo', render: (item, context) => context.getLookupLabel('metodos', item.metodo_depreciacao_id) },
+      { label: 'Método', render: (item, context) => context.getLookupLabel('metodos', item.metodo_depreciacao_id) },
       { label: 'Valores', render: (item) => primaryCell(`Contabil ${item.valor_contabil ?? '-'}`, `Acumulado ${item.valor_depreciado_acumulado ?? '-'}`) },
-      { label: 'Taxa anual', render: (item) => String(item.taxa_anual ?? 'Nao calculada') },
+      { label: 'Taxa anual', render: (item) => String(item.taxa_anual ?? 'Não calculada') },
     ],
   },
   conciliacoes: {
@@ -527,13 +528,13 @@ export const moduleCrudConfig: Record<string, ModuleConfig> = {
       { name: 'inventario_id', label: 'Inventario', type: 'select', valueType: 'number', lookupKey: 'inventarios' },
       { name: 'bem_patrimonial_id', label: 'Bem patrimonial', type: 'select', valueType: 'number', lookupKey: 'bens' },
       { name: 'tipo_divergencia', label: 'Tipo de divergencia', type: 'select', options: [{ value: 'NAO_ENCONTRADO', label: 'NAO_ENCONTRADO' }, { value: 'SEM_TOMBO', label: 'SEM_TOMBO' }, { value: 'LOCAL_DIFERENTE', label: 'LOCAL_DIFERENTE' }, { value: 'RESPONSAVEL_DIFERENTE', label: 'RESPONSAVEL_DIFERENTE' }] },
-      { name: 'descricao', label: 'Descricao', type: 'textarea' },
+      { name: 'descricao', label: 'Descrição', type: 'textarea' },
     ],
     columns: [
       { label: 'Divergencia', render: (item) => primaryCell(item.tipo_divergencia, `ID ${item.id}`) },
       { label: 'Inventario', render: (item, context) => context.getLookupLabel('inventarios', item.inventario_id) },
       { label: 'Bem', render: (item, context) => context.getLookupLabel('bens', item.bem_patrimonial_id) },
-      { label: 'Descricao', render: (item) => String(item.descricao ?? 'Sem descricao') },
+      { label: 'Descrição', render: (item) => String(item.descricao ?? 'Sem descrição') },
     ],
   },
   auditorias: {
@@ -549,12 +550,12 @@ export const moduleCrudConfig: Record<string, ModuleConfig> = {
       { name: 'inventario_id', label: 'Inventario', type: 'select', valueType: 'number', lookupKey: 'inventarios' },
       { name: 'data_auditoria', label: 'Data da auditoria', type: 'date' },
       { name: 'auditor', label: 'Auditor', type: 'text' },
-      { name: 'observacoes', label: 'Observacoes', type: 'textarea' },
+      { name: 'observacoes', label: 'Observações', type: 'textarea' },
     ],
     columns: [
       { label: 'Auditoria', render: (item) => primaryCell(item.auditor, `ID ${item.id} | ${item.data_auditoria ?? 'Sem data'}`) },
       { label: 'Inventario', render: (item, context) => context.getLookupLabel('inventarios', item.inventario_id) },
-      { label: 'Observacoes', render: (item) => String(item.observacoes ?? 'Sem observacoes') },
+      { label: 'Observações', render: (item) => String(item.observacoes ?? 'Sem observações') },
       { label: 'Empresa', render: (item) => String(item.empresa_id ?? '-') },
     ],
   },
@@ -563,3 +564,4 @@ export const moduleCrudConfig: Record<string, ModuleConfig> = {
 export function getCrudModuleConfig(slug: string) {
   return moduleCrudConfig[slug] ?? null;
 }
+

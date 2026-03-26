@@ -89,8 +89,10 @@ export default function SystemFeedbackStack({
 
   return (
     <div className="pointer-events-none fixed right-4 top-4 z-[140] flex w-[min(92vw,380px)] flex-col gap-3">
-      {message ? <FeedbackCard tone="success" title={messageTitle ?? 'Operacao concluida'} text={message} onClose={onCloseMessage} /> : null}
-      {error ? <FeedbackCard tone="error" title={errorTitle ?? 'Atencao'} text={error} onClose={onCloseError} /> : null}
+      {message ? <FeedbackCard tone="success" title={messageTitle ?? 'Opera??o conclu?da'} text={message} onClose={onCloseMessage} /> : null}
+      {error ? <FeedbackCard tone="error" title={errorTitle ?? 'Aténcao'} text={error} onClose={onCloseError} /> : null}
     </div>
   );
 }
+
+

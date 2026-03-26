@@ -1,5 +1,6 @@
-﻿import { notFound, redirect } from 'next/navigation';
+import { notFound, redirect } from 'next/navigation';
 
+import DepreciacaoUnifiedManagement from '@/components/DepreciacaoUnifiedManagement';
 import ExportacoesModuleManagement from '@/components/ExportacoesModuleManagement';
 import GenericModuleManagement from '@/components/GenericModuleManagement';
 import ReportsModuleManagement from '@/components/ReportsModuleManagement';
@@ -20,6 +21,19 @@ export default async function ModuloPage({ params }: PageProps) {
   }
 
   const { slug } = await params;
+
+  if (slug === 'metodos-depreciacao') {
+    redirect('/dashboard/modulos/depreciacoes');
+  }
+
+  if (slug === 'parametros-depreciacao') {
+    redirect('/dashboard/modulos/depreciacoes');
+  }
+
+  if (slug === 'depreciacoes') {
+    return <DepreciacaoUnifiedManagement empresaId={session.empresaId} />;
+  }
+
   const module = getAdminModule(slug);
 
   if (!module) {
@@ -35,9 +49,6 @@ export default async function ModuloPage({ params }: PageProps) {
     'baixas-bens',
     'responsabilidade-bens',
     'historico-localizacao-bens',
-    'metodos-depreciacao',
-    'parametros-depreciacao',
-    'depreciacoes',
     'conciliacoes',
     'divergencias',
     'auditorias',

@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 
 import { useEffect, useState, useTransition } from 'react';
 
@@ -250,7 +250,7 @@ export default function EmpresaManagement({ initialEmpresas }: { initialEmpresas
       setModalStep(1);
       setModalMode('view');
     } catch (fetchError) {
-      setError(fetchError instanceof Error ? fetchError.message : 'NÃ£o foi possÃ­vel carregar os dados da empresa.');
+      setError(fetchError instanceof Error ? fetchError.message : 'Não foi possível carregar os dados da empresa.');
     }
   }
 
@@ -269,7 +269,7 @@ export default function EmpresaManagement({ initialEmpresas }: { initialEmpresas
       setModalStep(1);
       setModalMode('edit');
     } catch (fetchError) {
-      setError(fetchError instanceof Error ? fetchError.message : 'NÃ£o foi possÃ­vel carregar os dados da empresa.');
+      setError(fetchError instanceof Error ? fetchError.message : 'Não foi possível carregar os dados da empresa.');
     }
   }
 
@@ -298,7 +298,7 @@ export default function EmpresaManagement({ initialEmpresas }: { initialEmpresas
       setEmpresas(payload?.data ?? []);
       setConsultaMessage('Consulta executada com sucesso.');
     } catch (fetchError) {
-      setConsultaError(fetchError instanceof Error ? fetchError.message : 'NÃ£o foi possÃ­vel consultar as empresas.');
+      setConsultaError(fetchError instanceof Error ? fetchError.message : 'Não foi possível consultar as empresas.');
     } finally {
       setIsLoadingEmpresas(false);
     }
@@ -329,12 +329,12 @@ export default function EmpresaManagement({ initialEmpresas }: { initialEmpresas
       | null;
 
     if (handleUnauthorizedClientResponse(response.status, payload?.message)) {
-      throw new Error('Sessao expirada.');
+      throw new Error('Sess?o expirada.');
     }
 
     if (!response.ok || !payload?.data) {
       const firstError = payload?.errors ? Object.values(payload.errors).flat().find(Boolean) : null;
-      throw new Error(firstError ?? payload?.message ?? 'NÃ£o foi possÃ­vel salvar a empresa.');
+      throw new Error(firstError ?? payload?.message ?? 'Não foi possível salvar a empresa.');
     }
 
     return payload.data;
@@ -360,11 +360,11 @@ export default function EmpresaManagement({ initialEmpresas }: { initialEmpresas
         | null;
 
       if (handleUnauthorizedClientResponse(response.status, payload?.message)) {
-        throw new Error('Sessao expirada.');
+        throw new Error('Sess?o expirada.');
       }
 
       if (!response.ok || !payload?.data) {
-        throw new Error(payload?.message ?? 'Nao foi possivel remover o logo da empresa.');
+        throw new Error(payload?.message ?? 'N?o foi poss?vel remover o logo da empresa.');
       }
 
       return payload.data;
@@ -391,12 +391,12 @@ export default function EmpresaManagement({ initialEmpresas }: { initialEmpresas
       | null;
 
     if (handleUnauthorizedClientResponse(response.status, payload?.message)) {
-      throw new Error('Sessao expirada.');
+      throw new Error('Sess?o expirada.');
     }
 
     if (!response.ok || !payload?.data) {
       const firstError = payload?.errors ? Object.values(payload.errors).flat().find(Boolean) : null;
-      throw new Error(firstError ?? payload?.message ?? 'Nao foi possivel enviar o logo da empresa.');
+      throw new Error(firstError ?? payload?.message ?? 'N?o foi poss?vel enviar o logo da empresa.');
     }
 
     return payload.data;
@@ -435,7 +435,7 @@ export default function EmpresaManagement({ initialEmpresas }: { initialEmpresas
       }
 
       if (!response.ok || !payload?.data) {
-        throw new Error(payload?.message ?? 'NÃ£o foi possÃ­vel consultar este CNPJ.');
+        throw new Error(payload?.message ?? 'Não foi possível consultar este CNPJ.');
       }
 
       setEmpresaForm((current) => ({
@@ -460,7 +460,7 @@ export default function EmpresaManagement({ initialEmpresas }: { initialEmpresas
 
       setConsultaMessage('Dados da empresa preenchidos a partir do CNPJ.');
     } catch (lookupError) {
-      setError(lookupError instanceof Error ? lookupError.message : 'NÃ£o foi possÃ­vel consultar o CNPJ.');
+      setError(lookupError instanceof Error ? lookupError.message : 'Não foi possível consultar o CNPJ.');
     } finally {
       setIsConsultandoCnpj(false);
     }
@@ -521,7 +521,7 @@ export default function EmpresaManagement({ initialEmpresas }: { initialEmpresas
       setMessage(modalMode === 'edit' ? 'Empresa atualizada com sucesso.' : 'Empresa cadastrada com sucesso.');
       resetModal();
     } catch (submitError) {
-      setError(submitError instanceof Error ? submitError.message : 'NÃ£o foi possÃ­vel salvar a empresa.');
+      setError(submitError instanceof Error ? submitError.message : 'Não foi possível salvar a empresa.');
     }
   }
 
@@ -546,7 +546,7 @@ export default function EmpresaManagement({ initialEmpresas }: { initialEmpresas
         }
 
         if (!response.ok) {
-          setConsultaError(payload?.message ?? 'NÃ£o foi possÃ­vel excluir a empresa.');
+          setConsultaError(payload?.message ?? 'Não foi possível excluir a empresa.');
           return;
         }
 
@@ -616,11 +616,11 @@ export default function EmpresaManagement({ initialEmpresas }: { initialEmpresas
               <thead>
                 <tr className="bg-[#f8fafc] text-left text-xs uppercase tracking-[0.16em] text-[var(--muted)]">
                   <th className="px-4 py-4">Empresa</th>
-                  <th className="px-4 py-4">ID / Codigo</th>
+                  <th className="px-4 py-4">ID / Código</th>
                   <th className="px-4 py-4">CNPJ</th>
                   <th className="px-4 py-4">Contato</th>
                   <th className="px-4 py-4">Status</th>
-                  <th className="px-4 py-4 text-right">Acoes</th>
+                  <th className="px-4 py-4 text-right">Ações</th>
                 </tr>
               </thead>
               <tbody>
@@ -632,7 +632,7 @@ export default function EmpresaManagement({ initialEmpresas }: { initialEmpresas
                     </td>
                     <td className="px-4 py-4">
                       <p className="font-semibold">ID {empresa.id}</p>
-                      <p className="mt-1 text-xs text-[var(--muted)]">{empresa.codigo ?? 'Codigo automatico'}</p>
+                      <p className="mt-1 text-xs text-[var(--muted)]">{empresa.codigo ?? 'C?digo autom?tico'}</p>
                     </td>
                     <td className="px-4 py-4">{empresa.cnpj}</td>
                     <td className="px-4 py-4">
@@ -705,4 +705,6 @@ export default function EmpresaManagement({ initialEmpresas }: { initialEmpresas
     </>
   );
 }
+
+
 

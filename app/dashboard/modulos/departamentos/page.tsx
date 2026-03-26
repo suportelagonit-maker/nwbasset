@@ -12,3 +12,4 @@ export default async function DepartamentosPage() {
 
   return <DepartamentoManagement empresaId={session.empresaId} />;
 }
+

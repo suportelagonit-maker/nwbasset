@@ -55,7 +55,7 @@ export default function SystemConfirmDialog({
         <div className="mt-3 rounded-[18px] border border-[var(--line)] bg-[#fafafa] px-3 py-3">
           <p className="text-[12px] leading-5 text-[var(--muted)]">
             {tone === 'danger'
-              ? 'Esta acao altera permanentemente o estado atual do registro.'
+              ? 'Esta a??o altera permanentemente o estado atual do registro.'
               : 'Confira os dados antes de confirmar a operação.'}
           </p>
         </div>
@@ -86,3 +86,5 @@ export default function SystemConfirmDialog({
     </div>
   );
 }
+
+

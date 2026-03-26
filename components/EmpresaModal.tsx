@@ -243,7 +243,7 @@ export default function EmpresaModal({
                   <input type="text" value={empresaForm.nome_fantasia} onChange={(event) => onEmpresaChange('nome_fantasia', event.target.value)} disabled={isReadOnly} className="admin-input" />
                 </label>
                 <label className="admin-field xl:col-span-2">
-                  Codigo de cadastro
+                  Código de cadastro
                   <input
                     type="text"
                     value={empresa?.codigo ?? ''}
@@ -373,7 +373,7 @@ export default function EmpresaModal({
             disabled={isPending}
             className="admin-btn-primary disabled:cursor-not-allowed disabled:opacity-70"
           >
-            {isReadOnly ? (step === 1 ? 'Avancar etapa' : 'Fechar consulta') : step === 1 ? 'Continuar' : isPending ? 'Salvando...' : mode === 'edit' ? 'Salvar alteracoes' : 'Cadastrar empresa'}
+            {isReadOnly ? (step === 1 ? 'Avançar etapa' : 'Fechar consulta') : step === 1 ? 'Continuar' : isPending ? 'Salvando...' : mode === 'edit' ? 'Salvar alterações' : 'Cadastrar empresa'}
           </button>
           </div>
         </div>
@@ -381,3 +381,5 @@ export default function EmpresaModal({
     </div>
   );
 }
+
+

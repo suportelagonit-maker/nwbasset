@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 
 import { useEffect, useState } from 'react';
 
@@ -14,31 +14,31 @@ const reports: ReportItem[] = [
     key: 'bens-por-local',
     label: 'Bens por local',
     path: 'relatorios/bens-por-local',
-    description: 'DistribuiÃ§Ã£o patrimonial agrupada por local fÃ­sico.',
+    description: 'Distribuição patrimonial agrupada por local físico.',
   },
   {
     key: 'bens-por-responsavel',
-    label: 'Bens por responsÃ¡vel',
+    label: 'Bens por responsável',
     path: 'relatorios/bens-por-responsavel',
-    description: 'ConcentraÃ§Ã£o de bens por responsÃ¡vel patrimonial.',
+    description: 'Concentração de bens por responsável patrimonial.',
   },
   {
     key: 'depreciacao',
-    label: 'DepreciaÃ§Ã£o',
+    label: 'Depreciação',
     path: 'relatorios/depreciacao',
-    description: 'VisÃ£o gerencial das depreciaÃ§Ãµes registradas.',
+    description: 'Visóo gerencial das depreciações registradas.',
   },
   {
     key: 'inventario',
-    label: 'InventÃ¡rio',
+    label: 'Inventário',
     path: 'relatorios/inventario',
-    description: 'Resumo operacional dos inventÃ¡rios patrimoniais.',
+    description: 'Resumo operacional dos inventários patrimoniais.',
   },
   {
     key: 'divergencias',
-    label: 'DivergÃªncias',
+    label: 'Divergências',
     path: 'relatorios/divergencias',
-    description: 'DivergÃªncias identificadas em inventÃ¡rios e conciliaÃ§Ãµes.',
+    description: 'Divergências identificadas em inventários e conciliações.',
   },
 ];
 
@@ -69,7 +69,7 @@ export default function ReportsModuleManagement(_: { empresaId: number | null })
 
       setData((current) => ({ ...current, [report.key]: payload }));
     } catch (fetchError) {
-      setError(fetchError instanceof Error ? fetchError.message : 'NÃ£o foi possÃ­vel consultar os relatÃ³rios.');
+      setError(fetchError instanceof Error ? fetchError.message : 'Não foi possível consultar os relatórios.');
     } finally {
       setLoadingKey(null);
     }
@@ -103,16 +103,16 @@ export default function ReportsModuleManagement(_: { empresaId: number | null })
     <section className="panel-surface rounded-[28px] p-6">
       <div className="flex flex-col gap-5 lg:flex-row lg:items-start lg:justify-between">
         <div>
-          <p className="text-[12px] font-semibold uppercase tracking-[0.16em] text-[var(--muted)]">RelatÃ³rios</p>
-          <h2 className="mt-1.5 text-[1.65rem] font-semibold tracking-[-0.045em] text-[var(--ink)]">Central de relatÃ³rios patrimoniais</h2>
+          <p className="text-[12px] font-semibold uppercase tracking-[0.16em] text-[var(--muted)]">Relatórios</p>
+          <h2 className="mt-1.5 text-[1.65rem] font-semibold tracking-[-0.045em] text-[var(--ink)]">Central de relatórios patrimoniais</h2>
           <p className="mt-2.5 max-w-3xl text-[13px] leading-6 text-[var(--muted)]">
-            Consulta operacional dos relatÃ³rios existentes na API. A tela mostra contagem e uma prÃ©via do retorno real do backend.
+            Consulta operacional dos relatórios existentes na API. A tela mostra contagem e uma prévia do retorno real do backend.
           </p>
         </div>
 
         <div className="flex flex-wrap items-center gap-3">
           <button type="button" onClick={() => void loadAllReports()} className="inline-flex h-10 items-center justify-center rounded-full bg-[var(--accent)] px-4.5 text-[13px] font-semibold text-white transition hover:opacity-90">
-            Atualizar relatÃ³rios
+            Atualizar relatórios
           </button>
         </div>
       </div>
@@ -150,4 +150,6 @@ export default function ReportsModuleManagement(_: { empresaId: number | null })
     </section>
   );
 }
+
+
 

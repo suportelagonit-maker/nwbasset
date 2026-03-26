@@ -39,5 +39,7 @@ export default function PatrimonioBarcode({
     });
   }, [displayValue, height, value, width]);
 
-  return <svg ref={ref} className={className} aria-label="Código de barras patrimonial" />;
+  return <svg ref={ref} className={className} aria-label="código de barras patrimonial" />;
 }
+
+

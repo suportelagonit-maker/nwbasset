@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 
 const exportacoes = [
   {
@@ -17,22 +17,22 @@ const exportacoes = [
     format: 'CSV',
   },
   {
-    label: 'Bens por responsÃ¡vel - PDF',
+    label: 'Bens por responsável - PDF',
     path: '/api/exportacoes/bens-por-responsavel/pdf',
     format: 'PDF',
   },
   {
-    label: 'DepreciaÃ§Ã£o - PDF',
+    label: 'Depreciação - PDF',
     path: '/api/exportacoes/depreciacao/pdf',
     format: 'PDF',
   },
   {
-    label: 'InventÃ¡rio - PDF',
+    label: 'Inventário - PDF',
     path: '/api/exportacoes/inventario/pdf',
     format: 'PDF',
   },
   {
-    label: 'DivergÃªncias - PDF',
+    label: 'Divergências - PDF',
     path: '/api/exportacoes/divergencias/pdf',
     format: 'PDF',
   },
@@ -42,10 +42,10 @@ export default function ExportacoesModuleManagement(_: { empresaId: number | nul
   return (
     <section className="panel-surface rounded-[28px] p-5 md:p-6">
       <div>
-        <p className="text-[12px] font-semibold uppercase tracking-[0.16em] text-[var(--muted)]">ExportaÃ§Ãµes</p>
-        <h2 className="mt-1.5 text-[1.65rem] font-semibold tracking-[-0.045em] text-[var(--ink)]">Central de exportaÃ§Ã£o patrimonial</h2>
+        <p className="text-[12px] font-semibold uppercase tracking-[0.16em] text-[var(--muted)]">Exportações</p>
+        <h2 className="mt-1.5 text-[1.65rem] font-semibold tracking-[-0.045em] text-[var(--ink)]">Central de exportação patrimonial</h2>
         <p className="mt-2.5 max-w-3xl text-[13px] leading-6 text-[var(--muted)]">
-          Download dos arquivos gerados pela API de exportaÃ§Ãµes do NWB Asset, respeitando o contexto da empresa ativa.
+          Download dos arquivos gerados pela API de exportações do NWB Asset, respeitando o contexto da empresa ativa.
         </p>
       </div>
 
@@ -68,4 +68,6 @@ export default function ExportacoesModuleManagement(_: { empresaId: number | nul
     </section>
   );
 }
+
+
 

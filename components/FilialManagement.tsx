@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 
 import { useEffect, useState } from 'react';
 
@@ -176,7 +176,7 @@ export default function FilialManagement(_: { empresaId: number | null }) {
 
       setFiliais(payload?.data ?? []);
     } catch (fetchError) {
-      setError(fetchError instanceof Error ? fetchError.message : 'NÃ£o foi possÃ­vel consultar as filiais.');
+      setError(fetchError instanceof Error ? fetchError.message : 'Não foi possível consultar as filiais.');
     } finally {
       setLoading(false);
     }
@@ -262,7 +262,7 @@ export default function FilialManagement(_: { empresaId: number | null }) {
 
     if (!response.ok || !payload?.data) {
       const firstError = payload?.errors ? Object.values(payload.errors).flat().find(Boolean) : null;
-      setError(firstError ?? payload?.message ?? 'NÃ£o foi possÃ­vel salvar a filial.');
+      setError(firstError ?? payload?.message ?? 'Não foi possível salvar a filial.');
       return;
     }
 
@@ -289,7 +289,7 @@ export default function FilialManagement(_: { empresaId: number | null }) {
         }
 
         if (!response.ok) {
-          setError(payload?.message ?? 'NÃ£o foi possÃ­vel excluir a filial.');
+          setError(payload?.message ?? 'Não foi possível excluir a filial.');
           return;
         }
 
@@ -328,7 +328,7 @@ export default function FilialManagement(_: { empresaId: number | null }) {
             <p className="text-[12px] font-semibold uppercase tracking-[0.16em] text-[var(--muted)]">Filiais</p>
             <h2 className="mt-1.5 text-[1.6rem] font-semibold tracking-[-0.045em] text-[var(--ink)]">Estrutura de filiais da empresa</h2>
             <p className="mt-2.5 max-w-3xl text-[13px] leading-6 text-[var(--muted)]">
-              Toda empresa possui pelo menos uma filial matriz. Se a empresa nÃ£o tiver outras unidades, essa matriz representa a prÃ³pria operaÃ§Ã£o principal.
+              Toda empresa possui pelo menos uma filial matriz. Se a empresa Não tiver outras unidades, essa matriz representa a própria operação principal.
             </p>
           </div>
 
@@ -356,10 +356,10 @@ export default function FilialManagement(_: { empresaId: number | null }) {
               <thead>
                 <tr className="bg-[#f8fafc] text-left text-[11px] uppercase tracking-[0.16em] text-[var(--muted)]">
                   <th className="px-4 py-3.5">Filial</th>
-                  <th className="px-4 py-3.5">Codigo</th>
+                  <th className="px-4 py-3.5">Código</th>
                   <th className="px-4 py-3.5">Cidade / UF</th>
                   <th className="px-4 py-3.5">Status</th>
-                  <th className="px-4 py-3.5 text-right">Acoes</th>
+                  <th className="px-4 py-3.5 text-right">Ações</th>
                 </tr>
               </thead>
               <tbody>
@@ -390,7 +390,7 @@ export default function FilialManagement(_: { empresaId: number | null }) {
                       </div>
                     </td>
                       <td className="px-4 py-3.5">{filial.codigo}</td>
-                      <td className="px-4 py-3.5">{[filial.cidade, filial.estado].filter(Boolean).join(' / ') || 'NÃ£o informado'}</td>
+                      <td className="px-4 py-3.5">{[filial.cidade, filial.estado].filter(Boolean).join(' / ') || 'Não informado'}</td>
                       <td className="px-4 py-3.5">
                         <StatusBadge status={filial.status} matriz={filial.matriz} />
                       </td>
@@ -472,7 +472,7 @@ export default function FilialManagement(_: { empresaId: number | null }) {
                     <input type="text" value={form.nome} onChange={(event) => updateField('nome', event.target.value)} disabled={isReadOnly} className="admin-input" />
                   </label>
                   <label className="admin-field">
-                    Codigo do cadastro
+                    Código do cadastro
                     <input
                       type="text"
                       value={selectedFilial?.codigo ?? ''}
@@ -529,7 +529,7 @@ export default function FilialManagement(_: { empresaId: number | null }) {
               <div className="admin-modal-footer -mx-3 px-3 md:-mx-3.5 md:px-3.5">
                 <div className="flex justify-end">
                 <button type="button" onClick={() => void handleSubmit()} className="admin-btn-primary">
-                  {modalMode === 'edit' ? 'Salvar alteracoes' : 'Cadastrar filial'}
+                  {modalMode === 'edit' ? 'Salvar altera??es' : 'Cadastrar filial'}
                 </button>
                 </div>
               </div>
@@ -550,4 +550,6 @@ export default function FilialManagement(_: { empresaId: number | null }) {
     </>
   );
 }
+
+
 

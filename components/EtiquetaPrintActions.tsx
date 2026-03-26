@@ -25,3 +25,5 @@ export default function EtiquetaPrintActions({ consultaHref }: EtiquetaPrintActi
     </div>
   );
 }
+
+

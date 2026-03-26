@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 
 import { useEffect, useMemo, useState } from 'react';
 
@@ -98,7 +98,7 @@ function roleLabel(role: string) {
       ADMIN_EMPRESA: 'Admin da empresa',
       GESTOR_PATRIMONIAL: 'Gestor patrimonial',
       AUDITOR: 'Auditor',
-      OPERADOR_INVENTARIO: 'Operador de inventÃ¡rio',
+      OPERADOR_INVENTARIO: 'Operador de inventário',
     }[role] ?? role
   );
 }
@@ -184,12 +184,12 @@ export default function UsersManagement() {
       }
 
       if (!response.ok) {
-        throw new Error(payload?.message ?? `Falha ao consultar usuÃ¡rios: ${response.status}`);
+        throw new Error(payload?.message ?? `Falha ao consultar usuários: ${response.status}`);
       }
 
       setUsuarios(payload?.data ?? []);
     } catch (fetchError) {
-      setError(fetchError instanceof Error ? fetchError.message : 'NÃ£o foi possÃ­vel consultar os usuÃ¡rios.');
+      setError(fetchError instanceof Error ? fetchError.message : 'Não foi possível consultar os usuários.');
     } finally {
       setLoading(false);
     }
@@ -210,7 +210,7 @@ export default function UsersManagement() {
       }
 
       if (!response.ok || !payload?.data) {
-        throw new Error(payload?.message ?? `Falha ao consultar catÃ¡logo de permissÃµes: ${response.status}`);
+        throw new Error(payload?.message ?? `Falha ao consultar catálogo de permissões: ${response.status}`);
       }
 
       const catalogData = payload.data;
@@ -230,7 +230,7 @@ export default function UsersManagement() {
         };
       });
     } catch (fetchError) {
-      setError(fetchError instanceof Error ? fetchError.message : 'NÃ£o foi possÃ­vel carregar o catÃ¡logo de permissÃµes.');
+      setError(fetchError instanceof Error ? fetchError.message : 'Não foi possível carregar o catálogo de permissões.');
     }
   }
 
@@ -339,12 +339,12 @@ export default function UsersManagement() {
     const body = await parsePayload(response);
 
     if (handleUnauthorizedClientResponse(response.status, body?.message)) {
-      throw new Error('SessÃ£o expirada.');
+      throw new Error('Sessão expirada.');
     }
 
     if (!response.ok) {
       const firstError = body?.errors ? Object.values(body.errors).flat().find(Boolean) : null;
-      throw new Error(firstError ?? body?.message ?? 'NÃ£o foi possÃ­vel salvar o usuÃ¡rio.');
+      throw new Error(firstError ?? body?.message ?? 'Não foi possível salvar o usuário.');
     }
   }
 
@@ -360,10 +360,10 @@ export default function UsersManagement() {
     try {
       await persistUsuario();
       await loadUsuarios();
-      setMessage(modalMode === 'edit' ? 'UsuÃ¡rio atualizado com sucesso.' : 'UsuÃ¡rio cadastrado com sucesso.');
+      setMessage(modalMode === 'edit' ? 'Usuário atualizado com sucesso.' : 'Usuário cadastrado com sucesso.');
       resetModal();
     } catch (submitError) {
-      setError(submitError instanceof Error ? submitError.message : 'NÃ£o foi possÃ­vel salvar o usuÃ¡rio.');
+      setError(submitError instanceof Error ? submitError.message : 'Não foi possível salvar o usuário.');
     } finally {
       setSaving(false);
     }
@@ -371,9 +371,9 @@ export default function UsersManagement() {
 
   function handleDelete(usuario: UsuarioItem) {
     setConfirmDialog({
-      title: 'Inativar usuÃ¡rio',
-      description: `Deseja inativar o usuÃ¡rio ${usuario.nome}? Essa operaÃ§Ã£o vale somente para a empresa ativa.`,
-      confirmLabel: 'Inativar usuÃ¡rio',
+      title: 'Inativar usuário',
+      description: `Deseja inativar o usuário ${usuario.nome}? Essa operação vale somente para a empresa ativa.`,
+      confirmLabel: 'Inativar usuário',
       action: async () => {
         const response = await fetch(`/api/admin/usuarios/${usuario.id}`, {
           method: 'DELETE',
@@ -387,11 +387,11 @@ export default function UsersManagement() {
         }
 
         if (!response.ok) {
-          throw new Error(payload?.message ?? 'NÃ£o foi possÃ­vel inativar o usuÃ¡rio.');
+          throw new Error(payload?.message ?? 'Não foi possível inativar o usuário.');
         }
 
         await loadUsuarios();
-        setMessage('UsuÃ¡rio inativado com sucesso.');
+        setMessage('Usuário inativado com sucesso.');
       },
     });
   }
@@ -408,7 +408,7 @@ export default function UsersManagement() {
       await confirmDialog.action();
       setConfirmDialog(null);
     } catch (confirmError) {
-      setError(confirmError instanceof Error ? confirmError.message : 'NÃ£o foi possÃ­vel concluir a operaÃ§Ã£o.');
+      setError(confirmError instanceof Error ? confirmError.message : 'Não foi possível concluir a operação.');
     } finally {
       setConfirmBusy(false);
     }
@@ -421,8 +421,8 @@ export default function UsersManagement() {
       <SystemFeedbackStack
         error={error}
         message={message}
-        errorTitle="AtenÃ§Ã£o"
-        messageTitle="OperaÃ§Ã£o concluÃ­da"
+        errorTitle="Atenção"
+        messageTitle="Operação concluída"
         onCloseError={() => setError(null)}
         onCloseMessage={() => setMessage(null)}
       />
@@ -441,11 +441,11 @@ export default function UsersManagement() {
       <section className="panel-surface overflow-hidden rounded-[28px]">
         <div className="flex flex-col gap-4 border-b border-[var(--line)] px-5 py-4 md:flex-row md:items-start md:justify-between">
           <div className="space-y-1.5">
-            <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-[var(--muted)]">UsuÃ¡rios e acessos</p>
-            <h2 className="text-[28px] font-semibold tracking-[-0.04em] text-[var(--ink)]">GestÃ£o de usuÃ¡rios da empresa ativa</h2>
+            <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-[var(--muted)]">Usuários e acessos</p>
+            <h2 className="text-[28px] font-semibold tracking-[-0.04em] text-[var(--ink)]">Gestão de usuários da empresa ativa</h2>
             <p className="max-w-3xl text-sm leading-6 text-[var(--muted)]">
-              O usuÃ¡rio criado aqui fica vinculado somente Ã  empresa selecionada no painel. O administrador da empresa pode
-              criar perfis operacionais e marcar as permissÃµes por caixas de seleÃ§Ã£o.
+              O usuário criado aqui fica vinculado somente · empresa selecionada no painel. O administrador da empresa pode
+              criar perfis operacionais e marcar as permissões por caixas de seleção.
             </p>
           </div>
 
@@ -454,7 +454,7 @@ export default function UsersManagement() {
               Atualizar
             </button>
             <button type="button" onClick={openCreateModal} disabled={!catalogo} className="admin-btn-primary">
-              Novo usuÃ¡rio
+              Novo usuário
             </button>
           </div>
         </div>
@@ -463,25 +463,25 @@ export default function UsersManagement() {
           <table className="min-w-full border-collapse">
             <thead>
               <tr className="border-b border-[var(--line)] bg-[#f8fafc] text-left text-[11px] uppercase tracking-[0.18em] text-[var(--muted)]">
-                <th className="px-5 py-4">UsuÃ¡rio</th>
+                <th className="px-5 py-4">Usuário</th>
                 <th className="px-5 py-4">Perfil</th>
-                <th className="px-5 py-4">PermissÃµes</th>
+                <th className="px-5 py-4">Permissões</th>
                 <th className="px-5 py-4">Status</th>
-                <th className="px-5 py-4">Ãšltimo acesso</th>
-                <th className="px-5 py-4 text-right">AÃ§Ãµes</th>
+                <th className="px-5 py-4">?ltimo acesso</th>
+                <th className="px-5 py-4 text-right">Ações</th>
               </tr>
             </thead>
             <tbody>
               {loading ? (
                 <tr>
                   <td colSpan={6} className="px-5 py-12 text-center text-sm text-[var(--muted)]">
-                    Carregando usuÃ¡rios...
+                    Carregando usuários...
                   </td>
                 </tr>
               ) : usuarios.length === 0 ? (
                 <tr>
                   <td colSpan={6} className="px-5 py-12 text-center text-sm text-[var(--muted)]">
-                    Nenhum usuÃ¡rio cadastrado para a empresa ativa.
+                    Nenhum usuário cadastrado para a empresa ativa.
                   </td>
                 </tr>
               ) : (
@@ -503,9 +503,9 @@ export default function UsersManagement() {
                       </td>
                       <td className="px-5 py-4">
                         <div className="space-y-1">
-                          <p className="font-semibold">{permissoes.length} permissÃµes</p>
+                          <p className="font-semibold">{permissoes.length} permissões</p>
                           <p className="max-w-[320px] truncate text-xs text-[var(--muted)]">
-                            {permissoes.slice(0, 3).join(' â€¢ ') || 'Sem permissÃµes diretas'}
+                            {permissoes.slice(0, 3).join(' ? ') || 'Sem permissões diretas'}
                           </p>
                         </div>
                       </td>
@@ -563,13 +563,13 @@ export default function UsersManagement() {
           <div className="panel-surface admin-dialog-shell overflow-hidden rounded-[24px] p-4 md:p-5 shadow-[0_22px_64px_rgba(15,23,42,0.18)]">
             <div className="flex items-start justify-between gap-4 border-b border-[var(--line)] pb-3">
               <div className="min-w-0">
-                <p className="admin-modal-kicker">UsuÃ¡rios</p>
+                <p className="admin-modal-kicker">Usuários</p>
                 <h3 className="admin-modal-title">
-                  {modalMode === 'create' ? 'Novo usuÃ¡rio' : modalMode === 'edit' ? 'Editar usuÃ¡rio' : 'Visualizar usuÃ¡rio'}
+                  {modalMode === 'create' ? 'Novo usuário' : modalMode === 'edit' ? 'Editar usuário' : 'Visualizar usuário'}
                 </h3>
                 <p className="admin-modal-copy">
-                  Este cadastro vale apenas para a empresa ativa. O administrador da empresa pode criar usuÃ¡rios operacionais e
-                  definir as permissÃµes por caixas de seleÃ§Ã£o.
+                  Este cadastro vale apenas para a empresa ativa. O administrador da empresa pode criar usuários operacionais e
+                  definir as permissões por caixas de seleção.
                 </p>
               </div>
 
@@ -640,15 +640,15 @@ export default function UsersManagement() {
                     onChange={(event) => updateField('ativo', event.target.checked)}
                     disabled={readOnly}
                   />
-                  UsuÃ¡rio ativo para acessar a empresa selecionada
+                  Usuário ativo para acessar a empresa selecionada
                 </label>
 
                 <div className="rounded-[24px] border border-[var(--line)] bg-white p-4">
                   <div className="mb-3 space-y-1">
-                    <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[var(--muted)]">PermissÃµes da empresa</p>
+                    <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[var(--muted)]">Permissões da empresa</p>
                     <p className="text-sm leading-6 text-[var(--muted)]">
-                      Marque somente os acessos que este usuÃ¡rio pode usar na empresa ativa. Ao trocar o perfil, o sistema carrega
-                      o conjunto padrÃ£o e vocÃª pode ajustar manualmente.
+                      Marque somente os acessos que este usuário pode usar na empresa ativa. Ao trocar o perfil, o sistema carrega
+                      o conjunto padr?o e você pode ajustar manualmente.
                     </p>
                   </div>
 
@@ -696,21 +696,21 @@ export default function UsersManagement() {
                 <div className="admin-summary-card">
                   <p className="admin-summary-label">Empresa</p>
                   <p className="admin-summary-value">Empresa ativa</p>
-                  <p className="mt-1 text-xs text-[var(--muted)]">Este usuÃ¡rio serÃ¡ criado e controlado apenas no contexto atual.</p>
+                  <p className="mt-1 text-xs text-[var(--muted)]">Este usuário ser? criado e controlado apenas no contexto atual.</p>
                 </div>
                 <div className="admin-summary-card">
                   <p className="admin-summary-label">Perfil selecionado</p>
-                  <p className="admin-summary-value">{form.role ? roleLabel(form.role) : 'NÃ£o definido'}</p>
+                  <p className="admin-summary-value">{form.role ? roleLabel(form.role) : 'Não definido'}</p>
                 </div>
                 <div className="admin-summary-card">
-                  <p className="admin-summary-label">PermissÃµes marcadas</p>
+                  <p className="admin-summary-label">Permissões marcadas</p>
                   <p className="admin-summary-value">{permissoesSelecionadas.length}</p>
-                  <p className="mt-1 text-xs text-[var(--muted)]">As permissÃµes diretas prevalecem sobre o padrÃ£o do perfil na empresa ativa.</p>
+                  <p className="mt-1 text-xs text-[var(--muted)]">As permissões diretas prevalecem sobre o padr?o do perfil na empresa ativa.</p>
                 </div>
                 <div className="admin-summary-card">
-                  <p className="admin-summary-label">Regra de negÃ³cio</p>
+                  <p className="admin-summary-label">Regra de negócio</p>
                   <p className="text-sm leading-6 text-[var(--muted)]">
-                    O administrador da empresa nÃ£o cria usuÃ¡rios para outras empresas. O escopo Ã© sempre o da empresa atualmente
+                    O administrador da empresa Não cria usuários para outras empresas. O escopo · sempre o da empresa atualmente
                     selecionada no sistema.
                   </p>
                 </div>
@@ -729,7 +729,7 @@ export default function UsersManagement() {
                   disabled={saving}
                   className="admin-btn-primary"
                 >
-                  {modalMode === 'view' ? 'Fechar' : saving ? 'Salvando...' : modalMode === 'edit' ? 'Salvar alteraÃ§Ãµes' : 'Cadastrar usuÃ¡rio'}
+                  {modalMode === 'view' ? 'Fechar' : saving ? 'Salvando...' : modalMode === 'edit' ? 'Salvar alterações' : 'Cadastrar usuário'}
                 </button>
               </div>
             </div>
@@ -739,4 +739,6 @@ export default function UsersManagement() {
     </>
   );
 }
+
+
 

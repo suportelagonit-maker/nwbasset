@@ -28,3 +28,4 @@ export default async function PatrimonioDashboardPage() {
 
   return <DashboardPatrimonioClient filters={filters} isGeneralView={isGeneralView} />;
 }
+

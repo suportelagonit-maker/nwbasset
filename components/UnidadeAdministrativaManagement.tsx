@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 
 import { useEffect, useState } from 'react';
 
@@ -145,7 +145,7 @@ export default function UnidadeAdministrativaManagement(_: { empresaId: number |
 
       setUnidades(payload?.data ?? []);
     } catch (fetchError) {
-      setError(fetchError instanceof Error ? fetchError.message : 'NÃ£o foi possÃ­vel consultar as unidades administrativas.');
+      setError(fetchError instanceof Error ? fetchError.message : 'Não foi possível consultar as unidades administrativas.');
     } finally {
       setLoading(false);
     }
@@ -243,7 +243,7 @@ export default function UnidadeAdministrativaManagement(_: { empresaId: number |
 
     if (!response.ok || !payload?.data) {
       const firstError = payload?.errors ? Object.values(payload.errors).flat().find(Boolean) : null;
-      setError(firstError ?? payload?.message ?? 'NÃ£o foi possÃ­vel salvar a unidade administrativa.');
+      setError(firstError ?? payload?.message ?? 'Não foi possível salvar a unidade administrativa.');
       return;
     }
 
@@ -270,7 +270,7 @@ export default function UnidadeAdministrativaManagement(_: { empresaId: number |
         }
 
         if (!response.ok) {
-          setError(payload?.message ?? 'NÃ£o foi possÃ­vel excluir a unidade administrativa.');
+          setError(payload?.message ?? 'Não foi possível excluir a unidade administrativa.');
           return;
         }
 
@@ -341,10 +341,10 @@ export default function UnidadeAdministrativaManagement(_: { empresaId: number |
               <thead>
                 <tr className="bg-[#f8fafc] text-left text-xs uppercase tracking-[0.16em] text-[var(--muted)]">
                   <th className="px-4 py-4">Unidade</th>
-                  <th className="px-4 py-4">Codigo</th>
+                  <th className="px-4 py-4">Código</th>
                   <th className="px-4 py-4">Filial</th>
                   <th className="px-4 py-4">Status</th>
-                  <th className="px-4 py-4 text-right">Acoes</th>
+                  <th className="px-4 py-4 text-right">Ações</th>
                 </tr>
               </thead>
               <tbody>
@@ -370,7 +370,7 @@ export default function UnidadeAdministrativaManagement(_: { empresaId: number |
                           </span>
                           <div>
                             <p className="font-semibold">{unidade.nome}</p>
-                            <p className="mt-1 text-xs text-[var(--muted)]">ID {unidade.id} {unidade.descricao ? `| ${unidade.descricao}` : '| Sem descricao informada'}</p>
+                            <p className="mt-1 text-xs text-[var(--muted)]">ID {unidade.id} {unidade.descricao ? `| ${unidade.descricao}` : '| Sem descri??o informada'}</p>
                           </div>
                         </div>
                       </td>
@@ -485,7 +485,7 @@ export default function UnidadeAdministrativaManagement(_: { empresaId: number |
                   </label>
 
                   <label className="admin-field">
-                    Codigo do cadastro
+                    Código do cadastro
                     <input
                       type="text"
                       value={selectedUnidade?.codigo ?? ''}
@@ -509,7 +509,7 @@ export default function UnidadeAdministrativaManagement(_: { empresaId: number |
                   </label>
 
                   <label className="admin-field md:col-span-2">
-                    Descricao
+                    Descrição
                     <textarea
                       value={form.descricao}
                       onChange={(event) => updateField('descricao', event.target.value)}
@@ -531,7 +531,7 @@ export default function UnidadeAdministrativaManagement(_: { empresaId: number |
                   onClick={() => void handleSubmit()}
                   className="admin-btn-primary"
                 >
-                  {modalMode === 'edit' ? 'Salvar alteracoes' : 'Cadastrar unidade'}
+                  {modalMode === 'edit' ? 'Salvar altera??es' : 'Cadastrar unidade'}
                 </button>
                 </div>
               </div>
@@ -552,4 +552,6 @@ export default function UnidadeAdministrativaManagement(_: { empresaId: number |
     </>
   );
 }
+
+
 

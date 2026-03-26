@@ -28,3 +28,5 @@ export default function PatrimonioResumo({ resumo }: PatrimonioResumoProps) {
     </section>
   );
 }
+
+
