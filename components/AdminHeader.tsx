@@ -24,10 +24,10 @@ export default async function AdminHeader() {
           Dashboard
         </Link>
         <Link className="rounded-full border border-[var(--line)] px-4 py-2 hover:bg-white/80" href="/users">
-          Usuarios
+          Usuários
         </Link>
         <Link className="rounded-full border border-[var(--line)] px-4 py-2 hover:bg-white/80" href="/permissoes">
-          Permissoes
+          Permissões
         </Link>
         <form action="/api/auth/logout" method="post">
           <button className="rounded-full border border-[var(--line)] px-4 py-2 hover:bg-white/80" type="submit">
@@ -38,3 +38,5 @@ export default async function AdminHeader() {
     </header>
   );
 }
+
+

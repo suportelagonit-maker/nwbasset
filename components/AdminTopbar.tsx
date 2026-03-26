@@ -2,6 +2,7 @@
 
 import ActiveEmpresaHeader from '@/components/ActiveEmpresaHeader';
 import EmpresaContextHeader from '@/components/EmpresaContextHeader';
+import FontesConsultaButton from '@/components/FontesConsultaButton';
 import UserMenu from '@/components/UserMenu';
 
 type EmpresaOption = {
@@ -71,6 +72,9 @@ export default function AdminTopbar({
         </div>
 
         <div className="ml-auto flex items-center gap-4">
+          <div className="hidden lg:block">
+            <FontesConsultaButton />
+          </div>
           <ActiveEmpresaHeader
             empresaId={empresaAtualId}
             empresaNome={empresaNome}
@@ -104,6 +108,9 @@ export default function AdminTopbar({
       </div>
 
       <div className="ml-auto flex min-w-0 items-center gap-3">
+        <div className="hidden lg:block">
+          <FontesConsultaButton />
+        </div>
         <ActiveEmpresaHeader
           empresaId={empresaAtualId}
           empresaNome={empresaNome}
@@ -111,7 +118,7 @@ export default function AdminTopbar({
           empresaLogoUrl={empresaLogoUrl}
         />
         <div className="hidden max-w-[180px] text-right xl:block">
-          <p className="truncate text-[12px] font-semibold leading-4 text-[var(--ink)]">{userName ?? 'Usuario autenticado'}</p>
+          <p className="truncate text-[12px] font-semibold leading-4 text-[var(--ink)]">{userName ?? 'Usuário autenticado'}</p>
           <p className="mt-0.5 truncate text-[10px] text-[var(--muted)]">{userEmail ?? 'Conta ativa'}</p>
         </div>
         <UserMenu initial={userInitial} userName={userName} userEmail={userEmail} />
@@ -119,3 +126,5 @@ export default function AdminTopbar({
     </header>
   );
 }
+
+

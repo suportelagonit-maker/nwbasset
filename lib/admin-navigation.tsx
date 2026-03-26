@@ -48,7 +48,7 @@ export const adminNavigation: AdminNavSection[] = [
         label: 'Unidades Administrativas',
         href: '/dashboard/modulos/unidades-administrativas',
         icon: 'office',
-        description: 'Estrutura administrativa vinculada à empresa e filial.',
+        description: 'Estrutura administrativa vinculada · empresa e filial.',
         endpoints: ['/api/v1/unidades-administrativas'],
       },
       {
@@ -138,28 +138,12 @@ export const adminNavigation: AdminNavSection[] = [
         endpoints: ['/api/v1/historico-localizacao-bens'],
       },
       {
-        key: 'metodos-depreciacao',
-        label: 'Métodos de Depreciação',
-        href: '/dashboard/modulos/metodos-depreciacao',
-        icon: 'calculator',
-        description: 'Métodos de cálculo de depreciação patrimonial.',
-        endpoints: ['/api/v1/metodos-depreciacao'],
-      },
-      {
-        key: 'parametros-depreciacao',
-        label: 'Parâmetros de Depreciação',
-        href: '/dashboard/modulos/parametros-depreciacao',
-        icon: 'sliders',
-        description: 'Parâmetros padrão de vida útil e taxa por empresa.',
-        endpoints: ['/api/v1/parametros-depreciacao'],
-      },
-      {
         key: 'depreciacoes',
         label: 'Depreciações',
         href: '/dashboard/modulos/depreciacoes',
         icon: 'trend',
-        description: 'Histórico de depreciação e valor contábil dos bens.',
-        endpoints: ['/api/v1/depreciacoes'],
+        description: 'Motor de depreciação com regras por tipo de bem.',
+        endpoints: ['/api/v1/regras-depreciacao', '/api/v1/metodos-depreciacao', '/api/v1/depreciacoes'],
       },
       {
         key: 'conciliacoes',
@@ -453,3 +437,4 @@ export function renderAdminIcon(icon: string): ReactNode {
       );
   }
 }
+

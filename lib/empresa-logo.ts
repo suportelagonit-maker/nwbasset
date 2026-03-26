@@ -106,3 +106,4 @@ export function buildEmpresaLogoCandidates(input: {
 
   return Array.from(new Set(candidates.filter(Boolean))).slice(0, 32);
 }
+
