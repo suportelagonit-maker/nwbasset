@@ -11,3 +11,4 @@ export function normalizeCompanyName(value: string | null | undefined) {
 export function isMasterCompanyName(value: string | null | undefined) {
   return normalizeCompanyName(value) === normalizeCompanyName(MASTER_COMPANY_NAME);
 }
+

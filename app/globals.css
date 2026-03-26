@@ -320,6 +320,106 @@ a {
   backdrop-filter: blur(8px);
 }
 
+/* Compatibilidade para modais legados ainda usados em alguns módulos */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 80;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  overflow-y: auto;
+  background: rgba(15, 23, 42, 0.34);
+  padding: clamp(10px, 2vw, 18px);
+}
+
+.modal-card {
+  width: 100%;
+  max-height: calc(100vh - 8px);
+  margin: auto;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  border: 1px solid var(--line);
+  background: var(--bg-panel);
+  border-radius: 28px;
+  box-shadow: 0 24px 70px rgba(15, 23, 42, 0.16);
+  padding: 12px 14px;
+}
+
+.modal-header {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  border-bottom: 1px solid var(--line);
+  padding-bottom: 12px;
+}
+
+.modal-kicker {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.modal-title {
+  margin-top: 4px;
+  font-size: 1.02rem;
+  font-weight: 600;
+  letter-spacing: -0.04em;
+  color: var(--ink);
+}
+
+.modal-subtitle {
+  margin-top: 6px;
+  max-width: 48rem;
+  font-size: 11px;
+  line-height: 1.45;
+  color: var(--muted);
+}
+
+.modal-body {
+  flex: 1 1 auto;
+  overflow-y: auto;
+  max-height: calc(100vh - 132px);
+  margin-top: 12px;
+  padding-right: 2px;
+}
+
+.modal-body::-webkit-scrollbar {
+  width: 10px;
+}
+
+.modal-body::-webkit-scrollbar-thumb {
+  background: rgba(15, 23, 42, 0.12);
+  border-radius: 999px;
+  border: 2px solid transparent;
+  background-clip: padding-box;
+}
+
+.modal-footer {
+  position: sticky;
+  bottom: 0;
+  margin-top: 10px;
+  border-top: 1px solid var(--line);
+  background: rgba(255, 255, 255, 0.96);
+  padding-top: 8px;
+  padding-bottom: 2px;
+  backdrop-filter: blur(8px);
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+@media (min-width: 1024px) {
+  .modal-header {
+    flex-direction: row;
+    align-items: flex-start;
+    justify-content: space-between;
+  }
+}
+
 .admin-dialog-overlay {
   position: fixed;
   inset: 0;

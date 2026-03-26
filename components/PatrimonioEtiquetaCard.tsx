@@ -1,13 +1,15 @@
 'use client';
 
-import { useState } from 'react';
-import Image from 'next/image';
+import { useMemo } from 'react';
 
 import PatrimonioBarcode from '@/components/PatrimonioBarcode';
+import { useResolvedLogoSrc } from '@/hooks/use-resolved-logo-src';
+import { buildEmpresaLogoCandidates } from '@/lib/empresa-logo';
 
 type PatrimonioEtiquetaCardProps = {
   numeroPlaqueta: string;
   barcodeValue: string;
+  empresaId?: number | null;
   empresaNome?: string | null;
   logoSrc?: string | null;
   className?: string;
@@ -16,11 +18,22 @@ type PatrimonioEtiquetaCardProps = {
 export default function PatrimonioEtiquetaCard({
   numeroPlaqueta,
   barcodeValue,
+  empresaId,
   empresaNome,
   logoSrc,
   className = '',
 }: PatrimonioEtiquetaCardProps) {
-  const [imageError, setImageError] = useState(false);
+  const logoCandidates = useMemo(
+    () =>
+      buildEmpresaLogoCandidates({
+        empresaLogoUrl: logoSrc,
+        empresaId,
+        empresaNome,
+      }),
+    [empresaId, empresaNome, logoSrc],
+  );
+  const currentLogoSrc = useResolvedLogoSrc(logoCandidates);
+
   const normalizedName = String(empresaNome ?? '')
     .replace(/^igreja\s+/i, '')
     .trim();
@@ -30,23 +43,18 @@ export default function PatrimonioEtiquetaCard({
         .slice(0, 2)
         .map((part) => part.toLowerCase())
     : ['nwb', 'asset'];
-  const shouldShowImage = Boolean(logoSrc) && !imageError;
 
   return (
     <article
       className={`flex h-[112px] w-[250px] overflow-hidden rounded-[12px] border border-[#d2d7e1] bg-white px-3 py-2 shadow-[0_8px_18px_rgba(15,23,42,0.06)] ${className}`.trim()}
     >
       <div className="flex w-[52%] flex-col justify-center border-r border-[rgba(15,23,42,0.08)] pr-3">
-        {shouldShowImage ? (
-          <Image
-            src={String(logoSrc)}
+        {currentLogoSrc ? (
+          <img
+            src={currentLogoSrc}
             alt={empresaNome ? `Logo ${empresaNome}` : 'Logo da empresa'}
-            width={170}
-            height={48}
             className="h-auto w-full object-contain"
-            priority
-            unoptimized
-            onError={() => setImageError(true)}
+            loading="eager"
           />
         ) : (
           <div className="flex flex-col justify-center leading-none text-[#101828]">

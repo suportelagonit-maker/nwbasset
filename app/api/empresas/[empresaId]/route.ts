@@ -13,7 +13,7 @@ export async function GET(_: Request, context: { params: Promise<{ empresaId: st
   const token = await getToken();
 
   if (!token) {
-    return NextResponse.json({ message: 'Sessao expirada.' }, { status: 401 });
+    return NextResponse.json({ message: 'Sess?o expirada.' }, { status: 401 });
   }
 
   const { empresaId } = await context.params;
@@ -36,7 +36,7 @@ export async function PUT(request: Request, context: { params: Promise<{ empresa
   const token = await getToken();
 
   if (!token) {
-    return NextResponse.json({ message: 'Sessao expirada.' }, { status: 401 });
+    return NextResponse.json({ message: 'Sess?o expirada.' }, { status: 401 });
   }
 
   const { empresaId } = await context.params;
@@ -80,7 +80,7 @@ export async function DELETE(_: Request, context: { params: Promise<{ empresaId:
   const token = await getToken();
 
   if (!token) {
-    return NextResponse.json({ message: 'Sessao expirada.' }, { status: 401 });
+    return NextResponse.json({ message: 'Sess?o expirada.' }, { status: 401 });
   }
 
   const { empresaId } = await context.params;

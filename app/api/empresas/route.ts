@@ -13,7 +13,7 @@ export async function GET() {
   const token = await getToken();
 
   if (!token) {
-    return NextResponse.json({ message: 'Sessao expirada.' }, { status: 401 });
+    return NextResponse.json({ message: 'Sess?o expirada.' }, { status: 401 });
   }
 
   const response = await fetch(`${API_BASE_URL}/empresas?per_page=100`, {
@@ -34,7 +34,7 @@ export async function POST(request: Request) {
   const token = await getToken();
 
   if (!token) {
-    return NextResponse.json({ message: 'Sessao expirada.' }, { status: 401 });
+    return NextResponse.json({ message: 'Sess?o expirada.' }, { status: 401 });
   }
 
   const payload = (await request.json()) as {
@@ -72,3 +72,4 @@ export async function POST(request: Request) {
 
   return NextResponse.json(body, { status: response.status });
 }
+

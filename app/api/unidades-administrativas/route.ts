@@ -11,11 +11,11 @@ async function getSessionHeaders() {
   const empresaId = cookieStore.get(EMPRESA_ID_COOKIE)?.value;
 
   if (!token) {
-    return { error: NextResponse.json({ message: 'Sessao expirada.' }, { status: 401 }) };
+    return { error: NextResponse.json({ message: 'Sess?o expirada.' }, { status: 401 }) };
   }
 
   if (!empresaId) {
-    return { error: NextResponse.json({ message: 'Empresa ativa nao definida.' }, { status: 400 }) };
+    return { error: NextResponse.json({ message: 'Empresa ativa n?o definida.' }, { status: 400 }) };
   }
 
   return {
@@ -73,3 +73,4 @@ export async function POST(request: Request) {
 
   return NextResponse.json(body, { status: response.status });
 }
+

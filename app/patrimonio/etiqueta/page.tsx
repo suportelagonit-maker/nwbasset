@@ -116,6 +116,7 @@ export default async function PatrimonioEtiquetaPage({
               key={`${payload.data.plaqueta.numero_plaqueta}-${index}`}
               numeroPlaqueta={payload.data.plaqueta.numero_plaqueta}
               barcodeValue={barcodeValue}
+              empresaId={payload.data.empresa.id}
               empresaNome={payload.data.empresa.nome_fantasia}
               logoSrc={empresaLogoSrc}
             />

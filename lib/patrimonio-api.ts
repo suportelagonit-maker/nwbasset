@@ -128,3 +128,4 @@ export async function getDashboardEvolucaoPatrimonio(
 ): Promise<EvolucaoPatrimonioItem[]> {
   return fetchApi<EvolucaoPatrimonioItem[]>('dashboard/patrimonio/evolucao-patrimonio', filters, session);
 }
+

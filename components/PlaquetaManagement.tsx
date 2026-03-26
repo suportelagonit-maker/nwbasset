@@ -1,6 +1,8 @@
 'use client';
 
-import { useEffect, useMemo, useState } from 'react';
+import { BrowserMultiFormatReader } from '@zxing/browser';
+import { BarcodeFormat, DecodeHintType } from '@zxing/library';
+import { useEffect, useMemo, useRef, useState } from 'react';
 
 import { handleUnauthorizedClientResponse } from '@/lib/client-auth';
 
@@ -40,6 +42,11 @@ type ConfirmState = {
   description: string;
   confirmLabel?: string;
   action: () => Promise<void> | void;
+};
+
+type ScanCandidate = {
+  rawValue: string;
+  numeroPlaqueta: string;
 };
 
 type Props = {
@@ -120,6 +127,19 @@ export default function PlaquetaManagement({ empresaId, empresaNome, empresaLogo
   const [confirmDialog, setConfirmDialog] = useState<ConfirmState | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [message, setMessage] = useState<string | null>(null);
+  const [showScannerModal, setShowScannerModal] = useState(false);
+  const [scannerError, setScannerError] = useState<string | null>(null);
+  const [scanCandidate, setScanCandidate] = useState<ScanCandidate | null>(null);
+  const videoRef = useRef<HTMLVideoElement | null>(null);
+  const streamRef = useRef<MediaStream | null>(null);
+  const detectorRef = useRef<{ detect: (source: ImageBitmapSource) => Promise<Array<{ rawValue?: string }>> } | null>(null);
+  const animationFrameRef = useRef<number | null>(null);
+  const zxingReaderRef = useRef<BrowserMultiFormatReader | null>(null);
+  const zxingControlsRef = useRef<{ stop: () => void } | null>(null);
+  const scanCanvasRef = useRef<HTMLCanvasElement | null>(null);
+  const lastScanAttemptRef = useRef(0);
+  const lastInvalidReadRef = useRef('');
+  const lastInvalidAtRef = useRef(0);
 
   const estoquePlaquetas = useMemo(
     () => plaquetas.filter((item) => !item.bem_patrimonial_id || item.status === 'EM_ESTOQUE'),
@@ -138,21 +158,53 @@ export default function PlaquetaManagement({ empresaId, empresaNome, empresaLogo
     [bens, bindForm.filial_id],
   );
 
-  const previewPlaquetas = useMemo(() => {
+  const previewPlaqueta = useMemo(() => {
     if (plaquetas.length > 0) {
-      return plaquetas.slice(0, 6);
+      return {
+        id: plaquetas[0].id,
+        numero_plaqueta: plaquetas[0].numero_plaqueta,
+        codigo_barras_conteudo: plaquetas[0].codigo_barras_conteudo,
+      };
     }
 
-    return ['0837', '0838', '0835', '0836', '0833', '0834'].map((numero) => ({
-      id: Number(numero),
-      numero_plaqueta: numero,
-      codigo_barras_conteudo: numero,
-    }));
+    return {
+      id: 837,
+      numero_plaqueta: '0837',
+      codigo_barras_conteudo: '0837',
+    };
   }, [plaquetas]);
 
   useEffect(() => {
     void loadData();
   }, []);
+
+  useEffect(() => {
+    const hasModalOpen = showCreateModal || showImportModal || Boolean(bindPlaqueta) || showScannerModal;
+
+    if (!hasModalOpen) {
+      return;
+    }
+
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+
+    return () => {
+      document.body.style.overflow = previousOverflow;
+    };
+  }, [bindPlaqueta, showCreateModal, showImportModal, showScannerModal]);
+
+  useEffect(() => {
+    if (!showScannerModal) {
+      stopScanner();
+      return;
+    }
+
+    void startScanner();
+
+    return () => {
+      stopScanner();
+    };
+  }, [showScannerModal]);
 
   async function loadData() {
     setLoading(true);
@@ -352,6 +404,9 @@ export default function PlaquetaManagement({ empresaId, empresaNome, empresaLogo
   }
 
   function openBindModal(plaqueta: PlaquetaItem) {
+    setShowCreateModal(false);
+    setShowImportModal(false);
+    setShowScannerModal(false);
     setBindPlaqueta(plaqueta);
     setBindForm({
       filial_id: plaqueta.filial_id ? String(plaqueta.filial_id) : '',
@@ -368,7 +423,6 @@ export default function PlaquetaManagement({ empresaId, empresaNome, empresaLogo
     if (!response.ok) {
       const message = await response.text();
       if (handleUnauthorizedClientResponse(response.status, message)) {
-        return;
       }
       throw new Error(message || 'Não foi possível remover a plaqueta.');
     }
@@ -376,6 +430,374 @@ export default function PlaquetaManagement({ empresaId, empresaNome, empresaLogo
     await loadData();
     setMessage('Plaqueta removida com sucesso.');
     setError(null);
+  }
+
+  function stopScanner() {
+    if (zxingControlsRef.current) {
+      zxingControlsRef.current.stop();
+      zxingControlsRef.current = null;
+    }
+
+    if (zxingReaderRef.current) {
+      zxingReaderRef.current = null;
+    }
+
+    scanCanvasRef.current = null;
+    lastScanAttemptRef.current = 0;
+
+    if (animationFrameRef.current) {
+      cancelAnimationFrame(animationFrameRef.current);
+      animationFrameRef.current = null;
+    }
+
+    if (streamRef.current) {
+      streamRef.current.getTracks().forEach((track) => track.stop());
+      streamRef.current = null;
+    }
+
+    if (videoRef.current) {
+      videoRef.current.srcObject = null;
+    }
+  }
+
+  function tryExtractNumeroPlaqueta(value: string) {
+    const digits = value.replace(/\D/g, '');
+    if (digits.length < 4) {
+      return '';
+    }
+
+    if (digits.length <= 6) {
+      return digits;
+    }
+
+    return digits.slice(-6);
+  }
+
+  function applyScannedBarcode(rawValue: string) {
+    const cleanValue = rawValue.trim();
+    if (!cleanValue) {
+      return false;
+    }
+
+    if (scanCandidate) {
+      return true;
+    }
+
+    const numeroPlaqueta = tryExtractNumeroPlaqueta(cleanValue);
+    if (!numeroPlaqueta) {
+      const now = Date.now();
+      if (lastInvalidReadRef.current !== cleanValue || now - lastInvalidAtRef.current > 1000) {
+        lastInvalidReadRef.current = cleanValue;
+        lastInvalidAtRef.current = now;
+        setScannerError(`Leitura parcial (${cleanValue}). Continue apontando até ler o código completo.`);
+      }
+      return false;
+    }
+
+    setScanCandidate({
+      rawValue: cleanValue,
+      numeroPlaqueta,
+    });
+    setError(null);
+    setScannerError(null);
+    lastInvalidReadRef.current = '';
+    lastInvalidAtRef.current = 0;
+    stopScanner();
+    return true;
+  }
+
+  function confirmScannedBarcode() {
+    if (!scanCandidate) {
+      return;
+    }
+
+    setCreateForm((current) => ({
+      ...current,
+      codigo_barras_conteudo: scanCandidate.rawValue,
+      numero_plaqueta: current.numero_plaqueta || scanCandidate.numeroPlaqueta,
+    }));
+    setMessage(`Leitura confirmada. Código: ${scanCandidate.rawValue} · Plaqueta: ${scanCandidate.numeroPlaqueta}.`);
+    setError(null);
+    setScannerError(null);
+    setScanCandidate(null);
+    setShowScannerModal(false);
+  }
+
+  function rescanBarcode() {
+    setScanCandidate(null);
+    setScannerError(null);
+    lastInvalidReadRef.current = '';
+    lastInvalidAtRef.current = 0;
+    stopScanner();
+    void startScanner();
+  }
+
+  function prepareScannerCanvas(width: number, height: number) {
+    if (!scanCanvasRef.current) {
+      scanCanvasRef.current = document.createElement('canvas');
+    }
+
+    const canvas = scanCanvasRef.current;
+    if (canvas.width !== width || canvas.height !== height) {
+      canvas.width = width;
+      canvas.height = height;
+    }
+
+    return canvas;
+  }
+
+  function enhanceBarcodeContrast(ctx: CanvasRenderingContext2D, width: number, height: number) {
+    const frame = ctx.getImageData(0, 0, width, height);
+    const data = frame.data;
+
+    for (let i = 0; i < data.length; i += 4) {
+      const luminance = data[i] * 0.2126 + data[i + 1] * 0.7152 + data[i + 2] * 0.0722;
+      const normalized = luminance > 130 ? 255 : 0;
+      data[i] = normalized;
+      data[i + 1] = normalized;
+      data[i + 2] = normalized;
+    }
+
+    ctx.putImageData(frame, 0, 0);
+  }
+
+  async function startScannerWithZxing() {
+    if (!videoRef.current) {
+      throw new Error('Nao foi possivel iniciar a camera.');
+    }
+
+    const hints = new Map<DecodeHintType, unknown>();
+    hints.set(DecodeHintType.TRY_HARDER, true);
+    hints.set(DecodeHintType.POSSIBLE_FORMATS, [
+      BarcodeFormat.CODE_128,
+      BarcodeFormat.CODE_39,
+      BarcodeFormat.ITF,
+      BarcodeFormat.EAN_13,
+      BarcodeFormat.EAN_8,
+      BarcodeFormat.UPC_A,
+      BarcodeFormat.UPC_E,
+      BarcodeFormat.QR_CODE,
+    ]);
+
+    const zxingReader = new BrowserMultiFormatReader(hints, {
+      delayBetweenScanAttempts: 80,
+      delayBetweenScanSuccess: 450,
+    });
+    zxingReaderRef.current = zxingReader;
+
+    const stream = await navigator.mediaDevices.getUserMedia({
+      video: {
+        facingMode: { ideal: 'environment' },
+        width: { ideal: 1920 },
+        height: { ideal: 1080 },
+      },
+      audio: false,
+    });
+    streamRef.current = stream;
+
+    const [videoTrack] = stream.getVideoTracks();
+    try {
+      const capabilities = videoTrack.getCapabilities?.() as MediaTrackCapabilities & {
+        zoom?: { min?: number; max?: number };
+      };
+      if (capabilities?.zoom && typeof capabilities.zoom.max === 'number' && capabilities.zoom.max > 1) {
+        const targetZoom = Math.min(2, capabilities.zoom.max);
+        await videoTrack.applyConstraints({ advanced: [{ zoom: targetZoom } as MediaTrackConstraintSet] });
+      }
+    } catch {
+      // zoom opcional; ignora se o dispositivo nao suportar
+    }
+
+    videoRef.current.srcObject = stream;
+    await videoRef.current.play();
+
+    const tick = async () => {
+      const video = videoRef.current;
+      const reader = zxingReaderRef.current;
+
+      if (!video || !reader || !showScannerModal) {
+        return;
+      }
+
+      const now = Date.now();
+      if (now - lastScanAttemptRef.current < 140) {
+        animationFrameRef.current = requestAnimationFrame(() => {
+          void tick();
+        });
+        return;
+      }
+      lastScanAttemptRef.current = now;
+
+      try {
+        if (video.readyState >= 2 && video.videoWidth > 0 && video.videoHeight > 0) {
+          const sourceWidth = video.videoWidth;
+          const sourceHeight = video.videoHeight;
+          const regions = [
+            {
+              x: 0,
+              y: 0,
+              width: sourceWidth,
+              height: sourceHeight,
+            },
+            {
+              x: Math.floor(sourceWidth * 0.14),
+              y: Math.floor(sourceHeight * 0.32),
+              width: Math.floor(sourceWidth * 0.72),
+              height: Math.floor(sourceHeight * 0.34),
+            },
+            {
+              x: Math.floor(sourceWidth * 0.42),
+              y: Math.floor(sourceHeight * 0.24),
+              width: Math.floor(sourceWidth * 0.5),
+              height: Math.floor(sourceHeight * 0.5),
+            },
+          ];
+
+          for (const region of regions) {
+            const safeWidth = Math.max(180, Math.min(sourceWidth, region.width));
+            const safeHeight = Math.max(90, Math.min(sourceHeight, region.height));
+            const safeX = Math.max(0, Math.min(sourceWidth - safeWidth, region.x));
+            const safeY = Math.max(0, Math.min(sourceHeight - safeHeight, region.y));
+
+            const scanCanvas = prepareScannerCanvas(safeWidth, safeHeight);
+            const scanCtx = scanCanvas.getContext('2d', { willReadFrequently: true });
+
+            if (!scanCtx) {
+              throw new Error('Nao foi possivel processar a imagem da camera.');
+            }
+
+            scanCtx.drawImage(video, safeX, safeY, safeWidth, safeHeight, 0, 0, safeWidth, safeHeight);
+
+            try {
+              const directResult = reader.decodeFromCanvas(scanCanvas);
+              const directValue = directResult?.getText()?.trim();
+              if (directValue) {
+                const applied = applyScannedBarcode(directValue);
+                if (applied) {
+                  return;
+                }
+              }
+            } catch {
+              // continua para etapa de contraste
+            }
+
+            enhanceBarcodeContrast(scanCtx, scanCanvas.width, scanCanvas.height);
+
+            try {
+              const contrastResult = reader.decodeFromCanvas(scanCanvas);
+              const contrastValue = contrastResult?.getText()?.trim();
+              if (contrastValue) {
+                const applied = applyScannedBarcode(contrastValue);
+                if (applied) {
+                  return;
+                }
+              }
+            } catch {
+              // segue varrendo
+            }
+          }
+        }
+      } catch {
+        // segue varrendo
+      }
+
+      animationFrameRef.current = requestAnimationFrame(() => {
+        void tick();
+      });
+    };
+
+    animationFrameRef.current = requestAnimationFrame(() => {
+      void tick();
+    });
+  }
+
+  async function startScanner() {
+    setScannerError(null);
+    lastInvalidReadRef.current = '';
+    lastInvalidAtRef.current = 0;
+
+    try {
+      if (!navigator.mediaDevices?.getUserMedia) {
+        throw new Error('Este navegador não possui suporte à câmera.');
+      }
+
+      try {
+        await startScannerWithZxing();
+        return;
+      } catch {
+        // fallback para BarcodeDetector
+      }
+
+      const BarcodeDetectorCtor = (
+        window as unknown as {
+          BarcodeDetector?: new (config?: { formats?: string[] }) => {
+            detect: (source: ImageBitmapSource) => Promise<Array<{ rawValue?: string }>>;
+          };
+        }
+      ).BarcodeDetector;
+
+      if (!BarcodeDetectorCtor) {
+        throw new Error('Leitura por camera nao suportada neste navegador. Use Chrome/Edge ou leitor de codigo.');
+      }
+
+      detectorRef.current = new BarcodeDetectorCtor({
+        formats: ['code_128', 'code_39', 'ean_13', 'ean_8', 'upc_a', 'upc_e', 'itf', 'qr_code'],
+      });
+
+      const stream = await navigator.mediaDevices.getUserMedia({
+        video: {
+          facingMode: { ideal: 'environment' },
+          width: { ideal: 1920 },
+          height: { ideal: 1080 },
+        },
+        audio: false,
+      });
+
+      streamRef.current = stream;
+
+      if (!videoRef.current) {
+        throw new Error('Não foi possível iniciar a câmera.');
+      }
+
+      videoRef.current.srcObject = stream;
+      await videoRef.current.play();
+
+      const tick = async () => {
+        const video = videoRef.current;
+        const detector = detectorRef.current;
+
+        if (!video || !detector || !showScannerModal) {
+          return;
+        }
+
+        try {
+          if (video.readyState >= 2) {
+            const results = await detector.detect(video);
+            const first = results.find((item) => item.rawValue && item.rawValue.trim() !== '');
+
+            if (first?.rawValue) {
+              const applied = applyScannedBarcode(first.rawValue);
+              if (applied) {
+                return;
+              }
+            }
+          }
+        } catch {
+          // segue tentando até detectar
+        }
+
+        animationFrameRef.current = requestAnimationFrame(() => {
+          void tick();
+        });
+      };
+
+      animationFrameRef.current = requestAnimationFrame(() => {
+        void tick();
+      });
+    } catch (scanError) {
+      setScannerError(scanError instanceof Error ? scanError.message : 'Não foi possível iniciar o leitor de código.');
+      stopScanner();
+    }
   }
 
   return (
@@ -415,10 +837,28 @@ export default function PlaquetaManagement({ empresaId, empresaNome, empresaLogo
             </div>
 
             <div className="flex flex-wrap gap-3">
-              <button type="button" className="admin-btn-secondary" onClick={() => setShowImportModal(true)}>
+              <button
+                type="button"
+                className="admin-btn-secondary"
+                onClick={() => {
+                  setShowCreateModal(false);
+                  setBindPlaqueta(null);
+                  setShowScannerModal(false);
+                  setShowImportModal(true);
+                }}
+              >
                 Importar planilha
               </button>
-              <button type="button" className="admin-btn-primary" onClick={() => setShowCreateModal(true)}>
+              <button
+                type="button"
+                className="admin-btn-primary"
+                onClick={() => {
+                  setShowImportModal(false);
+                  setBindPlaqueta(null);
+                  setShowScannerModal(false);
+                  setShowCreateModal(true);
+                }}
+              >
                 Nova etiqueta
               </button>
             </div>
@@ -433,19 +873,18 @@ export default function PlaquetaManagement({ empresaId, empresaNome, empresaLogo
                 O mesmo código impresso na gráfica pode ser lido pelo celular para localizar o bem no inventário.
               </p>
             </div>
-            <p className="text-xs font-medium text-[var(--muted)]">{plaquetas.length} plaquetas no contexto atual</p>
+            <p className="text-xs font-medium text-[var(--muted)]">Exemplo visual</p>
           </div>
 
-          <div className="mt-6 grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-            {previewPlaquetas.map((plaqueta) => (
-              <PatrimonioEtiquetaCard
-                key={plaqueta.id}
-                numeroPlaqueta={plaqueta.numero_plaqueta}
-                barcodeValue={plaqueta.codigo_barras_conteudo}
-                empresaNome={empresaNome}
-                logoSrc={empresaLogoUrl}
-              />
-            ))}
+          <div className="mt-6 flex justify-start">
+            <PatrimonioEtiquetaCard
+              key={previewPlaqueta.id}
+              numeroPlaqueta={previewPlaqueta.numero_plaqueta}
+              barcodeValue={previewPlaqueta.codigo_barras_conteudo}
+              empresaId={empresaId}
+              empresaNome={empresaNome}
+              logoSrc={empresaLogoUrl}
+            />
           </div>
         </section>
 
@@ -599,6 +1038,19 @@ export default function PlaquetaManagement({ empresaId, empresaNome, empresaLogo
                   />
                 </label>
               </div>
+              <div className="flex justify-end">
+                <button
+                  type="button"
+                  className="admin-btn-secondary"
+                  onClick={() => {
+                    setScanCandidate(null);
+                    setScannerError(null);
+                    setShowScannerModal(true);
+                  }}
+                >
+                  Ler código (câmera)
+                </button>
+              </div>
               <label className="admin-field">
                 <span className="admin-field-label">Observações</span>
                 <textarea
@@ -666,6 +1118,85 @@ export default function PlaquetaManagement({ empresaId, empresaNome, empresaLogo
         </div>
       )}
 
+      {showScannerModal && (
+        <div className="modal-overlay">
+          <div className="modal-card max-w-xl">
+            <div className="modal-header">
+              <div>
+                <p className="modal-kicker">Leitor de código de barras</p>
+                <h3 className="modal-title">Escanear etiqueta física</h3>
+                <p className="modal-subtitle">
+                  Aponte a câmera para o código de barras da etiqueta impressa. O campo será preenchido automaticamente.
+                </p>
+              </div>
+              <button
+                type="button"
+                className="admin-btn-secondary"
+                onClick={() => {
+                  setScanCandidate(null);
+                  setShowScannerModal(false);
+                }}
+              >
+                Fechar
+              </button>
+            </div>
+
+            <div className="modal-body space-y-3">
+              {scanCandidate ? (
+                <div className="space-y-3 rounded-2xl border border-[var(--line)] bg-[rgba(248,250,252,0.9)] p-4">
+                  <div>
+                    <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[var(--muted)]">Código lido</p>
+                    <p className="mt-1 text-base font-semibold text-[var(--ink)]">{scanCandidate.rawValue}</p>
+                  </div>
+                  <div>
+                    <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[var(--muted)]">Número da plaqueta identificado</p>
+                    <p className="mt-1 text-base font-semibold text-[var(--ink)]">{scanCandidate.numeroPlaqueta}</p>
+                  </div>
+                </div>
+              ) : (
+                <>
+                  <div className="overflow-hidden rounded-2xl border border-[var(--line)] bg-[#0b1220]">
+                    <video ref={videoRef} autoPlay playsInline muted className="h-[320px] w-full object-cover" />
+                  </div>
+                  {scannerError ? (
+                    <div className="rounded-2xl border border-[rgba(190,18,60,0.18)] bg-[rgba(190,18,60,0.08)] px-4 py-3 text-sm text-[var(--rose)]">
+                      {scannerError}
+                    </div>
+                  ) : (
+                    <p className="text-sm text-[var(--muted)]">
+                      A leitura só é aceita quando identificar ao menos 4 dígitos numéricos da plaqueta.
+                    </p>
+                  )}
+                </>
+              )}
+            </div>
+
+            <div className="modal-footer">
+              {scanCandidate && (
+                <button type="button" className="admin-btn-secondary" onClick={rescanBarcode}>
+                  Ler novamente
+                </button>
+              )}
+              <button
+                type="button"
+                className="admin-btn-secondary"
+                onClick={() => {
+                  setScanCandidate(null);
+                  setShowScannerModal(false);
+                }}
+              >
+                Cancelar
+              </button>
+              {scanCandidate && (
+                <button type="button" className="admin-btn-primary" onClick={confirmScannedBarcode}>
+                  Usar leitura
+                </button>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+
       {bindPlaqueta && (
         <div className="modal-overlay">
           <div className="modal-card max-w-4xl">
@@ -685,6 +1216,7 @@ export default function PlaquetaManagement({ empresaId, empresaNome, empresaLogo
                 <PatrimonioEtiquetaCard
                   numeroPlaqueta={bindPlaqueta.numero_plaqueta}
                   barcodeValue={bindPlaqueta.codigo_barras_conteudo}
+                  empresaId={empresaId}
                   empresaNome={empresaNome}
                   logoSrc={empresaLogoUrl}
                 />

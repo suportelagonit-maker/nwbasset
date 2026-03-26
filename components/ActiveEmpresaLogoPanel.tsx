@@ -1,8 +1,9 @@
 'use client';
 
-import Image from 'next/image';
 import { useEffect, useMemo, useState, useTransition } from 'react';
 import { useRouter } from 'next/navigation';
+import { useResolvedLogoSrc } from '@/hooks/use-resolved-logo-src';
+import { buildEmpresaLogoCandidates } from '@/lib/empresa-logo';
 
 type EmpresaOption = {
   id: number;
@@ -54,6 +55,19 @@ export default function ActiveEmpresaLogoPanel({
   useEffect(() => {
     setPreviewUrl(empresaLogoUrl ?? null);
   }, [empresaLogoUrl]);
+
+  const logoCandidates = useMemo(() => {
+    if (previewUrl?.startsWith('blob:')) {
+      return [previewUrl];
+    }
+
+    return buildEmpresaLogoCandidates({
+      empresaLogoUrl: previewUrl,
+      empresaId,
+      empresaNome,
+    });
+  }, [empresaId, empresaNome, previewUrl]);
+  const currentLogoSrc = useResolvedLogoSrc(logoCandidates, '/LogoAsset.png');
 
   useEffect(() => {
     return () => {
@@ -205,14 +219,12 @@ export default function ActiveEmpresaLogoPanel({
           {empresaCnpj ? <p className="mt-1 text-sm text-[var(--muted)]">{formatCnpj(empresaCnpj)}</p> : null}
         </div>
         <div className="flex h-16 w-24 shrink-0 items-center justify-center overflow-hidden rounded-[18px] border border-[var(--line)] bg-white px-3">
-          {previewUrl ? (
-            <Image
-              src={previewUrl}
+          {currentLogoSrc ? (
+            <img
+              src={currentLogoSrc}
               alt={`Logo de ${empresaNome ?? 'empresa ativa'}`}
-              width={96}
-              height={40}
               className="h-auto max-h-[40px] w-auto max-w-full object-contain"
-              unoptimized
+              loading="eager"
             />
           ) : (
             <span className="text-center text-[11px] font-medium uppercase tracking-[0.16em] text-[var(--muted)]">

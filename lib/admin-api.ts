@@ -106,3 +106,4 @@ export async function getEmpresas(session: AuthSession): Promise<EmpresaItem[]> 
 
   return payload.data;
 }
+

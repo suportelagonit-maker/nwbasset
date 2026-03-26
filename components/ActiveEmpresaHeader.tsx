@@ -1,8 +1,12 @@
 'use client';
 
-import Image from 'next/image';
+import { useMemo } from 'react';
+
+import { useResolvedLogoSrc } from '@/hooks/use-resolved-logo-src';
+import { buildEmpresaLogoCandidates } from '@/lib/empresa-logo';
 
 type ActiveEmpresaHeaderProps = {
+  empresaId?: number | null;
   empresaNome?: string | null;
   empresaCnpj?: string | null;
   empresaLogoUrl?: string | null;
@@ -18,22 +22,36 @@ function formatCnpj(value?: string | null): string {
   return digits.replace(/^(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})$/, '$1.$2.$3/$4-$5');
 }
 
-export default function ActiveEmpresaHeader({ empresaNome, empresaCnpj, empresaLogoUrl }: ActiveEmpresaHeaderProps) {
+export default function ActiveEmpresaHeader({
+  empresaId,
+  empresaNome,
+  empresaCnpj,
+  empresaLogoUrl,
+}: ActiveEmpresaHeaderProps) {
+  const logoCandidates = useMemo(
+    () =>
+      buildEmpresaLogoCandidates({
+        empresaLogoUrl,
+        empresaId,
+        empresaNome,
+      }),
+    [empresaId, empresaLogoUrl, empresaNome],
+  );
+  const currentLogoSrc = useResolvedLogoSrc(logoCandidates, '/LogoAsset.png');
+
   if (!empresaNome) {
     return null;
   }
 
   return (
     <div className="flex min-w-0 max-w-[320px] items-center justify-end gap-3 text-right">
-      {empresaLogoUrl ? (
+      {currentLogoSrc ? (
         <div className="flex h-14 w-20 shrink-0 items-center justify-center overflow-hidden px-1">
-          <Image
-            src={empresaLogoUrl}
+          <img
+            src={currentLogoSrc}
             alt={`Logo de ${empresaNome}`}
-            width={80}
-            height={40}
             className="h-auto max-h-[40px] w-auto max-w-full object-contain"
-            unoptimized
+            loading="eager"
           />
         </div>
       ) : null}

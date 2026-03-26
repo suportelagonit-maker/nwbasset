@@ -71,7 +71,12 @@ export default function AdminTopbar({
         </div>
 
         <div className="ml-auto flex items-center gap-4">
-          <ActiveEmpresaHeader empresaNome={empresaNome} empresaCnpj={empresaCnpj} empresaLogoUrl={empresaLogoUrl} />
+          <ActiveEmpresaHeader
+            empresaId={empresaAtualId}
+            empresaNome={empresaNome}
+            empresaCnpj={empresaCnpj}
+            empresaLogoUrl={empresaLogoUrl}
+          />
           <UserMenu initial={userInitial} userName={userName} userEmail={userEmail} />
         </div>
       </header>
@@ -99,7 +104,12 @@ export default function AdminTopbar({
       </div>
 
       <div className="ml-auto flex min-w-0 items-center gap-3">
-        <ActiveEmpresaHeader empresaNome={empresaNome} empresaCnpj={empresaCnpj} empresaLogoUrl={empresaLogoUrl} />
+        <ActiveEmpresaHeader
+          empresaId={empresaAtualId}
+          empresaNome={empresaNome}
+          empresaCnpj={empresaCnpj}
+          empresaLogoUrl={empresaLogoUrl}
+        />
         <div className="hidden max-w-[180px] text-right xl:block">
           <p className="truncate text-[12px] font-semibold leading-4 text-[var(--ink)]">{userName ?? 'Usuario autenticado'}</p>
           <p className="mt-0.5 truncate text-[10px] text-[var(--muted)]">{userEmail ?? 'Conta ativa'}</p>

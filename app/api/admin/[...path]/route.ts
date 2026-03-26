@@ -8,7 +8,7 @@ async function proxyRequest(request: NextRequest, path: string[]) {
   const session = await getAuthSession();
 
   if (!session.token) {
-    return Response.json({ message: 'Sessao expirada.' }, { status: 401 });
+    return Response.json({ message: 'Sess?o expirada.' }, { status: 401 });
   }
 
   const targetUrl = new URL(`${API_BASE_URL}/${path.join('/')}`);
