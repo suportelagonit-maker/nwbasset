@@ -79,6 +79,26 @@ class Usuario extends Authenticatable
         return $this->normalizeRole($this->role ?: RoleEnum::OPERADOR_INVENTARIO->value) === RoleEnum::SUPER_ADMIN->value;
     }
 
+    public function isUltraAdmin(): bool
+    {
+        $targetEmail = strtolower(trim((string) env('ULTRA_ADMIN_EMAIL', 'admin@nwbasset.local')));
+
+        return strtolower(trim((string) $this->email)) === $targetEmail;
+    }
+
+    public function canBeManagedBy(?self $actor): bool
+    {
+        if (! $this->isUltraAdmin()) {
+            return true;
+        }
+
+        if (! $actor instanceof self) {
+            return false;
+        }
+
+        return (int) $actor->id === (int) $this->id;
+    }
+
     public function empresasAcessiveisQuery(): Builder
     {
         if ($this->canAccessAllEmpresas()) {

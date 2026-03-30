@@ -16,6 +16,7 @@ use App\Domain\Administration\Services\PermissionCatalogService;
 use App\Domain\Audit\Enums\AuditoriaEventoEnum;
 use App\Domain\Audit\Services\AuditLogger;
 use App\Http\Controllers\Controller;
+use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
@@ -103,7 +104,7 @@ class UsuarioController extends Controller
 
     public function show(Usuario $usuario, Request $request): UsuarioResource
     {
-        $this->empresaContext()->garantirModelRelacionadoDaEmpresa($usuario, 'empresa');
+        $this->empresaContext()->garantirModelRelacionadoDaEmpresa($usuario, 'empresa', null, 'id');
 
         return new UsuarioResource(
             $usuario->load([
@@ -116,7 +117,8 @@ class UsuarioController extends Controller
 
     public function update(UpdateUsuarioRequest $request, Usuario $usuario, UpdateUsuarioAction $action): UsuarioResource
     {
-        $this->empresaContext()->garantirModelRelacionadoDaEmpresa($usuario, 'empresa');
+        $this->empresaContext()->garantirModelRelacionadoDaEmpresa($usuario, 'empresa', null, 'id');
+        $this->assertUsuarioGerenciavel($usuario, $request->user());
 
         return new UsuarioResource(
             $action->execute(
@@ -130,7 +132,8 @@ class UsuarioController extends Controller
 
     public function destroy(Usuario $usuario, Request $request, AuditLogger $auditLogger): JsonResponse
     {
-        $this->empresaContext()->garantirModelRelacionadoDaEmpresa($usuario, 'empresa');
+        $this->empresaContext()->garantirModelRelacionadoDaEmpresa($usuario, 'empresa', null, 'id');
+        $this->assertUsuarioGerenciavel($usuario, $request->user());
 
         $dadosAnteriores = $usuario->toArray();
         $usuario->update(['ativo' => false]);
@@ -146,5 +149,14 @@ class UsuarioController extends Controller
         );
 
         return response()->json(['message' => 'Usuário inativado com sucesso.']);
+    }
+
+    private function assertUsuarioGerenciavel(Usuario $usuarioAlvo, mixed $actor): void
+    {
+        if ($usuarioAlvo->canBeManagedBy($actor instanceof Usuario ? $actor : null)) {
+            return;
+        }
+
+        throw new AuthorizationException('O usuário admin@nwbasset.local é protegido e só pode ser alterado por ele mesmo.');
     }
 }

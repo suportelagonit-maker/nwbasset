@@ -10,6 +10,8 @@ class UsuarioResource extends JsonResource
 {
     public function toArray(Request $request): array
     {
+        $actor = $request->user();
+
         return [
             'id' => $this->id,
             'empresa_id' => $this->empresa_id,
@@ -19,6 +21,12 @@ class UsuarioResource extends JsonResource
             'is_super_admin' => method_exists($this->resource, 'isSuperAdmin')
                 ? $this->resource->isSuperAdmin()
                 : false,
+            'is_ultra_admin' => method_exists($this->resource, 'isUltraAdmin')
+                ? $this->resource->isUltraAdmin()
+                : false,
+            'can_manage' => method_exists($this->resource, 'canBeManagedBy')
+                ? $this->resource->canBeManagedBy($actor)
+                : true,
             'role_atual' => method_exists($this->resource, 'roleForEmpresa')
                 ? $this->resource->roleForEmpresa($request->attributes->get('empresa_id'))
                 : $this->role,
