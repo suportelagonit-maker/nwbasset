@@ -17,6 +17,8 @@ type UsuarioItem = {
   permissoes?: string[];
   ativo: boolean;
   ultimo_login_em: string | null;
+  is_ultra_admin?: boolean;
+  can_manage?: boolean;
 };
 
 type CatalogoGrupo = {
@@ -132,6 +134,24 @@ async function parsePayload(response: Response) {
         errors?: Record<string, string[]>;
       }
     | null;
+}
+
+const ULTRA_ADMIN_EMAIL = 'admin@nwbasset.local';
+
+function isUltraAdmin(usuario: UsuarioItem) {
+  if (typeof usuario.is_ultra_admin === 'boolean') {
+    return usuario.is_ultra_admin;
+  }
+
+  return usuario.email.trim().toLowerCase() === ULTRA_ADMIN_EMAIL;
+}
+
+function canManageUsuario(usuario: UsuarioItem) {
+  if (typeof usuario.can_manage === 'boolean') {
+    return usuario.can_manage;
+  }
+
+  return true;
 }
 
 export default function UsersManagement() {
@@ -272,6 +292,11 @@ export default function UsersManagement() {
   }
 
   function openEditModal(usuario: UsuarioItem) {
+    if (!canManageUsuario(usuario)) {
+      setError('Este usuario e protegido. Somente o proprio admin@nwbasset.local pode alterar este cadastro.');
+      return;
+    }
+
     setError(null);
     setMessage(null);
     setSelectedUsuario(usuario);
@@ -370,6 +395,11 @@ export default function UsersManagement() {
   }
 
   function handleDelete(usuario: UsuarioItem) {
+    if (!canManageUsuario(usuario)) {
+      setError('Este usuario e protegido. Somente o proprio admin@nwbasset.local pode inativar este cadastro.');
+      return;
+    }
+
     setConfirmDialog({
       title: 'Inativar usuário',
       description: `Deseja inativar o usuário ${usuario.nome}? Essa operação vale somente para a empresa ativa.`,
@@ -487,13 +517,25 @@ export default function UsersManagement() {
               ) : (
                 usuarios.map((usuario) => {
                   const permissoes = uniquePermissions(usuario.permissoes ?? []);
+                  const canManage = canManageUsuario(usuario);
+                  const ultraAdminProtegido = isUltraAdmin(usuario) && !canManage;
 
                   return (
-                    <tr key={usuario.id} className="border-b border-[rgba(15,23,42,0.08)] text-sm text-[var(--ink)]">
+                    <tr
+                      key={usuario.id}
+                      className={`border-b border-[rgba(15,23,42,0.08)] text-sm text-[var(--ink)] ${
+                        ultraAdminProtegido ? 'bg-[rgba(15,23,42,0.02)] opacity-75' : ''
+                      }`}
+                    >
                       <td className="px-5 py-4">
                         <div className="space-y-1">
                           <p className="font-semibold">{usuario.nome}</p>
                           <p className="text-xs text-[var(--muted)]">{usuario.email}</p>
+                          {ultraAdminProtegido ? (
+                            <p className="text-[11px] font-medium text-[var(--muted)]">
+                              Usuario protegido: apenas o proprio admin@nwbasset.local pode editar.
+                            </p>
+                          ) : null}
                         </div>
                       </td>
                       <td className="px-5 py-4">
@@ -534,16 +576,36 @@ export default function UsersManagement() {
                           <button
                             type="button"
                             onClick={() => openEditModal(usuario)}
-                            className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-[var(--line)] bg-white text-[var(--ink)] transition hover:border-[var(--blue)] hover:text-[var(--blue)]"
+                            disabled={!canManage}
+                            className={`inline-flex h-9 w-9 items-center justify-center rounded-full border transition ${
+                              canManage
+                                ? 'border-[var(--line)] bg-white text-[var(--ink)] hover:border-[var(--blue)] hover:text-[var(--blue)]'
+                                : 'cursor-not-allowed border-[var(--line)] bg-[#f3f4f6] text-[var(--muted)]'
+                            }`}
                             aria-label={`Editar ${usuario.nome}`}
+                            title={
+                              canManage
+                                ? `Editar ${usuario.nome}`
+                                : 'Somente o proprio admin@nwbasset.local pode editar este usuario.'
+                            }
                           >
                             <PencilIcon />
                           </button>
                           <button
                             type="button"
                             onClick={() => handleDelete(usuario)}
-                            className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-[rgba(225,29,72,0.16)] bg-white text-[var(--rose)] transition hover:bg-[rgba(225,29,72,0.06)]"
+                            disabled={!canManage}
+                            className={`inline-flex h-9 w-9 items-center justify-center rounded-full border transition ${
+                              canManage
+                                ? 'border-[rgba(225,29,72,0.16)] bg-white text-[var(--rose)] hover:bg-[rgba(225,29,72,0.06)]'
+                                : 'cursor-not-allowed border-[var(--line)] bg-[#f3f4f6] text-[var(--muted)]'
+                            }`}
                             aria-label={`Inativar ${usuario.nome}`}
+                            title={
+                              canManage
+                                ? `Inativar ${usuario.nome}`
+                                : 'Somente o proprio admin@nwbasset.local pode inativar este usuario.'
+                            }
                           >
                             <TrashIcon />
                           </button>

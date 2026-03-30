@@ -2,7 +2,6 @@
 
 import ActiveEmpresaHeader from '@/components/ActiveEmpresaHeader';
 import EmpresaContextHeader from '@/components/EmpresaContextHeader';
-import FontesConsultaButton from '@/components/FontesConsultaButton';
 import UserMenu from '@/components/UserMenu';
 
 type EmpresaOption = {
@@ -72,9 +71,6 @@ export default function AdminTopbar({
         </div>
 
         <div className="ml-auto flex items-center gap-4">
-          <div className="hidden lg:block">
-            <FontesConsultaButton />
-          </div>
           <ActiveEmpresaHeader
             empresaId={empresaAtualId}
             empresaNome={empresaNome}
@@ -108,9 +104,6 @@ export default function AdminTopbar({
       </div>
 
       <div className="ml-auto flex min-w-0 items-center gap-3">
-        <div className="hidden lg:block">
-          <FontesConsultaButton />
-        </div>
         <ActiveEmpresaHeader
           empresaId={empresaAtualId}
           empresaNome={empresaNome}

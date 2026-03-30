@@ -529,7 +529,7 @@ export default function FilialManagement(_: { empresaId: number | null }) {
               <div className="admin-modal-footer -mx-3 px-3 md:-mx-3.5 md:px-3.5">
                 <div className="flex justify-end">
                 <button type="button" onClick={() => void handleSubmit()} className="admin-btn-primary">
-                  {modalMode === 'edit' ? 'Salvar altera??es' : 'Cadastrar filial'}
+                  {modalMode === 'edit' ? 'Salvar alterações' : 'Cadastrar filial'}
                 </button>
                 </div>
               </div>

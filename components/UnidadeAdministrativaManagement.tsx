@@ -531,7 +531,7 @@ export default function UnidadeAdministrativaManagement(_: { empresaId: number |
                   onClick={() => void handleSubmit()}
                   className="admin-btn-primary"
                 >
-                  {modalMode === 'edit' ? 'Salvar altera??es' : 'Cadastrar unidade'}
+                  {modalMode === 'edit' ? 'Salvar alterações' : 'Cadastrar unidade'}
                 </button>
                 </div>
               </div>
