@@ -102,8 +102,8 @@ export const adminNavigation: AdminNavSection[] = [
         label: 'Responsáveis',
         href: '/dashboard/modulos/responsaveis',
         icon: 'users',
-        description: 'Responsáveis patrimoniais por bem e local.',
-        endpoints: ['/api/v1/responsaveis'],
+        description: 'Cadastro de responsáveis e histórico de responsabilidade dos bens.',
+        endpoints: ['/api/v1/responsaveis', '/api/v1/responsabilidade-bens'],
       },
       {
         key: 'transferencias-bens',
@@ -120,14 +120,6 @@ export const adminNavigation: AdminNavSection[] = [
         icon: 'archive',
         description: 'Baixa formal e auditável de bens.',
         endpoints: ['/api/v1/baixas-bens'],
-      },
-      {
-        key: 'responsabilidade-bens',
-        label: 'Responsabilidade de Bens',
-        href: '/dashboard/modulos/responsabilidade-bens',
-        icon: 'shield',
-        description: 'Histórico de atribuição de responsabilidade por bem.',
-        endpoints: ['/api/v1/responsabilidade-bens'],
       },
       {
         key: 'historico-localizacao-bens',
@@ -195,12 +187,6 @@ export const adminNavigation: AdminNavSection[] = [
         description: 'Auditoria patrimonial e trilhas operacionais.',
         endpoints: ['/api/v1/auditorias'],
       },
-    ],
-  },
-  {
-    key: 'administracao',
-    label: 'Administração',
-    items: [
       {
         key: 'usuarios',
         label: 'Usuários',
@@ -216,13 +202,6 @@ export const adminNavigation: AdminNavSection[] = [
         icon: 'eye',
         description: 'Matriz de permissões por perfil do sistema.',
         endpoints: ['/api/v1/roles-permissoes'],
-      },
-      {
-        key: 'perfil',
-        label: 'Perfil',
-        href: '/perfil',
-        icon: 'user',
-        description: 'Dados da sessão e informações do usuário autenticado.',
       },
     ],
   },

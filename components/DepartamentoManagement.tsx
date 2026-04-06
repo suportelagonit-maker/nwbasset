@@ -425,7 +425,7 @@ export default function DepartamentoManagement({ empresaId }: { empresaId: numbe
                           <div>
                             <p className="font-semibold">{departamento.nome}</p>
                             <p className="mt-1 text-xs text-[var(--muted)]">
-                              ID {departamento.id} {departamento.descricao ? `| ${departamento.descricao}` : '| Sem descri??o informada'}
+                              ID {departamento.id} {departamento.descricao ? `| ${departamento.descricao}` : '| Sem descrição informada'}
                             </p>
                           </div>
                         </div>

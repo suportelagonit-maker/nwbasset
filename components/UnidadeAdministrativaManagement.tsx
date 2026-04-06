@@ -370,7 +370,7 @@ export default function UnidadeAdministrativaManagement(_: { empresaId: number |
                           </span>
                           <div>
                             <p className="font-semibold">{unidade.nome}</p>
-                            <p className="mt-1 text-xs text-[var(--muted)]">ID {unidade.id} {unidade.descricao ? `| ${unidade.descricao}` : '| Sem descri??o informada'}</p>
+                            <p className="mt-1 text-xs text-[var(--muted)]">ID {unidade.id} {unidade.descricao ? `| ${unidade.descricao}` : '| Sem descrição informada'}</p>
                           </div>
                         </div>
                       </td>

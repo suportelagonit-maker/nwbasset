@@ -18,6 +18,11 @@ const headingFont = Space_Grotesk({
 export const metadata: Metadata = {
   title: 'NWB Asset | Dashboard Patrimonial',
   description: 'Painel patrimonial do ERP NWB Asset.',
+  icons: {
+    icon: '/Favicon.png',
+    shortcut: '/Favicon.png',
+    apple: '/Favicon.png',
+  },
 };
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {

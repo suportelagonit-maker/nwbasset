@@ -4,6 +4,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { useEffect, useState, useTransition } from 'react';
 import { useRouter } from 'next/navigation';
+import { toFriendlyError } from '@/lib/feedback-message';
 
 type EmpresaOption = {
   id: number;
@@ -33,6 +34,7 @@ export default function EmpresaSelectionForm() {
   const [isSuperAdmin, setIsSuperAdmin] = useState(false);
   const [empresas, setEmpresas] = useState<EmpresaOption[]>([]);
   const [empresaId, setEmpresaId] = useState('');
+  const friendlyError = error ? toFriendlyError(error) : null;
 
   useEffect(() => {
     void loadContext();
@@ -191,9 +193,11 @@ export default function EmpresaSelectionForm() {
         </label>
       </div>
 
-      {error ? (
+      {friendlyError ? (
         <div className="mt-4 rounded-2xl border border-[rgba(190,18,60,0.18)] bg-[rgba(190,18,60,0.08)] px-4 py-3 text-sm text-[var(--rose)]">
-          {error}
+          <p className="font-semibold">{friendlyError.title}</p>
+          <p className="mt-1">{friendlyError.text}</p>
+          {friendlyError.help ? <p className="mt-1 text-xs opacity-80">{friendlyError.help}</p> : null}
         </div>
       ) : null}
 

@@ -14,6 +14,7 @@ import {
   type DashboardQueryFilters,
   type PatrimonioResumo as PatrimonioResumoData,
 } from '@/lib/patrimonio-api';
+import { toFriendlyError } from '@/lib/feedback-message';
 
 function MiniIconCard({
   title,
@@ -126,6 +127,7 @@ export default function DashboardPatrimonioClient({
   const [resumo, setResumo] = useState<PatrimonioResumoData>(EMPTY_RESUMO);
   const [bensPorLocal, setBensPorLocal] = useState<BensPorLocalItem[]>([]);
   const [bensPorDepartamento, setBensPorDepartamento] = useState<BensPorDepartamentoItem[]>([]);
+  const friendlyError = error ? toFriendlyError(error) : null;
 
   useEffect(() => {
     let alive = true;
@@ -189,9 +191,11 @@ export default function DashboardPatrimonioClient({
           </p>
         </div>
 
-        {error ? (
+        {friendlyError ? (
           <div className="rounded-[18px] border border-[rgba(239,68,68,0.18)] bg-[rgba(254,242,242,0.92)] px-4 py-3 text-sm text-[#b42318]">
-            {error}
+            <p className="font-semibold">{friendlyError.title}</p>
+            <p className="mt-1">{friendlyError.text}</p>
+            {friendlyError.help ? <p className="mt-1 text-xs opacity-80">{friendlyError.help}</p> : null}
           </div>
         ) : null}
 
@@ -266,10 +270,10 @@ export default function DashboardPatrimonioClient({
               <DashboardChartCardSkeleton title="Bens Móveis" />
               <DashboardChartCardSkeleton title="Bens Imóveis" />
             </>
-          ) : error ? (
+          ) : friendlyError ? (
             <>
-              <DashboardChartCardError title="Bens Móveis" message={error} />
-              <DashboardChartCardError title="Bens Imóveis" message={error} />
+              <DashboardChartCardError title="Bens Móveis" message={friendlyError.text} />
+              <DashboardChartCardError title="Bens Imóveis" message={friendlyError.text} />
             </>
           ) : (
             <>

@@ -2,6 +2,7 @@
 
 import { useMemo, useState, useTransition } from 'react';
 import { useRouter } from 'next/navigation';
+import { toFriendlyError } from '@/lib/feedback-message';
 
 type EmpresaOption = {
   id: number;
@@ -31,6 +32,7 @@ export default function EmpresaContextHeader({
     dashboardScope === 'geral' ? '__geral__' : empresaAtualId ? String(empresaAtualId) : '',
   );
   const [error, setError] = useState<string | null>(null);
+  const friendlyError = error ? toFriendlyError(error) : null;
 
   const canSwitchEmpresa = useMemo(
     () => isSuperAdmin || empresas.length > 1,
@@ -108,7 +110,11 @@ export default function EmpresaContextHeader({
           className="inline-flex h-5 w-5 animate-spin rounded-full border-2 border-[rgba(246,164,0,0.16)] border-t-[var(--accent)]"
         />
       ) : null}
-      {error ? <span className="hidden text-xs text-[var(--rose)] xl:block">{error}</span> : null}
+      {friendlyError ? (
+        <span className="hidden text-xs text-[var(--rose)] xl:block">
+          {friendlyError.text}
+        </span>
+      ) : null}
     </div>
   );
 }

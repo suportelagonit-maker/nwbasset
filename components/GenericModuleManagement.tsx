@@ -24,6 +24,7 @@ export type ModuleFieldConfig = {
   defaultValue?: string | ((context: { empresaId: number | null }) => string);
   options?: Array<{ value: string; label: string }>;
   lookupKey?: string;
+  lookupValueKey?: string;
   filterOption?: (
     item: Record<string, unknown>,
     form: Record<string, string>,
@@ -70,6 +71,7 @@ type GenericModuleManagementProps = {
   slug: string;
   empresaNome?: string | null;
   empresaLogoUrl?: string | null;
+  headerVariant?: "full" | "compact";
 };
 type ModalMode = "create" | "edit" | "view" | null;
 type ConfirmDialogState = {
@@ -185,6 +187,100 @@ function getDefaultValue(field: ModuleFieldConfig, empresaId: number | null) {
   }
   return "";
 }
+function onlyDigits(value: string) {
+  return value.replace(/\D/g, "");
+}
+function maskCpf(value: string) {
+  const digits = onlyDigits(value).slice(0, 11);
+  if (digits.length <= 3) {
+    return digits;
+  }
+  if (digits.length <= 6) {
+    return `${digits.slice(0, 3)}.${digits.slice(3)}`;
+  }
+  if (digits.length <= 9) {
+    return `${digits.slice(0, 3)}.${digits.slice(3, 6)}.${digits.slice(6)}`;
+  }
+  return `${digits.slice(0, 3)}.${digits.slice(3, 6)}.${digits.slice(6, 9)}-${digits.slice(9)}`;
+}
+function maskTelefone(value: string) {
+  const digits = onlyDigits(value).slice(0, 11);
+  if (digits.length <= 2) {
+    return digits ? `(${digits}` : "";
+  }
+  if (digits.length <= 6) {
+    return `(${digits.slice(0, 2)}) ${digits.slice(2)}`;
+  }
+  if (digits.length <= 10) {
+    return `(${digits.slice(0, 2)}) ${digits.slice(2, 6)}-${digits.slice(6)}`;
+  }
+  return `(${digits.slice(0, 2)}) ${digits.slice(2, 7)}-${digits.slice(7)}`;
+}
+function maskResponsavelField(fieldName: string, value: string) {
+  if (fieldName === "cpf") {
+    return maskCpf(value);
+  }
+  if (fieldName === "telefone") {
+    return maskTelefone(value);
+  }
+  return value;
+}
+function isValidCpf(value: string) {
+  const digits = onlyDigits(value);
+  if (digits.length !== 11) {
+    return false;
+  }
+  if (/^(\d)\1{10}$/.test(digits)) {
+    return false;
+  }
+  const calculateCheckDigit = (base: string, factor: number) => {
+    let total = 0;
+    for (const char of base) {
+      total += Number(char) * factor;
+      factor -= 1;
+    }
+    const remainder = total % 11;
+    return remainder < 2 ? 0 : 11 - remainder;
+  };
+  const firstCheckDigit = calculateCheckDigit(digits.slice(0, 9), 10);
+  const secondCheckDigit = calculateCheckDigit(
+    `${digits.slice(0, 9)}${firstCheckDigit}`,
+    11,
+  );
+  return (
+    firstCheckDigit === Number(digits[9]) &&
+    secondCheckDigit === Number(digits[10])
+  );
+}
+function getResponsavelFieldError(fieldName: string, value: string) {
+  if (fieldName === "cpf") {
+    const digits = onlyDigits(value);
+    if (!digits.length) {
+      return null;
+    }
+    if (digits.length < 11) {
+      return "CPF incompleto.";
+    }
+    if (!isValidCpf(value)) {
+      return "CPF inválido.";
+    }
+    return null;
+  }
+  if (fieldName === "telefone") {
+    const digits = onlyDigits(value);
+    if (!digits.length) {
+      return null;
+    }
+    if (digits.length < 10) {
+      return "Telefone incompleto.";
+    }
+    if (digits.length > 11) {
+      return "Telefone inválido.";
+    }
+    return null;
+  }
+  return null;
+}
 function getRecordImages(record: Record<string, unknown> | null) {
   if (!record || !Array.isArray(record.imagens)) {
     return [];
@@ -269,6 +365,7 @@ export default function GenericModuleManagement({
   slug,
   empresaNome,
   empresaLogoUrl,
+  headerVariant = "full",
 }: GenericModuleManagementProps) {
   const config = getCrudModuleConfig(slug);
   const [records, setRecords] = useState<Record<string, unknown>[]>([]);
@@ -286,6 +383,7 @@ export default function GenericModuleManagement({
     unknown
   > | null>(null);
   const [form, setForm] = useState<Record<string, string>>({});
+  const [dataFimIndeterminada, setDataFimIndeterminada] = useState(false);
   const [activeStepIndex, setActiveStepIndex] = useState(0);
   const [uploadingImages, setUploadingImages] = useState(false);
   const [uploadingDocuments, setUploadingDocuments] = useState(false);
@@ -339,7 +437,11 @@ export default function GenericModuleManagement({
   const steppedBodyMinHeightClassName =
     config.steppedBodyMinHeightClassName ?? "min-h-[420px] lg:min-h-[448px]";
   const isAssetModule = config.key === "bens";
+  const isCompactHeader = headerVariant === "compact";
   const isAssetAttachmentsStep = isAssetModule && currentStep?.key === "anexos";
+  const isResponsaveisModule = config.key === "responsaveis";
+  const isResponsabilidadeBensModule = config.key === "responsabilidade-bens";
+  const isTransferenciasBensModule = config.key === "transferencias-bens";
   const selectedImages = getRecordImages(selectedRecord);
   const selectedDocuments = getRecordDocuments(selectedRecord);
   const visibleImages = selectedImages.slice(0, 5);
@@ -354,6 +456,56 @@ export default function GenericModuleManagement({
     const currentFieldNames = new Set(currentStep.fields);
     return baseFields.filter((field) => currentFieldNames.has(field.name));
   }, [config.fields, currentStep]);
+  const transferenciaBemSelecionado = useMemo(() => {
+    if (!isTransferenciasBensModule) {
+      return null;
+    }
+    const bemSelecionadoId = String(form.bem_patrimonial_id ?? "");
+    if (!bemSelecionadoId) {
+      return null;
+    }
+    return (
+      (lookups.bens ?? []).find(
+        (bem) => String(bem.id ?? "") === bemSelecionadoId,
+      ) ?? null
+    );
+  }, [form.bem_patrimonial_id, isTransferenciasBensModule, lookups.bens]);
+  function applyFieldMask(field: ModuleFieldConfig, value: string) {
+    if (!isResponsaveisModule) {
+      return value;
+    }
+    return maskResponsavelField(field.name, value);
+  }
+  function getFieldPlaceholder(field: ModuleFieldConfig) {
+    if (field.placeholder) {
+      return field.placeholder;
+    }
+    if (!isResponsaveisModule) {
+      return undefined;
+    }
+    if (field.name === "cpf") {
+      return "000.000.000-00";
+    }
+    if (field.name === "telefone") {
+      return "(00) 00000-0000";
+    }
+    return undefined;
+  }
+  const responsavelFieldErrors = useMemo(() => {
+    const errors: Record<string, string | null> = {};
+    if (isResponsaveisModule) {
+      errors.cpf = getResponsavelFieldError("cpf", form.cpf ?? "");
+      errors.telefone = getResponsavelFieldError(
+        "telefone",
+        form.telefone ?? "",
+      );
+    }
+    return errors;
+  }, [form.cpf, form.telefone, isResponsaveisModule]);
+  const hasResponsavelFieldErrors = useMemo(
+    () => Object.values(responsavelFieldErrors).some((error) => Boolean(error)),
+    [responsavelFieldErrors],
+  );
   async function refreshAll() {
     await Promise.all([loadRecords(), loadLookups()]);
   }
@@ -435,9 +587,12 @@ export default function GenericModuleManagement({
     return Object.fromEntries(
       config.fields.map((field) => [
         field.name,
-        record
-          ? normalizeFieldValue(field, record[field.name])
-          : getDefaultValue(field, empresaId),
+        applyFieldMask(
+          field,
+          record
+            ? normalizeFieldValue(field, record[field.name])
+            : getDefaultValue(field, empresaId),
+        ),
       ]),
     ) as Record<string, string>;
   }
@@ -449,6 +604,7 @@ export default function GenericModuleManagement({
     setModalMode(null);
     setSelectedRecord(null);
     setForm(createInitialForm(null));
+    setDataFimIndeterminada(false);
     setActiveStepIndex(0);
     setUploadingImages(false);
     setUploadingDocuments(false);
@@ -461,6 +617,7 @@ export default function GenericModuleManagement({
     setError(null);
     setSelectedRecord(null);
     setForm(createInitialForm(null));
+    setDataFimIndeterminada(false);
     setActiveStepIndex(0);
     setModalMode("create");
   }
@@ -468,6 +625,9 @@ export default function GenericModuleManagement({
     setError(null);
     setSelectedRecord(record);
     setForm(createInitialForm(record));
+    setDataFimIndeterminada(
+      isResponsabilidadeBensModule && !String(record.data_fim ?? "").trim(),
+    );
     setActiveStepIndex(0);
     setModalMode("view");
   }
@@ -475,15 +635,43 @@ export default function GenericModuleManagement({
     setError(null);
     setSelectedRecord(record);
     setForm(createInitialForm(record));
+    setDataFimIndeterminada(
+      isResponsabilidadeBensModule && !String(record.data_fim ?? "").trim(),
+    );
     setActiveStepIndex(0);
     setModalMode("edit");
   }
   function updateField(field: ModuleFieldConfig, value: string) {
     setForm((current) => {
-      const next = { ...current, [field.name]: value };
+      const next = { ...current, [field.name]: applyFieldMask(field, value) };
       field.clearOnChange?.forEach((clearField) => {
         next[clearField] = "";
       });
+      if (isTransferenciasBensModule && field.name === "bem_patrimonial_id") {
+        const bemSelecionado = (lookups.bens ?? []).find(
+          (bem) => String(bem.id ?? "") === String(value ?? ""),
+        );
+        if (bemSelecionado) {
+          next.origem_unidade_administrativa_id = String(
+            bemSelecionado.unidade_administrativa_id ?? "",
+          );
+          next.origem_departamento_id = String(
+            bemSelecionado.departamento_id ?? "",
+          );
+          next.origem_local_id = String(bemSelecionado.local_id ?? "");
+          next.origem_responsavel_id = String(
+            bemSelecionado.responsavel_id ?? "",
+          );
+          if (!next.filial_id && bemSelecionado.filial_id) {
+            next.filial_id = String(bemSelecionado.filial_id);
+          }
+        } else {
+          next.origem_unidade_administrativa_id = "";
+          next.origem_departamento_id = "";
+          next.origem_local_id = "";
+          next.origem_responsavel_id = "";
+        }
+      }
       return next;
     });
   }
@@ -594,6 +782,11 @@ export default function GenericModuleManagement({
     }
     if (isReadOnly) {
       resetModal();
+      return;
+    }
+    if (isResponsaveisModule && hasResponsavelFieldErrors) {
+      setErrorTitle("Campos inválidos");
+      setError("Corrija CPF e telefone antes de salvar.");
       return;
     }
     await handleSubmit();
@@ -1203,23 +1396,42 @@ export default function GenericModuleManagement({
           setMessageTitle(null);
         }}
       />
-      <section className="panel-surface rounded-[28px] p-5 md:p-6">
+      <section
+        className={[
+          "panel-surface rounded-[28px]",
+          isCompactHeader ? "p-4 md:p-5" : "p-5 md:p-6",
+        ].join(" ")}
+      >
         
-        <div className="flex flex-col gap-5 lg:flex-row lg:items-start lg:justify-between">
+        <div
+          className={[
+            "flex flex-col lg:flex-row lg:items-start lg:justify-between",
+            isCompactHeader ? "gap-3.5" : "gap-5",
+          ].join(" ")}
+        >
           
           <div>
             
             <p className="text-[12px] font-semibold uppercase tracking-[0.16em] text-[var(--muted)]">
               {config.label}
             </p>
-            <h2 className="mt-1.5 text-[1.6rem] font-semibold tracking-[-0.045em] text-[var(--ink)]">
+            <h2
+              className={[
+                "font-semibold tracking-[-0.045em] text-[var(--ink)]",
+                isCompactHeader
+                  ? "mt-1 text-[1.36rem]"
+                  : "mt-1.5 text-[1.6rem]",
+              ].join(" ")}
+            >
               {config.summary}
             </h2>
-            <p className="mt-2.5 max-w-3xl text-[13px] leading-6 text-[var(--muted)]">
-              
-              Tela operacional vinculada a tabela real do sistema, respeitando a
-              empresa ativa e a estrutura multiempresa.
-            </p>
+            {!isCompactHeader ? (
+              <p className="mt-2.5 max-w-3xl text-[13px] leading-6 text-[var(--muted)]">
+                
+                Tela operacional vinculada a tabela real do sistema,
+                respeitando a empresa ativa e a estrutura multiempresa.
+              </p>
+            ) : null}
           </div>
           <div className="flex flex-wrap items-center gap-3">
             {config.allowCreate !== false ? (
@@ -1276,7 +1488,12 @@ export default function GenericModuleManagement({
             </div>
           </section>
         ) : null}
-        <div className="mt-6 overflow-hidden rounded-[24px] border border-[var(--line)]">
+        <div
+          className={[
+            "overflow-hidden rounded-[24px] border border-[var(--line)]",
+            isCompactHeader ? "mt-4" : "mt-6",
+          ].join(" ")}
+        >
           
           <div className="overflow-x-auto">
             
@@ -2044,7 +2261,69 @@ export default function GenericModuleManagement({
                         </section>
                       </div>
                     ) : (
-                      <div className={`grid gap-2.5 ${stepFormGridClassName}`}>
+                      <div className="space-y-2.5">
+                        {isTransferenciasBensModule ? (
+                          <section className="rounded-[16px] border border-[var(--line)] bg-white px-3 py-2.5">
+                            <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[var(--muted)]">
+                              Contexto do bem para transferencia
+                            </p>
+                            {transferenciaBemSelecionado ? (
+                              <div className="mt-2.5 grid gap-2 sm:grid-cols-2 xl:grid-cols-4">
+                                <div className="rounded-[12px] border border-[var(--line)] bg-[#fafafa] px-2.5 py-2">
+                                  <p className="text-[10px] font-semibold uppercase tracking-[0.14em] text-[var(--muted)]">
+                                    Responsavel atual
+                                  </p>
+                                  <p className="mt-1 text-[13px] font-semibold text-[var(--ink)]">
+                                    {transferenciaBemSelecionado.responsavel_id
+                                      ? getLookupLabel(
+                                          "responsaveis",
+                                          transferenciaBemSelecionado.responsavel_id,
+                                        )
+                                      : "Sem responsavel"}
+                                  </p>
+                                </div>
+                                <div className="rounded-[12px] border border-[var(--line)] bg-[#fafafa] px-2.5 py-2">
+                                  <p className="text-[10px] font-semibold uppercase tracking-[0.14em] text-[var(--muted)]">
+                                    Unidade atual
+                                  </p>
+                                  <p className="mt-1 text-[13px] font-semibold text-[var(--ink)]">
+                                    {getLookupLabel(
+                                      "unidades",
+                                      transferenciaBemSelecionado.unidade_administrativa_id,
+                                    )}
+                                  </p>
+                                </div>
+                                <div className="rounded-[12px] border border-[var(--line)] bg-[#fafafa] px-2.5 py-2">
+                                  <p className="text-[10px] font-semibold uppercase tracking-[0.14em] text-[var(--muted)]">
+                                    Departamento atual
+                                  </p>
+                                  <p className="mt-1 text-[13px] font-semibold text-[var(--ink)]">
+                                    {getLookupLabel(
+                                      "departamentos",
+                                      transferenciaBemSelecionado.departamento_id,
+                                    )}
+                                  </p>
+                                </div>
+                                <div className="rounded-[12px] border border-[var(--line)] bg-[#fafafa] px-2.5 py-2">
+                                  <p className="text-[10px] font-semibold uppercase tracking-[0.14em] text-[var(--muted)]">
+                                    Local atual
+                                  </p>
+                                  <p className="mt-1 text-[13px] font-semibold text-[var(--ink)]">
+                                    {getLookupLabel(
+                                      "locais",
+                                      transferenciaBemSelecionado.local_id,
+                                    )}
+                                  </p>
+                                </div>
+                              </div>
+                            ) : (
+                              <p className="mt-2 text-[12px] text-[var(--muted)]">
+                                Selecione um bem patrimonial para visualizar o responsavel e a estrutura atual antes da transferencia.
+                              </p>
+                            )}
+                          </section>
+                        ) : null}
+                        <div className={`grid gap-2.5 ${stepFormGridClassName}`}>
                         
                         {visibleFields.map((field) => {
                           const disabled =
@@ -2052,6 +2331,19 @@ export default function GenericModuleManagement({
                             field.readOnly ||
                             field.disabled?.(form);
                           const commonClassName = "admin-input";
+                          const fieldError =
+                            responsavelFieldErrors[field.name] ?? null;
+                          const inputClassName = fieldError
+                            ? `${commonClassName} border-[var(--rose)]`
+                            : commonClassName;
+                          const isDataFimField =
+                            isResponsabilidadeBensModule &&
+                            field.name === "data_fim";
+                          const inputDisabled =
+                            disabled ||
+                            (isDataFimField &&
+                              dataFimIndeterminada &&
+                              !isReadOnly);
                           if (field.type === "textarea") {
                             return (
                               <label
@@ -2091,8 +2383,13 @@ export default function GenericModuleManagement({
                                     const lookup = config.lookups?.find(
                                       (entry) => entry.key === field.lookupKey,
                                     );
+                                    const lookupValueKey = field.lookupValueKey;
                                     return {
-                                      value: String(option.id ?? ""),
+                                      value: String(
+                                        lookupValueKey
+                                          ? option[lookupValueKey]
+                                          : (option.id ?? ""),
+                                      ),
                                       label: lookup
                                         ? lookup.label(option)
                                         : String(option.id ?? ""),
@@ -2133,16 +2430,43 @@ export default function GenericModuleManagement({
                               <input
                                 type={field.type}
                                 value={form[field.name] ?? ""}
-                                onChange={(event) =>
-                                  updateField(field, event.target.value)
-                                }
-                                disabled={disabled}
-                                placeholder={field.placeholder}
-                                className={commonClassName}
+                                onChange={(event) => {
+                                  if (isDataFimField && dataFimIndeterminada) {
+                                    setDataFimIndeterminada(false);
+                                  }
+                                  updateField(field, event.target.value);
+                                }}
+                                disabled={inputDisabled}
+                                placeholder={getFieldPlaceholder(field)}
+                                className={inputClassName}
                               />
+                              {isDataFimField ? (
+                                <label className="mt-2 inline-flex items-center gap-2 text-[12px] font-medium text-[var(--muted)]">
+                                  <input
+                                    type="checkbox"
+                                    checked={dataFimIndeterminada}
+                                    onChange={(event) => {
+                                      const checked = event.target.checked;
+                                      setDataFimIndeterminada(checked);
+                                      if (checked) {
+                                        updateField(field, "");
+                                      }
+                                    }}
+                                    disabled={isReadOnly}
+                                    className="h-4 w-4 rounded border border-[var(--line)]"
+                                  />
+                                  Data indeterminada (em aberto)
+                                </label>
+                              ) : null}
+                              {fieldError ? (
+                                <span className="mt-1 block text-[11px] font-medium text-[var(--rose)]">
+                                  {fieldError}
+                                </span>
+                              ) : null}
                             </label>
                           );
                         })}
+                        </div>
                       </div>
                     )}
                   </div>

@@ -3,6 +3,7 @@ import { notFound, redirect } from 'next/navigation';
 import DepreciacaoUnifiedManagement from '@/components/DepreciacaoUnifiedManagement';
 import ExportacoesModuleManagement from '@/components/ExportacoesModuleManagement';
 import GenericModuleManagement from '@/components/GenericModuleManagement';
+import ResponsaveisUnifiedManagement from '@/components/ResponsaveisUnifiedManagement';
 import ReportsModuleManagement from '@/components/ReportsModuleManagement';
 import { getAuthSession } from '@/lib/auth-session';
 import { getAdminModule, renderAdminIcon } from '@/lib/admin-navigation';
@@ -34,6 +35,17 @@ export default async function ModuloPage({ params }: PageProps) {
     return <DepreciacaoUnifiedManagement empresaId={session.empresaId} />;
   }
 
+  if (slug === 'responsaveis' || slug === 'responsabilidade-bens') {
+    return (
+      <ResponsaveisUnifiedManagement
+        empresaId={session.empresaId}
+        empresaNome={session.empresaNome}
+        empresaLogoUrl={session.empresaLogoUrl}
+        activeSlug={slug}
+      />
+    );
+  }
+
   const module = getAdminModule(slug);
 
   if (!module) {
@@ -41,13 +53,11 @@ export default async function ModuloPage({ params }: PageProps) {
   }
 
   const crudSlugs = new Set([
-    'responsaveis',
     'bens',
     'plaquetas',
     'inventarios',
     'transferencias-bens',
     'baixas-bens',
-    'responsabilidade-bens',
     'historico-localizacao-bens',
     'conciliacoes',
     'divergencias',

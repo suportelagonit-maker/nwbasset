@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState } from 'react';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
+import { toFriendlyError } from '@/lib/feedback-message';
 
 type EmpresaOption = {
   id: number;
@@ -35,6 +36,7 @@ export default function EmpresaSelector() {
   const [loading, setLoading] = useState(true);
   const [switching, setSwitching] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
+  const friendlyError = errorMessage ? toFriendlyError(errorMessage) : null;
 
   useEffect(() => {
     if (!pathname.startsWith('/dashboard') && !pathname.startsWith('/users') && !pathname.startsWith('/permissoes')) {
@@ -200,7 +202,9 @@ export default function EmpresaSelector() {
         ) : null}
       </div>
 
-      {errorMessage ? <p className="w-full text-[12px] text-[#c2410c] sm:text-right">{errorMessage}</p> : null}
+      {friendlyError ? (
+        <p className="w-full text-[12px] text-[#c2410c] sm:text-right">{friendlyError.text}</p>
+      ) : null}
     </div>
   );
 }

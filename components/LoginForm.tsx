@@ -2,6 +2,7 @@
 
 import { useState, useTransition } from 'react';
 import { useRouter } from 'next/navigation';
+import { toFriendlyError } from '@/lib/feedback-message';
 
 type LoginPayload = {
   email: string;
@@ -16,6 +17,7 @@ export default function LoginForm() {
     email: 'admin@nwbasset.local',
     password: 'NwbAsset@123',
   });
+  const friendlyError = error ? toFriendlyError(error) : null;
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -81,9 +83,11 @@ export default function LoginForm() {
         </label>
       </div>
 
-      {error ? (
+      {friendlyError ? (
         <div className="mt-4 rounded-2xl border border-[rgba(190,18,60,0.18)] bg-[rgba(190,18,60,0.08)] px-4 py-3 text-sm text-[var(--rose)]">
-          {error}
+          <p className="font-semibold">{friendlyError.title}</p>
+          <p className="mt-1">{friendlyError.text}</p>
+          {friendlyError.help ? <p className="mt-1 text-xs opacity-80">{friendlyError.help}</p> : null}
         </div>
       ) : null}
 

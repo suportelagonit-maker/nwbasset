@@ -43,7 +43,6 @@ type LocalFormState = {
   unidade_administrativa_id: string;
   departamento_id: string;
   nome: string;
-  endereco: string;
   descricao: string;
   status: string;
 };
@@ -53,7 +52,6 @@ const initialForm: LocalFormState = {
   unidade_administrativa_id: "",
   departamento_id: "",
   nome: "",
-  endereco: "",
   descricao: "",
   status: "ativo",
 };
@@ -368,7 +366,6 @@ export default function LocalManagement({
       unidade_administrativa_id: String(local.unidade_administrativa_id),
       departamento_id: String(local.departamento_id),
       nome: local.nome ?? "",
-      endereco: local.endereco ?? "",
       descricao: local.descricao ?? "",
       status: local.status ?? "ativo",
     });
@@ -382,7 +379,6 @@ export default function LocalManagement({
       unidade_administrativa_id: String(local.unidade_administrativa_id),
       departamento_id: String(local.departamento_id),
       nome: local.nome ?? "",
-      endereco: local.endereco ?? "",
       descricao: local.descricao ?? "",
       status: local.status ?? "ativo",
     });
@@ -602,9 +598,6 @@ export default function LocalManagement({
                             <p className="font-semibold">{local.nome}</p>
                             <p className="mt-1 text-xs text-[var(--muted)]">
                               ID {local.id}
-                              {local.endereco
-                                ? `| ${local.endereco}`
-                                : "| Sem endereco informado"}
                             </p>
                           </div>
                         </div>
@@ -791,19 +784,6 @@ export default function LocalManagement({
                         value={form.nome}
                         onChange={(event) =>
                           updateField("nome", event.target.value)
-                        }
-                        disabled={isReadOnly}
-                        className="admin-input"
-                      />
-                    </label>
-
-                    <label className="admin-field md:col-span-2 xl:col-span-2">
-                      Endereco
-                      <input
-                        type="text"
-                        value={form.endereco}
-                        onChange={(event) =>
-                          updateField("endereco", event.target.value)
                         }
                         disabled={isReadOnly}
                         className="admin-input"
