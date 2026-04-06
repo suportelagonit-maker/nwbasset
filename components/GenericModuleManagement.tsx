@@ -14,7 +14,14 @@ export type ModuleLookupConfig = {
 export type ModuleFieldConfig = {
   name: string;
   label: string;
-  type: "text" | "email" | "date" | "number" | "textarea" | "select";
+  type:
+    | "text"
+    | "email"
+    | "date"
+    | "number"
+    | "textarea"
+    | "select"
+    | "checkbox-group";
   required?: boolean;
   hidden?: boolean;
   readOnly?: boolean;
@@ -27,6 +34,10 @@ export type ModuleFieldConfig = {
   lookupValueKey?: string;
   filterOption?: (
     item: Record<string, unknown>,
+    form: Record<string, string>,
+    lookups: Record<string, Record<string, unknown>[]>,
+  ) => boolean;
+  visibleWhen?: (
     form: Record<string, string>,
     lookups: Record<string, Record<string, unknown>[]>,
   ) => boolean;
@@ -322,6 +333,71 @@ function getDocumentTypeLabel(tipoDocumento: unknown) {
 function createPendingUploadId(prefix: string) {
   return `${prefix}-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
 }
+
+function normalizeSelectText(value: string) {
+  return value
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .trim()
+    .toLowerCase();
+}
+
+function parseCheckboxGroupValues(rawValue: string, options: Array<{ value: string; label: string }>) {
+  if (!rawValue) {
+    return new Set<string>();
+  }
+  const selected = new Set<string>();
+  const normalizedRaw = normalizeSelectText(rawValue);
+  const tokens = rawValue
+    .split(/[,;/|]+/g)
+    .map((token) => token.trim())
+    .filter(Boolean);
+
+  for (const token of tokens) {
+    const normalizedToken = normalizeSelectText(token);
+    const directOption = options.find(
+      (option) =>
+        normalizeSelectText(option.value) === normalizedToken ||
+        normalizeSelectText(option.label) === normalizedToken,
+    );
+    if (directOption) {
+      selected.add(directOption.value);
+      continue;
+    }
+    if (normalizedToken.includes("110")) {
+      selected.add("110V");
+    }
+    if (normalizedToken.includes("220")) {
+      selected.add("220V");
+    }
+    if (normalizedToken.includes("bi")) {
+      selected.add("BI_VOLTS");
+    }
+  }
+
+  if (normalizedRaw.includes("110") && normalizedRaw.includes("220")) {
+    selected.add("110V");
+    selected.add("220V");
+  }
+  if (normalizedRaw.includes("bi")) {
+    selected.add("BI_VOLTS");
+  }
+
+  return selected;
+}
+
+function serializeCheckboxGroupValues(
+  selectedValues: Set<string>,
+  options: Array<{ value: string; label: string }>,
+) {
+  if (selectedValues.size === 0) {
+    return "";
+  }
+  const orderedLabels = options
+    .filter((option) => selectedValues.has(option.value))
+    .map((option) => option.label);
+  return orderedLabels.join(", ");
+}
 function getPlaquetaPreviewItems(
   records: Record<string, unknown>[],
   empresaId: number | null,
@@ -359,6 +435,82 @@ function getPlaquetaPreviewItems(
     empresaNome: empresaNome ?? "Sua empresa",
     logoSrc: empresaLogoUrl ?? null,
   }));
+}
+
+const ASSET_DETAILS_MARKER = "--- ESPECIFICACOES TECNICAS ---";
+const ASSET_DETAILS_FIELDS: Array<{ field: string; label: string }> = [
+  { field: "subtipo_equipamento", label: "Produto de equipamento" },
+  { field: "subtipo_informatica", label: "Produto de informatica" },
+  { field: "subtipo_mobiliario", label: "Produto de mobiliario" },
+  { field: "subtipo_utensilio", label: "Produto de utensilio" },
+  { field: "subtipo_veiculo", label: "Tipo de veiculo" },
+  { field: "subtipo_generico", label: "Produto" },
+  { field: "processador", label: "Processador" },
+  { field: "memoria_ram", label: "Memoria RAM" },
+  { field: "armazenamento", label: "Armazenamento" },
+  { field: "sistema_operacional", label: "Sistema operacional" },
+  { field: "tamanho_tela", label: "Tamanho da tela" },
+  { field: "placa_veiculo", label: "Placa do veiculo" },
+  { field: "ano_fabricacao", label: "Ano de fabricacao" },
+  { field: "combustivel", label: "Combustivel" },
+  { field: "material", label: "Material" },
+  { field: "dimensoes", label: "Dimensoes" },
+  { field: "capacidade", label: "Capacidade" },
+  { field: "potencia", label: "Potencia" },
+  { field: "ergonomica", label: "Ergonomica" },
+  { field: "voltagem", label: "Voltagem" },
+];
+
+function stripAssetDetailsFromDescription(descricao: string) {
+  const markerIndex = descricao.indexOf(ASSET_DETAILS_MARKER);
+  if (markerIndex === -1) {
+    return descricao.trim();
+  }
+  return descricao.slice(0, markerIndex).trim();
+}
+
+function buildAssetDetailsLines(form: Record<string, string>) {
+  return ASSET_DETAILS_FIELDS.map(({ field, label }) => {
+    const value = String(form[field] ?? "").trim();
+    return value ? `${label}: ${value}` : null;
+  }).filter((line): line is string => Boolean(line));
+}
+
+function mergeAssetDescriptionWithDetails(descricao: string, form: Record<string, string>) {
+  const baseDescription = stripAssetDetailsFromDescription(descricao);
+  const detailsLines = buildAssetDetailsLines(form);
+  if (!detailsLines.length) {
+    return baseDescription;
+  }
+  return `${baseDescription}\n\n${ASSET_DETAILS_MARKER}\n${detailsLines.join("\n")}`;
+}
+
+function hydrateAssetDetailsFromDescription(
+  descricao: string,
+  currentForm: Record<string, string>,
+) {
+  const markerIndex = descricao.indexOf(ASSET_DETAILS_MARKER);
+  if (markerIndex === -1) {
+    return currentForm;
+  }
+  const detailsChunk = descricao.slice(markerIndex + ASSET_DETAILS_MARKER.length).trim();
+  if (!detailsChunk) {
+    return currentForm;
+  }
+  const labelToField = new Map(ASSET_DETAILS_FIELDS.map((item) => [item.label, item.field]));
+  const nextForm = { ...currentForm };
+  for (const rawLine of detailsChunk.split(/\r?\n/)) {
+    const [rawLabel, ...rawValueParts] = rawLine.split(":");
+    if (!rawLabel || rawValueParts.length === 0) {
+      continue;
+    }
+    const field = labelToField.get(rawLabel.trim());
+    if (!field) {
+      continue;
+    }
+    nextForm[field] = rawValueParts.join(":").trim();
+  }
+  return nextForm;
 }
 export default function GenericModuleManagement({
   empresaId,
@@ -449,13 +601,26 @@ export default function GenericModuleManagement({
   const imageInputId = `asset-images-${selectedRecord?.id ?? "novo"}`;
   const documentInputId = `asset-documents-${selectedRecord?.id ?? "novo"}`;
   const visibleFields = useMemo(() => {
-    const baseFields = config.fields.filter((field) => !field.hidden);
+    const baseFields = config.fields.filter(
+      (field) =>
+        !field.hidden &&
+        (field.visibleWhen ? field.visibleWhen(form, lookups) : true),
+    );
     if (!currentStep) {
       return baseFields;
     }
     const currentFieldNames = new Set(currentStep.fields);
-    return baseFields.filter((field) => currentFieldNames.has(field.name));
-  }, [config.fields, currentStep]);
+    const stepFieldOrder = new Map(
+      currentStep.fields.map((fieldName, index) => [fieldName, index]),
+    );
+    return baseFields
+      .filter((field) => currentFieldNames.has(field.name))
+      .sort(
+        (a, b) =>
+          (stepFieldOrder.get(a.name) ?? Number.MAX_SAFE_INTEGER) -
+          (stepFieldOrder.get(b.name) ?? Number.MAX_SAFE_INTEGER),
+      );
+  }, [config.fields, currentStep, form, lookups]);
   const transferenciaBemSelecionado = useMemo(() => {
     if (!isTransferenciasBensModule) {
       return null;
@@ -584,7 +749,7 @@ export default function GenericModuleManagement({
     return lookup.label(item);
   }
   function createInitialForm(record?: Record<string, unknown> | null) {
-    return Object.fromEntries(
+    const nextForm = Object.fromEntries(
       config.fields.map((field) => [
         field.name,
         applyFieldMask(
@@ -595,6 +760,12 @@ export default function GenericModuleManagement({
         ),
       ]),
     ) as Record<string, string>;
+    if (isAssetModule && record) {
+      const descricao = String(record.descricao ?? "");
+      nextForm.descricao = stripAssetDetailsFromDescription(descricao);
+      return hydrateAssetDetailsFromDescription(descricao, nextForm);
+    }
+    return nextForm;
   }
   function resetModal() {
     pendingImages.forEach((image) => URL.revokeObjectURL(image.previewUrl));
@@ -676,7 +847,7 @@ export default function GenericModuleManagement({
     });
   }
   function buildPayload() {
-    return Object.fromEntries(
+    const payload = Object.fromEntries(
       config.fields.map((field) => {
         const rawValue = form[field.name];
         if (field.valueType === "number") {
@@ -697,6 +868,15 @@ export default function GenericModuleManagement({
         return [field.name, rawValue === "" ? null : rawValue];
       }),
     );
+
+    if (isAssetModule) {
+      payload.descricao = mergeAssetDescriptionWithDetails(
+        String(payload.descricao ?? ""),
+        form,
+      );
+    }
+
+    return payload;
   }
   async function handleSubmit(options?: { closeAfterSave?: boolean }) {
     const closeAfterSave = options?.closeAfterSave ?? true;
@@ -1496,10 +1676,7 @@ export default function GenericModuleManagement({
         >
           
           <div className="overflow-x-auto">
-            
-            <table className="min-w-full border-collapse">
-              
-              <thead>
+            <table className="min-w-full border-collapse"><thead>
                 
                 <tr className="bg-[#f8fafc] text-left text-[11px] uppercase tracking-[0.16em] text-[var(--muted)]">
                   
@@ -1511,8 +1688,7 @@ export default function GenericModuleManagement({
                   ))}
                   <th className="px-4 py-3.5 text-right">Ações</th>
                 </tr>
-              </thead>
-              <tbody>
+              </thead><tbody>
                 
                 {loading ? (
                   <tr>
@@ -1594,8 +1770,7 @@ export default function GenericModuleManagement({
                     </tr>
                   ))
                 )}
-              </tbody>
-            </table>
+              </tbody></table>
           </div>
         </div>
       </section>
@@ -2367,16 +2542,66 @@ export default function GenericModuleManagement({
                               </label>
                             );
                           }
+                          if (field.type === "checkbox-group") {
+                            const checkboxOptions = field.options ?? [];
+                            const currentSelection = parseCheckboxGroupValues(
+                              form[field.name] ?? "",
+                              checkboxOptions,
+                            );
+                            return (
+                              <label key={field.name} className="admin-field">
+                                {field.label}
+                                <div className="mt-0.5 flex flex-wrap items-center gap-4 rounded-[14px] border border-[var(--line)] bg-white px-3 py-2.5">
+                                  {checkboxOptions.map((option) => {
+                                    const checked = currentSelection.has(option.value);
+                                    return (
+                                      <label
+                                        key={`${field.name}-${option.value}`}
+                                        className="inline-flex items-center gap-2 text-[13px] font-medium text-[var(--ink)]"
+                                      >
+                                        <input
+                                          type="checkbox"
+                                          checked={checked}
+                                          onChange={(event) => {
+                                            const nextSelection = new Set(currentSelection);
+                                            if (event.target.checked) {
+                                              if (option.value === "BI_VOLTS") {
+                                                nextSelection.clear();
+                                                nextSelection.add("BI_VOLTS");
+                                              } else {
+                                                nextSelection.delete("BI_VOLTS");
+                                                nextSelection.add(option.value);
+                                              }
+                                            } else {
+                                              nextSelection.delete(option.value);
+                                            }
+                                            updateField(
+                                              field,
+                                              serializeCheckboxGroupValues(nextSelection, checkboxOptions),
+                                            );
+                                          }}
+                                          disabled={disabled}
+                                          className="h-4 w-4 rounded border border-[var(--line)]"
+                                        />
+                                        <span>{option.label}</span>
+                                      </label>
+                                    );
+                                  })}
+                                </div>
+                                {fieldError ? (
+                                  <span className="mt-1 block text-[11px] font-medium text-[var(--rose)]">
+                                    {fieldError}
+                                  </span>
+                                ) : null}
+                              </label>
+                            );
+                          }
                           if (field.type === "select") {
-                            const options = field.lookupKey
+                            const lookupOptions = field.lookupKey
                               ? (lookups[field.lookupKey] ?? [])
                                   .filter((option) =>
                                     field.filterOption
-                                      ? field.filterOption(
-                                          option,
-                                          form,
-                                          lookups,
-                                        )
+                                      ? field.filterOption(option, form, lookups)
                                       : true,
                                   )
                                   .map((option) => {
@@ -2384,18 +2609,32 @@ export default function GenericModuleManagement({
                                       (entry) => entry.key === field.lookupKey,
                                     );
                                     const lookupValueKey = field.lookupValueKey;
+                                    const rawValue = lookupValueKey
+                                      ? option[lookupValueKey]
+                                      : (option.id ?? "");
                                     return {
-                                      value: String(
-                                        lookupValueKey
-                                          ? option[lookupValueKey]
-                                          : (option.id ?? ""),
-                                      ),
+                                      value: String(rawValue ?? ""),
                                       label: lookup
                                         ? lookup.label(option)
                                         : String(option.id ?? ""),
                                     };
                                   })
-                              : (field.options ?? []);
+                              : [];
+                            const rawOptions =
+                              lookupOptions.length > 0
+                                ? lookupOptions
+                                : (field.options ?? []);
+                            const optionMap = new Map<
+                              string,
+                              { value: string; label: string }
+                            >();
+                            for (const option of rawOptions) {
+                              const normalizedKey = `${normalizeSelectText(option.label)}::${normalizeSelectText(option.value)}`;
+                              if (!optionMap.has(normalizedKey)) {
+                                optionMap.set(normalizedKey, option);
+                              }
+                            }
+                            const options = Array.from(optionMap.values());
                             return (
                               <label key={field.name} className="admin-field">
                                 
@@ -2409,7 +2648,9 @@ export default function GenericModuleManagement({
                                   className={commonClassName}
                                 >
                                   
-                                  <option value="">Selecione</option>
+                                  <option value="">
+                                    {field.placeholder ?? "Selecione"}
+                                  </option>
                                   {options.map((option) => (
                                     <option
                                       key={`${field.name}-${option.value}`}

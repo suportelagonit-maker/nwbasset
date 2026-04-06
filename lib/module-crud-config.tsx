@@ -55,6 +55,16 @@ const tipoBemLookup = {
   label: (item: Record<string, unknown>) => String(item.nome ?? `Tipo #${item.id ?? ''}`),
 } as const;
 
+const plaquetaDisponivelLookup = {
+  key: 'plaquetas_disponiveis',
+  path: 'plaquetas?disponivel_para_vinculo=1&per_page=500',
+  label: (item: Record<string, unknown>) => {
+    const numero = String(item.numero_plaqueta ?? item.codigo_plaqueta ?? item.id ?? '');
+    const status = String(item.status ?? '');
+    return status ? `Plaqueta ${numero} (${status})` : `Plaqueta ${numero}`;
+  },
+} as const;
+
 function primaryCell(title: unknown, subtitle: unknown) {
   return (
     <div>
@@ -146,7 +156,7 @@ export const moduleCrudConfig: Record<string, ModuleConfig> = {
     emptyMessage: 'Nenhum bem patrimonial cadastrado.',
     modalMaxWidthClassName: 'admin-modal-shell--md',
     steppedBodyMinHeightClassName: 'min-h-[300px] lg:min-h-[320px]',
-    lookups: [filialLookup, unidadeLookup, departamentoLookup, localLookup, responsavelLookup, tipoBemLookup],
+    lookups: [filialLookup, unidadeLookup, departamentoLookup, localLookup, responsavelLookup, tipoBemLookup, plaquetaDisponivelLookup],
     steps: [
       {
         key: 'estrutura',
@@ -159,8 +169,35 @@ export const moduleCrudConfig: Record<string, ModuleConfig> = {
       {
         key: 'identificacao',
         label: 'Identificação',
-        description: 'Cadastre tombo, sórie e informações principais do bem.',
-        fields: ['numero_tombo', 'numero_serie', 'descricao', 'categoria', 'marca', 'modelo'],
+        description: 'Selecione o tipo do bem e preencha as informações principais do item.',
+        fields: [
+          'categoria',
+          'subtipo_equipamento',
+          'subtipo_informatica',
+          'subtipo_mobiliario',
+          'subtipo_utensilio',
+          'subtipo_veiculo',
+          'subtipo_generico',
+          'numero_tombo',
+          'numero_serie',
+          'descricao',
+          'marca',
+          'modelo',
+          'processador',
+          'memoria_ram',
+          'armazenamento',
+          'sistema_operacional',
+          'tamanho_tela',
+          'placa_veiculo',
+          'ano_fabricacao',
+          'combustivel',
+          'material',
+          'dimensoes',
+          'capacidade',
+          'potencia',
+          'ergonomica',
+          'voltagem',
+        ],
         compactSummary: true,
         formGridClassName: 'sm:grid-cols-2 xl:grid-cols-3',
       },
@@ -188,12 +225,229 @@ export const moduleCrudConfig: Record<string, ModuleConfig> = {
       { name: 'departamento_id', label: 'Departamento', type: 'select', valueType: 'number', lookupKey: 'departamentos', clearOnChange: ['local_id', 'responsavel_id'], disabled: (form) => !form.unidade_administrativa_id, filterOption: (option, form) => String(option.filial_id ?? '') === String(form.filial_id ?? '') && String(option.unidade_administrativa_id ?? '') === String(form.unidade_administrativa_id ?? '') },
       { name: 'local_id', label: 'Local', type: 'select', valueType: 'number', lookupKey: 'locais', disabled: (form) => !form.departamento_id, filterOption: (option, form) => String(option.filial_id ?? '') === String(form.filial_id ?? '') && String(option.unidade_administrativa_id ?? '') === String(form.unidade_administrativa_id ?? '') && String(option.departamento_id ?? '') === String(form.departamento_id ?? '') },
       { name: 'responsavel_id', label: 'Responsável', type: 'select', valueType: 'number', lookupKey: 'responsaveis', disabled: (form) => !form.departamento_id, filterOption: (option, form) => String(option.filial_id ?? '') === String(form.filial_id ?? '') && String(option.departamento_id ?? '') === String(form.departamento_id ?? '') },
-      { name: 'numero_tombo', label: 'Número do tombo', type: 'text', required: true },
-      { name: 'numero_serie', label: 'Número de sórie', type: 'text' },
-      { name: 'descricao', label: 'Descrição', type: 'textarea', required: true },
-      { name: 'categoria', label: 'Tipo do bem', type: 'select', lookupKey: 'tipos_bens', lookupValueKey: 'nome', required: true },
-      { name: 'marca', label: 'Marca', type: 'text' },
-      { name: 'modelo', label: 'Modelo', type: 'text' },
+      {
+        name: 'numero_tombo',
+        label: 'Número do tombo (plaqueta)',
+        type: 'select',
+        required: true,
+        lookupKey: 'plaquetas_disponiveis',
+        lookupValueKey: 'numero_plaqueta',
+        placeholder: 'Selecione a plaqueta cadastrada',
+        disabled: (form) => !form.filial_id,
+        filterOption: (option, form) => {
+          const numeroOpcao = String(option.numero_plaqueta ?? option.codigo_plaqueta ?? '');
+          const numeroSelecionado = String(form.numero_tombo ?? '');
+          const statusOpcao = String(option.status ?? '').toUpperCase();
+          const mesmaFilial = !form.filial_id || String(option.filial_id ?? '') === String(form.filial_id ?? '');
+          const disponivel = option.bem_patrimonial_id === null || option.bem_patrimonial_id === undefined;
+          const statusPermitido = ['EM_ESTOQUE', 'GERADA', 'VINCULADA', 'APLICADA'].includes(statusOpcao);
+          return mesmaFilial && statusPermitido && (disponivel || (numeroSelecionado !== '' && numeroOpcao === numeroSelecionado));
+        },
+        visibleWhen: (form) => Boolean(form.categoria),
+      },
+      { name: 'numero_serie', label: 'Número de série', type: 'text', visibleWhen: (form) => Boolean(form.categoria) },
+      { name: 'descricao', label: 'Descrição', type: 'textarea', required: true, visibleWhen: (form) => Boolean(form.categoria) },
+      {
+        name: 'categoria',
+        label: 'Tipo do bem',
+        type: 'select',
+        lookupKey: 'tipos_bens',
+        lookupValueKey: 'nome',
+        options: [
+          { value: 'Equipamentos', label: 'Equipamentos' },
+          { value: 'Informática', label: 'Informática' },
+          { value: 'Mobiliário', label: 'Mobiliário' },
+          { value: 'Utensílios', label: 'Utensílios' },
+          { value: 'Veículos', label: 'Veículos' },
+          { value: 'Imóveis', label: 'Imóveis' },
+        ],
+        required: true,
+        clearOnChange: [
+          'subtipo_equipamento',
+          'subtipo_informatica',
+          'subtipo_mobiliario',
+          'subtipo_utensilio',
+          'subtipo_veiculo',
+          'subtipo_generico',
+          'processador',
+          'memoria_ram',
+          'armazenamento',
+          'sistema_operacional',
+          'tamanho_tela',
+          'placa_veiculo',
+          'ano_fabricacao',
+          'combustivel',
+          'material',
+          'dimensoes',
+          'capacidade',
+          'potencia',
+          'ergonomica',
+          'voltagem',
+        ],
+      },
+      { name: 'marca', label: 'Marca', type: 'text', visibleWhen: (form) => Boolean(form.categoria) },
+      { name: 'modelo', label: 'Modelo', type: 'text', visibleWhen: (form) => Boolean(form.categoria) },
+      {
+        name: 'subtipo_equipamento',
+        label: 'Produto de equipamento',
+        type: 'select',
+        placeholder: 'Selecione o produto',
+        visibleWhen: (form) => String(form.categoria ?? '').toLowerCase().includes('equip'),
+        options: [
+          { value: 'Projetor', label: 'Projetor' },
+          { value: 'Nobreak', label: 'Nobreak' },
+          { value: 'Ar-condicionado', label: 'Ar-condicionado' },
+          { value: 'Ferramenta elétrica', label: 'Ferramenta elétrica' },
+          { value: 'Outro equipamento', label: 'Outro equipamento' },
+        ],
+      },
+      {
+        name: 'subtipo_informatica',
+        label: 'Produto de informática',
+        type: 'select',
+        placeholder: 'Selecione o produto',
+        visibleWhen: (form) => String(form.categoria ?? '').toLowerCase().includes('inform'),
+        options: [
+          { value: 'Computador', label: 'Computador' },
+          { value: 'Notebook', label: 'Notebook' },
+          { value: 'Monitor', label: 'Monitor' },
+          { value: 'Impressora', label: 'Impressora' },
+          { value: 'Servidor', label: 'Servidor' },
+          { value: 'Equipamento de rede', label: 'Equipamento de rede' },
+        ],
+      },
+      {
+        name: 'subtipo_mobiliario',
+        label: 'Produto de mobiliário',
+        type: 'select',
+        placeholder: 'Selecione o produto',
+        visibleWhen: (form) => String(form.categoria ?? '').toLowerCase().includes('mobili'),
+        options: [
+          { value: 'Cadeira', label: 'Cadeira' },
+          { value: 'Mesa', label: 'Mesa' },
+          { value: 'Armário', label: 'Armário' },
+          { value: 'Estante', label: 'Estante' },
+          { value: 'Bancada', label: 'Bancada' },
+        ],
+      },
+      {
+        name: 'subtipo_utensilio',
+        label: 'Produto de utensílio',
+        type: 'select',
+        placeholder: 'Selecione o produto',
+        visibleWhen: (form) => String(form.categoria ?? '').toLowerCase().includes('utens'),
+        options: [
+          { value: 'Copa/Cozinha', label: 'Copa/Cozinha' },
+          { value: 'Limpeza', label: 'Limpeza' },
+          { value: 'Escritório', label: 'Escritório' },
+          { value: 'Ferramenta manual', label: 'Ferramenta manual' },
+          { value: 'Outro utensílio', label: 'Outro utensílio' },
+        ],
+      },
+      {
+        name: 'subtipo_veiculo',
+        label: 'Tipo de veículo',
+        type: 'select',
+        placeholder: 'Selecione o veículo',
+        visibleWhen: (form) => String(form.categoria ?? '').toLowerCase().includes('veic'),
+        options: [
+          { value: 'Carro', label: 'Carro' },
+          { value: 'Moto', label: 'Moto' },
+          { value: 'Van', label: 'Van' },
+          { value: 'Caminhão', label: 'Caminhão' },
+          { value: 'Ônibus', label: 'Ônibus' },
+        ],
+      },
+      {
+        name: 'subtipo_generico',
+        label: 'Produto',
+        type: 'text',
+        placeholder: 'Ex.: Projetor, ferramenta, utensílio...',
+        visibleWhen: (form) => {
+          const categoria = String(form.categoria ?? '').toLowerCase();
+          return categoria !== '' && !categoria.includes('inform') && !categoria.includes('mobili') && !categoria.includes('veic');
+        },
+      },
+      {
+        name: 'processador',
+        label: 'Processador',
+        type: 'text',
+        visibleWhen: (form) => {
+          const categoria = String(form.categoria ?? '').toLowerCase();
+          const subtipo = String(form.subtipo_informatica ?? '').toLowerCase();
+          if (!categoria.includes('inform')) return false;
+          return subtipo === '' || subtipo === 'computador' || subtipo === 'notebook' || subtipo === 'servidor';
+        },
+      },
+      {
+        name: 'memoria_ram',
+        label: 'Memória RAM',
+        type: 'text',
+        placeholder: 'Ex.: 16 GB',
+        visibleWhen: (form) => {
+          const categoria = String(form.categoria ?? '').toLowerCase();
+          const subtipo = String(form.subtipo_informatica ?? '').toLowerCase();
+          if (!categoria.includes('inform')) return false;
+          return subtipo === '' || subtipo === 'computador' || subtipo === 'notebook' || subtipo === 'servidor';
+        },
+      },
+      {
+        name: 'armazenamento',
+        label: 'Armazenamento',
+        type: 'text',
+        placeholder: 'Ex.: SSD 512 GB',
+        visibleWhen: (form) => {
+          const categoria = String(form.categoria ?? '').toLowerCase();
+          const subtipo = String(form.subtipo_informatica ?? '').toLowerCase();
+          if (!categoria.includes('inform')) return false;
+          return subtipo === '' || subtipo === 'computador' || subtipo === 'notebook' || subtipo === 'servidor';
+        },
+      },
+      {
+        name: 'sistema_operacional',
+        label: 'Sistema operacional',
+        type: 'text',
+        visibleWhen: (form) => {
+          const categoria = String(form.categoria ?? '').toLowerCase();
+          const subtipo = String(form.subtipo_informatica ?? '').toLowerCase();
+          if (!categoria.includes('inform')) return false;
+          return subtipo === '' || subtipo === 'computador' || subtipo === 'notebook' || subtipo === 'servidor';
+        },
+      },
+      {
+        name: 'tamanho_tela',
+        label: 'Tamanho da tela',
+        type: 'text',
+        placeholder: 'Ex.: 15,6"',
+        visibleWhen: (form) => {
+          const categoria = String(form.categoria ?? '').toLowerCase();
+          const subtipo = String(form.subtipo_informatica ?? '').toLowerCase();
+          if (!categoria.includes('inform')) return false;
+          return subtipo === '' || subtipo === 'notebook' || subtipo === 'monitor';
+        },
+      },
+      { name: 'placa_veiculo', label: 'Placa do veículo', type: 'text', visibleWhen: (form) => String(form.categoria ?? '').toLowerCase().includes('veic') },
+      { name: 'ano_fabricacao', label: 'Ano de fabricação', type: 'number', visibleWhen: (form) => String(form.categoria ?? '').toLowerCase().includes('veic') },
+      { name: 'combustivel', label: 'Combustível', type: 'text', visibleWhen: (form) => String(form.categoria ?? '').toLowerCase().includes('veic') },
+      { name: 'material', label: 'Material', type: 'text', visibleWhen: (form) => { const categoria = String(form.categoria ?? '').toLowerCase(); return categoria.includes('mobili') || categoria.includes('utens'); } },
+      { name: 'dimensoes', label: 'Dimensões', type: 'text', placeholder: 'Ex.: 120x60x75 cm', visibleWhen: (form) => { const categoria = String(form.categoria ?? '').toLowerCase(); return categoria.includes('mobili') || categoria.includes('utens'); } },
+      { name: 'capacidade', label: 'Capacidade', type: 'text', placeholder: 'Ex.: 20 L, 150 kg, 8 lugares', visibleWhen: (form) => { const categoria = String(form.categoria ?? '').toLowerCase(); return categoria.includes('mobili') || categoria.includes('utens') || categoria.includes('equip'); } },
+      { name: 'potencia', label: 'Potência', type: 'text', placeholder: 'Ex.: 750 W', visibleWhen: (form) => { const categoria = String(form.categoria ?? '').toLowerCase(); return categoria.includes('inform') || categoria.includes('equip') || categoria.includes('utens'); } },
+      { name: 'ergonomica', label: 'Ergonômica', type: 'select', options: [{ value: 'Sim', label: 'Sim' }, { value: 'Não', label: 'Não' }], visibleWhen: (form) => String(form.subtipo_mobiliario ?? '').toLowerCase() === 'cadeira' },
+      {
+        name: 'voltagem',
+        label: 'Voltagem',
+        type: 'checkbox-group',
+        options: [
+          { value: '110V', label: '110V' },
+          { value: '220V', label: '220V' },
+          { value: 'BI_VOLTS', label: 'Bi Volts' },
+        ],
+        visibleWhen: (form) => {
+          const categoria = String(form.categoria ?? '').toLowerCase();
+          return categoria.includes('inform') || categoria.includes('equip') || categoria.includes('utens');
+        },
+      },
       { name: 'data_aquisicao', label: 'Data de aquisição', type: 'date' },
       { name: 'valor_aquisicao', label: 'Valor de aquisição', type: 'number' },
       { name: 'valor_residual', label: 'Valor residual', type: 'number' },
