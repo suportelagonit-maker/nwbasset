@@ -3,6 +3,7 @@
 namespace App\Domain\AssetMovements\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
 
 abstract class BaseBemMovimentacaoRequest extends FormRequest
@@ -84,14 +85,43 @@ abstract class BaseBemMovimentacaoRequest extends FormRequest
         ];
     }
 
-    protected function responsavelRule(int|string|null $empresaId, int|string|null $filialId, bool $required = true): array
+    protected function responsavelRule(
+        int|string|null $empresaId,
+        int|string|null $filialId,
+        int|string|null $departamentoId = null,
+        bool $required = true,
+    ): array
     {
+        $exists = Rule::exists('responsaveis', 'id')->where(fn ($query) => $query
+            ->where('empresa_id', $empresaId)
+            ->where('filial_id', $filialId));
+
+        if ($departamentoId !== null && $departamentoId !== '') {
+            $exists->where(fn ($query) => $query->where('departamento_id', $departamentoId));
+        }
+
         return [
             $required ? 'required' : 'sometimes',
             'integer',
-            Rule::exists('responsaveis', 'id')->where(fn ($query) => $query
-                ->where('empresa_id', $empresaId)
-                ->where('filial_id', $filialId)),
+            $exists,
         ];
+    }
+
+    protected function bemDepartamentoId(
+        int|string|null $bemId,
+        int|string|null $empresaId,
+        int|string|null $filialId,
+    ): ?int {
+        if ($bemId === null || $bemId === '') {
+            return null;
+        }
+
+        $departamentoId = DB::table('bens_patrimoniais')
+            ->where('id', $bemId)
+            ->where('empresa_id', $empresaId)
+            ->where('filial_id', $filialId)
+            ->value('departamento_id');
+
+        return $departamentoId !== null ? (int) $departamentoId : null;
     }
 }

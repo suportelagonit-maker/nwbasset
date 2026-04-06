@@ -15,6 +15,7 @@ class Responsavel extends Model
     protected $fillable = [
         'empresa_id',
         'filial_id',
+        'departamento_id',
         'nome',
         'matricula',
         'cpf',
@@ -32,6 +33,11 @@ class Responsavel extends Model
     public function filial(): BelongsTo
     {
         return $this->belongsTo(Filial::class, 'filial_id');
+    }
+
+    public function departamento(): BelongsTo
+    {
+        return $this->belongsTo(Departamento::class, 'departamento_id');
     }
 
     public function bensPatrimoniais(): HasMany

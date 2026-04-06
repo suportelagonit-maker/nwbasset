@@ -21,9 +21,17 @@ class StoreResponsavelRequest extends FormRequest
                 'integer',
                 Rule::exists('filiais', 'id')->where(fn ($query) => $query->where('empresa_id', $this->input('empresa_id'))),
             ],
+            'departamento_id' => [
+                'required',
+                'integer',
+                Rule::exists('departamentos', 'id')->where(fn ($query) => $query
+                    ->where('empresa_id', $this->input('empresa_id'))
+                    ->where('filial_id', $this->input('filial_id'))),
+            ],
             'nome' => ['required', 'string', 'max:180'],
             'matricula' => [
-                'required',
+                'sometimes',
+                'nullable',
                 'string',
                 'max:40',
                 Rule::unique('responsaveis', 'matricula')->where(fn ($query) => $query->where('empresa_id', $this->input('empresa_id'))),

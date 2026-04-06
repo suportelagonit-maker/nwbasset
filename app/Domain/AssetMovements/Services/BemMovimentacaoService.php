@@ -8,6 +8,7 @@ use App\Domain\AssetMovements\Models\HistoricoLocalizacaoBem;
 use App\Domain\AssetMovements\Models\ResponsabilidadeBem;
 use App\Domain\AssetMovements\Models\TransferenciaBem;
 use App\Domain\AssetRegistry\Models\BemPatrimonial;
+use App\Domain\Organization\Models\Responsavel;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
@@ -55,12 +56,14 @@ class BemMovimentacaoService
             $bem = $this->obterBem($data['bem_patrimonial_id']);
             $this->assertBemContexto($bem, $data['empresa_id'], $data['filial_id']);
             $this->assertBemNaoBaixado($bem);
+            $data = $this->resolverResponsaveisDaTransferencia($bem, $data);
             $this->assertOrigemAtual($bem, $data);
 
             $transferencia = TransferenciaBem::query()->create($data);
 
             $this->encerrarHistoricoAtual($bem, $data['data_transferencia']);
             $this->criarHistoricoDestino($transferencia);
+            $this->aplicarResponsavelDestinoNoBem($bem, $data);
             $this->sincronizarLocalizacaoDoBem($bem->fresh());
             app(LogOperacaoPatrimonialService::class)->registrar(
                 'TRANSFERENCIA_BEM',
@@ -77,9 +80,31 @@ class BemMovimentacaoService
     public function atualizarTransferencia(TransferenciaBem $transferencia, array $data): TransferenciaBem
     {
         return DB::transaction(function () use ($transferencia, $data): TransferenciaBem {
+            $bem = $transferencia->bemPatrimonial()->lockForUpdate()->firstOrFail();
             $historicoRelacionado = $this->encontrarHistoricoDaTransferencia($transferencia);
+            $payload = [
+                ...$transferencia->only([
+                    'bem_patrimonial_id',
+                    'empresa_id',
+                    'filial_id',
+                    'origem_unidade_administrativa_id',
+                    'origem_departamento_id',
+                    'origem_local_id',
+                    'origem_responsavel_id',
+                    'destino_unidade_administrativa_id',
+                    'destino_departamento_id',
+                    'destino_local_id',
+                    'destino_responsavel_id',
+                    'data_transferencia',
+                    'motivo',
+                    'observacoes',
+                ]),
+                ...$data,
+            ];
+            $payload = $this->resolverResponsaveisDaTransferencia($bem, $payload);
+            $this->assertOrigemAtual($bem, $payload);
 
-            $transferencia->update($data);
+            $transferencia->update($payload);
 
             if ($historicoRelacionado) {
                 $historicoRelacionado->update([
@@ -95,7 +120,8 @@ class BemMovimentacaoService
                 $this->criarHistoricoDestino($transferencia);
             }
 
-            $this->sincronizarLocalizacaoDoBem($transferencia->bemPatrimonial()->firstOrFail());
+            $this->aplicarResponsavelDestinoNoBem($bem, $payload);
+            $this->sincronizarLocalizacaoDoBem($bem->fresh());
 
             return $transferencia->fresh();
         });
@@ -307,6 +333,14 @@ class BemMovimentacaoService
                 'destino_local_id' => 'Origem e destino da transferencia nao podem ser iguais.',
             ]);
         }
+
+        if (isset($data['origem_responsavel_id']) && $data['origem_responsavel_id'] !== null) {
+            if ((int) $data['origem_responsavel_id'] !== (int) ($bem->responsavel_id ?? 0)) {
+                throw ValidationException::withMessages([
+                    'origem_responsavel_id' => 'O responsavel de origem deve corresponder ao responsavel atual do bem.',
+                ]);
+            }
+        }
     }
 
     protected function encerrarHistoricoAtual(BemPatrimonial $bem, string $dataReferencia): void
@@ -410,5 +444,77 @@ class BemMovimentacaoService
                 'data_inicio' => 'Ja existe responsabilidade em periodo conflitante para este bem.',
             ]);
         }
+    }
+
+    protected function resolverResponsaveisDaTransferencia(BemPatrimonial $bem, array $data): array
+    {
+        $origemResponsavelId = array_key_exists('origem_responsavel_id', $data)
+            ? $data['origem_responsavel_id']
+            : $bem->responsavel_id;
+
+        $data['origem_responsavel_id'] = $origemResponsavelId !== null
+            ? (int) $origemResponsavelId
+            : null;
+
+        if ($data['origem_responsavel_id'] !== null) {
+            $this->assertResponsavelContexto(
+                $data['origem_responsavel_id'],
+                (int) $data['empresa_id'],
+                (int) $data['filial_id'],
+                (int) $data['origem_departamento_id'],
+                'origem_responsavel_id',
+            );
+        }
+
+        $destinoResponsavelId = $data['destino_responsavel_id'] ?? null;
+        $data['destino_responsavel_id'] = $destinoResponsavelId !== null && $destinoResponsavelId !== ''
+            ? (int) $destinoResponsavelId
+            : null;
+
+        if ($data['destino_responsavel_id'] !== null) {
+            $this->assertResponsavelContexto(
+                $data['destino_responsavel_id'],
+                (int) $data['empresa_id'],
+                (int) $data['filial_id'],
+                (int) $data['destino_departamento_id'],
+                'destino_responsavel_id',
+            );
+        }
+
+        return $data;
+    }
+
+    protected function assertResponsavelContexto(
+        int $responsavelId,
+        int $empresaId,
+        int $filialId,
+        int $departamentoId,
+        string $field,
+    ): void {
+        $existeNoContexto = Responsavel::query()
+            ->where('id', $responsavelId)
+            ->where('empresa_id', $empresaId)
+            ->where('filial_id', $filialId)
+            ->where('departamento_id', $departamentoId)
+            ->exists();
+
+        if (! $existeNoContexto) {
+            throw ValidationException::withMessages([
+                $field => 'O responsavel informado nao pertence ao contexto da transferencia.',
+            ]);
+        }
+    }
+
+    protected function aplicarResponsavelDestinoNoBem(BemPatrimonial $bem, array $data): void
+    {
+        $atualizar = filter_var($data['atualizar_responsavel_bem'] ?? false, FILTER_VALIDATE_BOOL);
+
+        if (! $atualizar || ! array_key_exists('destino_responsavel_id', $data)) {
+            return;
+        }
+
+        $bem->update([
+            'responsavel_id' => $data['destino_responsavel_id'],
+        ]);
     }
 }

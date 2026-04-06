@@ -16,6 +16,7 @@ class UpdateResponsavelRequest extends FormRequest
     {
         $responsavel = $this->route('responsavel');
         $empresaId = $this->input('empresa_id', $responsavel?->empresa_id);
+        $filialId = $this->input('filial_id', $responsavel?->filial_id);
 
         return [
             'empresa_id' => ['sometimes', 'integer', Rule::exists('empresas', 'id')],
@@ -24,10 +25,18 @@ class UpdateResponsavelRequest extends FormRequest
                 'integer',
                 Rule::exists('filiais', 'id')->where(fn ($query) => $query->where('empresa_id', $empresaId)),
             ],
+            'departamento_id' => [
+                'sometimes',
+                'required',
+                'integer',
+                Rule::exists('departamentos', 'id')->where(fn ($query) => $query
+                    ->where('empresa_id', $empresaId)
+                    ->where('filial_id', $filialId)),
+            ],
             'nome' => ['sometimes', 'required', 'string', 'max:180'],
             'matricula' => [
                 'sometimes',
-                'required',
+                'nullable',
                 'string',
                 'max:40',
                 Rule::unique('responsaveis', 'matricula')

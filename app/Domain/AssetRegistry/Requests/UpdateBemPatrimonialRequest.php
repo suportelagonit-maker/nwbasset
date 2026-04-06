@@ -3,6 +3,7 @@
 namespace App\Domain\AssetRegistry\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Facades\Schema;
 use Illuminate\Validation\Rule;
 
 class UpdateBemPatrimonialRequest extends FormRequest
@@ -60,7 +61,8 @@ class UpdateBemPatrimonialRequest extends FormRequest
                 'integer',
                 Rule::exists('responsaveis', 'id')->where(fn ($query) => $query
                     ->where('empresa_id', $empresaId)
-                    ->where('filial_id', $filialId)),
+                    ->where('filial_id', $filialId)
+                    ->where('departamento_id', $departamentoId)),
             ],
             'numero_tombo' => [
                 'sometimes',
@@ -73,7 +75,10 @@ class UpdateBemPatrimonialRequest extends FormRequest
             ],
             'numero_serie' => ['nullable', 'string', 'max:120'],
             'descricao' => ['sometimes', 'required', 'string'],
-            'categoria' => ['nullable', 'string', 'max:120'],
+            'categoria' => array_merge(
+                ['sometimes', 'required'],
+                $this->categoriaRules((int) $empresaId),
+            ),
             'marca' => ['nullable', 'string', 'max:120'],
             'modelo' => ['nullable', 'string', 'max:120'],
             'data_aquisicao' => ['nullable', 'date'],
@@ -83,5 +88,17 @@ class UpdateBemPatrimonialRequest extends FormRequest
             'status_bem' => ['nullable', 'string', 'max:40'],
             'estado_conservacao' => ['nullable', 'string', 'max:40'],
         ];
+    }
+
+    private function categoriaRules(int $empresaId): array
+    {
+        $rules = ['string', 'max:120'];
+
+        if (Schema::hasTable('tipos_bens_patrimoniais')) {
+            $rules[] = Rule::exists('tipos_bens_patrimoniais', 'nome')
+                ->where(fn ($query) => $query->where('empresa_id', $empresaId));
+        }
+
+        return $rules;
     }
 }

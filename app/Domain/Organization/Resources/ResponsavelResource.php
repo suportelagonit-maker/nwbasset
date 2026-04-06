@@ -13,6 +13,7 @@ class ResponsavelResource extends JsonResource
             'id' => $this->id,
             'empresa_id' => $this->empresa_id,
             'filial_id' => $this->filial_id,
+            'departamento_id' => $this->departamento_id,
             'nome' => $this->nome,
             'matricula' => $this->matricula,
             'cpf' => $this->cpf,
@@ -20,6 +21,7 @@ class ResponsavelResource extends JsonResource
             'telefone' => $this->telefone,
             'cargo' => $this->cargo,
             'status' => $this->status,
+            'departamento_nome' => $this->whenLoaded('departamento', fn () => $this->departamento?->nome),
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
         ];

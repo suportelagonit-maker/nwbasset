@@ -7,6 +7,7 @@ use App\Domain\Organization\Models\Departamento;
 use App\Domain\Organization\Models\Empresa;
 use App\Domain\Organization\Models\Filial;
 use App\Domain\Organization\Models\Local;
+use App\Domain\Organization\Models\Responsavel;
 use App\Domain\Organization\Models\UnidadeAdministrativa;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -22,9 +23,11 @@ class TransferenciaBem extends Model
         'origem_unidade_administrativa_id',
         'origem_departamento_id',
         'origem_local_id',
+        'origem_responsavel_id',
         'destino_unidade_administrativa_id',
         'destino_departamento_id',
         'destino_local_id',
+        'destino_responsavel_id',
         'data_transferencia',
         'motivo',
         'observacoes',
@@ -67,6 +70,11 @@ class TransferenciaBem extends Model
         return $this->belongsTo(Local::class, 'origem_local_id');
     }
 
+    public function origemResponsavel(): BelongsTo
+    {
+        return $this->belongsTo(Responsavel::class, 'origem_responsavel_id');
+    }
+
     public function destinoUnidadeAdministrativa(): BelongsTo
     {
         return $this->belongsTo(UnidadeAdministrativa::class, 'destino_unidade_administrativa_id');
@@ -80,5 +88,10 @@ class TransferenciaBem extends Model
     public function destinoLocal(): BelongsTo
     {
         return $this->belongsTo(Local::class, 'destino_local_id');
+    }
+
+    public function destinoResponsavel(): BelongsTo
+    {
+        return $this->belongsTo(Responsavel::class, 'destino_responsavel_id');
     }
 }
