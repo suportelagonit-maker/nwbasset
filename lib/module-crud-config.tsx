@@ -55,6 +55,13 @@ const tipoBemLookup = {
   label: (item: Record<string, unknown>) => String(item.nome ?? `Tipo #${item.id ?? ''}`),
 } as const;
 
+const regraDepreciacaoLookup = {
+  key: 'regras_depreciacao',
+  path: 'regras-depreciacao?per_page=500&ativo=1&base_regra=fiscal',
+  label: (item: Record<string, unknown>) =>
+    String(item.nome_regra ?? item.tipo_bem ?? ((item.tipo_bem_objeto as Record<string, unknown> | undefined)?.nome) ?? `Regra #${item.id ?? ''}`),
+} as const;
+
 const plaquetaDisponivelLookup = {
   key: 'plaquetas_disponiveis',
   path: 'plaquetas?disponivel_para_vinculo=1&per_page=500',
@@ -156,7 +163,7 @@ export const moduleCrudConfig: Record<string, ModuleConfig> = {
     emptyMessage: 'Nenhum bem patrimonial cadastrado.',
     modalMaxWidthClassName: 'admin-modal-shell--md',
     steppedBodyMinHeightClassName: 'min-h-[300px] lg:min-h-[320px]',
-    lookups: [filialLookup, unidadeLookup, departamentoLookup, localLookup, responsavelLookup, tipoBemLookup, plaquetaDisponivelLookup],
+    lookups: [filialLookup, unidadeLookup, departamentoLookup, localLookup, responsavelLookup, tipoBemLookup, plaquetaDisponivelLookup, regraDepreciacaoLookup],
     steps: [
       {
         key: 'estrutura',
@@ -450,10 +457,10 @@ export const moduleCrudConfig: Record<string, ModuleConfig> = {
       },
       { name: 'data_aquisicao', label: 'Data de aquisição', type: 'date' },
       { name: 'valor_aquisicao', label: 'Valor de aquisição', type: 'number' },
-      { name: 'valor_residual', label: 'Valor residual', type: 'number' },
-      { name: 'vida_util_anos', label: 'Vida útil (anos)', type: 'number', valueType: 'number' },
+      { name: 'valor_residual', label: 'Valor residual (automático)', type: 'number', readOnly: true },
+      { name: 'vida_util_anos', label: 'Vida útil (anos) (automático)', type: 'number', valueType: 'number', readOnly: true },
       { name: 'status_bem', label: 'Status do bem', type: 'text', defaultValue: 'ativo' },
-      { name: 'estado_conservacao', label: 'Estado de conservação', type: 'text', defaultValue: 'bom' },
+      { name: 'estado_conservacao', label: 'Estado de conservação', type: 'select', defaultValue: 'Novo', options: [{ value: 'Novo', label: 'Novo' }, { value: 'Usado', label: 'Usado' }] },
     ],
     columns: [
       {

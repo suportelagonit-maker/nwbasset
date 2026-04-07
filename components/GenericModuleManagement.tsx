@@ -342,6 +342,138 @@ function normalizeSelectText(value: string) {
     .toLowerCase();
 }
 
+function parseDecimalValue(value: string) {
+  let normalized = String(value ?? "")
+    .replace(/\s+/g, "")
+    .trim();
+  if (!normalized) {
+    return null;
+  }
+
+  if (normalized.includes(",") && normalized.includes(".")) {
+    const commaIndex = normalized.lastIndexOf(",");
+    const dotIndex = normalized.lastIndexOf(".");
+    if (commaIndex > dotIndex) {
+      normalized = normalized.replace(/\./g, "").replace(",", ".");
+    } else {
+      normalized = normalized.replace(/,/g, "");
+    }
+  } else if (normalized.includes(",")) {
+    normalized = normalized.replace(/\./g, "").replace(",", ".");
+  }
+
+  if (!normalized) {
+    return null;
+  }
+  const parsed = Number(normalized);
+  return Number.isFinite(parsed) ? parsed : null;
+}
+
+function toDateOnlyString(value: unknown) {
+  const asText = String(value ?? "").trim();
+  return /^\d{4}-\d{2}-\d{2}$/.test(asText) ? asText : null;
+}
+
+function isRegraVigenteHoje(regra: Record<string, unknown>, hoje: string) {
+  const inicio = toDateOnlyString(regra.data_inicio_vigencia);
+  const fim = toDateOnlyString(regra.data_fim_vigencia);
+  if (inicio && inicio > hoje) {
+    return false;
+  }
+  if (fim && fim < hoje) {
+    return false;
+  }
+  return true;
+}
+
+function resolveRegraDepreciacaoPorCategoria(
+  categoria: string,
+  lookups: Record<string, Record<string, unknown>[]>,
+) {
+  const categoriaNormalizada = normalizeSelectText(categoria);
+  if (!categoriaNormalizada) {
+    return null;
+  }
+
+  const regras = lookups.regras_depreciacao ?? [];
+  if (!regras.length) {
+    return null;
+  }
+
+  const hoje = new Date().toISOString().slice(0, 10);
+  const tipos = lookups.tipos_bens ?? [];
+  const tipoCorrespondente = tipos.find(
+    (tipo) => normalizeSelectText(String(tipo.nome ?? "")) === categoriaNormalizada,
+  );
+  const tipoId = tipoCorrespondente?.id ? String(tipoCorrespondente.id) : null;
+
+  const candidatas = regras.filter((regra) => {
+    const ativo = regra.ativo;
+    if (ativo !== undefined && ativo !== null && ativo !== true && ativo !== 1 && ativo !== "1") {
+      return false;
+    }
+    if (!isRegraVigenteHoje(regra, hoje)) {
+      return false;
+    }
+    const regraTipoId = regra.tipo_bem_id !== undefined && regra.tipo_bem_id !== null ? String(regra.tipo_bem_id) : null;
+    const regraTipoNome = normalizeSelectText(
+      String(
+        regra.tipo_bem ??
+          ((regra.tipo_bem_objeto as Record<string, unknown> | undefined)?.nome ?? ""),
+      ),
+    );
+    if (tipoId && regraTipoId && regraTipoId === tipoId) {
+      return true;
+    }
+    return regraTipoNome === categoriaNormalizada;
+  });
+
+  if (!candidatas.length) {
+    return null;
+  }
+
+  const ordenadas = [...candidatas].sort((a, b) => {
+    const dataA = String(a.data_inicio_vigencia ?? a.updated_at ?? a.created_at ?? "");
+    const dataB = String(b.data_inicio_vigencia ?? b.updated_at ?? b.created_at ?? "");
+    if (dataA === dataB) {
+      return Number(b.id ?? 0) - Number(a.id ?? 0);
+    }
+    return dataB.localeCompare(dataA);
+  });
+
+  return ordenadas[0] ?? null;
+}
+
+function calcularCamposAutomaticosDepreciacao(
+  form: Record<string, string>,
+  lookups: Record<string, Record<string, unknown>[]>,
+) {
+  const categoria = String(form.categoria ?? "");
+  if (!categoria) {
+    return { vidaUtil: "", valorResidual: "" };
+  }
+
+  const regra = resolveRegraDepreciacaoPorCategoria(categoria, lookups);
+  if (!regra) {
+    return { vidaUtil: "", valorResidual: "" };
+  }
+
+  const vidaUtilRegra = Number(regra.vida_util_anos ?? 0);
+  const vidaUtil = Number.isFinite(vidaUtilRegra) && vidaUtilRegra > 0 ? String(vidaUtilRegra) : "";
+
+  const percentualResidual = Number(regra.valor_residual_percentual ?? 0);
+  const aquisicao = parseDecimalValue(String(form.valor_aquisicao ?? ""));
+  if (aquisicao === null || !Number.isFinite(percentualResidual) || percentualResidual < 0) {
+    return { vidaUtil, valorResidual: "" };
+  }
+
+  const residual = Math.max(
+    0,
+    Math.round((aquisicao * (percentualResidual / 100)) * 100) / 100,
+  );
+  return { vidaUtil, valorResidual: residual.toFixed(2) };
+}
+
 function parseCheckboxGroupValues(rawValue: string, options: Array<{ value: string; label: string }>) {
   if (!rawValue) {
     return new Set<string>();
@@ -635,6 +767,42 @@ export default function GenericModuleManagement({
       ) ?? null
     );
   }, [form.bem_patrimonial_id, isTransferenciasBensModule, lookups.bens]);
+
+  useEffect(() => {
+    if (!isAssetModule || !modalMode || isReadOnly) {
+      return;
+    }
+
+    const { vidaUtil, valorResidual } = calcularCamposAutomaticosDepreciacao(
+      form,
+      lookups,
+    );
+
+    setForm((current) => {
+      if (
+        String(current.vida_util_anos ?? "") === vidaUtil &&
+        String(current.valor_residual ?? "") === valorResidual
+      ) {
+        return current;
+      }
+      return {
+        ...current,
+        vida_util_anos: vidaUtil,
+        valor_residual: valorResidual,
+      };
+    });
+  }, [
+    form.categoria,
+    form.valor_aquisicao,
+    isAssetModule,
+    isReadOnly,
+    lookups.regras_depreciacao,
+    lookups.tipos_bens,
+    modalMode,
+    form,
+    lookups,
+  ]);
+
   function applyFieldMask(field: ModuleFieldConfig, value: string) {
     if (!isResponsaveisModule) {
       return value;
