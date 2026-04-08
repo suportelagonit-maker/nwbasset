@@ -17,6 +17,10 @@ export function proxy(request: NextRequest) {
   }
 
   if (token && pathname === '/login') {
+    if (empresaId || dashboardScope === 'geral') {
+      return NextResponse.redirect(new URL('/dashboard/patrimonio', request.url));
+    }
+
     return NextResponse.redirect(new URL('/selecionar-empresa', request.url));
   }
 

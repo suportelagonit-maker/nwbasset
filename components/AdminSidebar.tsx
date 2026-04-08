@@ -48,7 +48,7 @@ export default function AdminSidebar({
     [],
   );
   const corporateKeys = useMemo(() => new Set(corporateOrder), [corporateOrder]);
-  const assetsOrder = useMemo(() => ['bens', 'plaquetas'], []);
+  const assetsOrder = useMemo(() => ['bens', 'tipos-bens', 'tipos-produtos', 'plaquetas'], []);
   const assetsKeys = useMemo(() => new Set(assetsOrder), [assetsOrder]);
   const inventoryOrder = useMemo(() => ['inventarios', 'conciliacoes', 'divergencias'], []);
   const inventoryKeys = useMemo(() => new Set(inventoryOrder), [inventoryOrder]);
@@ -343,28 +343,6 @@ export default function AdminSidebar({
     setAdministracaoOpen(false);
   }, [pathname]);
 
-  useEffect(() => {
-    const hrefs = navigationItems.map((item) => item.href);
-
-    const prefetchAll = () => {
-      hrefs.forEach((href) => {
-        try {
-          router.prefetch(href);
-        } catch {}
-      });
-    };
-
-    if (typeof window !== 'undefined' && 'requestIdleCallback' in window) {
-      const idleId = window.requestIdleCallback(() => prefetchAll(), { timeout: 1500 });
-
-      return () => window.cancelIdleCallback(idleId);
-    }
-
-    const timeoutId = setTimeout(prefetchAll, 300);
-
-    return () => clearTimeout(timeoutId);
-  }, [navigationItems, router]);
-
   function renderItem(
     item: (typeof navigationItems)[number],
     nested = false,
@@ -376,12 +354,7 @@ export default function AdminSidebar({
       <Link
         key={item.key}
         href={item.href}
-        prefetch
-        onMouseEnter={() => {
-          try {
-            router.prefetch(item.href);
-          } catch {}
-        }}
+        prefetch={false}
         className={[
           'flex items-center rounded-2xl font-medium transition',
           collapsed

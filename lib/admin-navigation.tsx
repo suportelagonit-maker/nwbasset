@@ -60,6 +60,22 @@ export const adminNavigation: AdminNavSection[] = [
         endpoints: ['/api/v1/bens'],
       },
       {
+        key: 'tipos-bens',
+        label: 'Tipos de Bem Patrimonial',
+        href: '/dashboard/modulos/tipos-bens',
+        icon: 'grid',
+        description: 'Catálogo dos tipos de bem patrimonial.',
+        endpoints: ['/api/v1/tipos-bens-patrimoniais'],
+      },
+      {
+        key: 'tipos-produtos',
+        label: 'Tipos de Produto',
+        href: '/dashboard/modulos/tipos-produtos',
+        icon: 'layers',
+        description: 'Catálogo de produtos/subtipos por tipo de bem.',
+        endpoints: ['/api/v1/tipos-produtos'],
+      },
+      {
         key: 'plaquetas',
         label: 'Plaquetas / QR Code',
         href: '/dashboard/modulos/plaquetas',
@@ -399,6 +415,15 @@ export function renderAdminIcon(icon: string): ReactNode {
         <svg aria-hidden="true" className="h-[18px] w-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
           <path d="M2.5 12s3.5-6 9.5-6 9.5 6 9.5 6-3.5 6-9.5 6-9.5-6-9.5-6Z" />
           <circle cx="12" cy="12" r="3" />
+        </svg>
+      );
+    case 'grid':
+      return (
+        <svg aria-hidden="true" className="h-[18px] w-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
+          <rect x="4" y="4" width="6" height="6" rx="1.2" />
+          <rect x="14" y="4" width="6" height="6" rx="1.2" />
+          <rect x="4" y="14" width="6" height="6" rx="1.2" />
+          <rect x="14" y="14" width="6" height="6" rx="1.2" />
         </svg>
       );
     case 'user':

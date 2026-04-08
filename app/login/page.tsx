@@ -8,6 +8,10 @@ export default async function LoginPage() {
   const session = await getAuthSession();
 
   if (session.token) {
+    if (session.empresaId || session.dashboardScope === 'geral') {
+      redirect('/dashboard/patrimonio');
+    }
+
     redirect('/selecionar-empresa');
   }
 

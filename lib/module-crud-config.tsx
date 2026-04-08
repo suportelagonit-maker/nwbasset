@@ -72,6 +72,12 @@ const plaquetaDisponivelLookup = {
   },
 } as const;
 
+const tiposProdutoLookup = {
+  key: 'tipos_produtos',
+  path: 'tipos-produtos?per_page=500&ativo=1',
+  label: (item: Record<string, unknown>) => String(item.nome ?? `Produto #${item.id ?? ''}`),
+} as const;
+
 function primaryCell(title: unknown, subtitle: unknown) {
   return (
     <div>
@@ -109,6 +115,67 @@ const baixaMotivoOptions = [
 
 function getBaixaMotivoLabel(value: unknown) {
   return baixaMotivoOptions.find((option) => option.value === String(value ?? ''))?.label ?? String(value ?? 'Sem motivo');
+}
+
+function getLookupId(item: Record<string, unknown>, foreignKey: string): string {
+  const directValue = item[foreignKey];
+  if (directValue !== null && directValue !== undefined && directValue !== '') {
+    return String(directValue);
+  }
+
+  if (!foreignKey.endsWith('_id')) {
+    return '';
+  }
+
+  const relationKey = foreignKey.slice(0, -3);
+  const relation = item[relationKey];
+
+  if (relation && typeof relation === 'object') {
+    const relationId = (relation as Record<string, unknown>).id;
+    if (relationId !== null && relationId !== undefined && relationId !== '') {
+      return String(relationId);
+    }
+  }
+
+  return '';
+}
+
+function normalizeText(value: unknown): string {
+  return String(value ?? '')
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .trim()
+    .toLowerCase();
+}
+
+function resolveTipoBemNome(option: Record<string, unknown>, lookups: Record<string, Record<string, unknown>[]>): string {
+  const tipos = lookups.tipos_bens ?? [];
+  const byId = tipos.find((tipo) => String(tipo.id ?? '') === String(option.tipo_bem_id ?? ''));
+  const nome = byId?.nome ?? byId?.tipo_bem ?? option.tipo_bem ?? option.nome_regra ?? option.nome;
+  return normalizeText(nome ?? '');
+}
+
+function isResponsavelAtivo(option: Record<string, unknown>): boolean {
+  const status = String(option.status ?? '')
+    .trim()
+    .toLowerCase();
+  return status === '' || status === 'ativo';
+}
+
+function filterResponsavelByDepartamento(
+  option: Record<string, unknown>,
+  filialId: string | undefined,
+  departamentoId: string | undefined,
+): boolean {
+  if (!filialId || !departamentoId) {
+    return false;
+  }
+
+  return (
+    isResponsavelAtivo(option) &&
+    getLookupId(option, 'filial_id') === String(filialId) &&
+    getLookupId(option, 'departamento_id') === String(departamentoId)
+  );
 }
 
 export const moduleCrudConfig: Record<string, ModuleConfig> = {
@@ -163,7 +230,7 @@ export const moduleCrudConfig: Record<string, ModuleConfig> = {
     emptyMessage: 'Nenhum bem patrimonial cadastrado.',
     modalMaxWidthClassName: 'admin-modal-shell--md',
     steppedBodyMinHeightClassName: 'min-h-[300px] lg:min-h-[320px]',
-    lookups: [filialLookup, unidadeLookup, departamentoLookup, localLookup, responsavelLookup, tipoBemLookup, plaquetaDisponivelLookup, regraDepreciacaoLookup],
+    lookups: [filialLookup, unidadeLookup, departamentoLookup, localLookup, responsavelLookup, tipoBemLookup, tiposProdutoLookup, plaquetaDisponivelLookup, regraDepreciacaoLookup],
     steps: [
       {
         key: 'estrutura',
@@ -231,7 +298,16 @@ export const moduleCrudConfig: Record<string, ModuleConfig> = {
       { name: 'unidade_administrativa_id', label: 'Unidade administrativa', type: 'select', valueType: 'number', lookupKey: 'unidades', clearOnChange: ['departamento_id', 'local_id'], disabled: (form) => !form.filial_id, filterOption: (option, form) => String(option.filial_id ?? '') === String(form.filial_id ?? '') },
       { name: 'departamento_id', label: 'Departamento', type: 'select', valueType: 'number', lookupKey: 'departamentos', clearOnChange: ['local_id', 'responsavel_id'], disabled: (form) => !form.unidade_administrativa_id, filterOption: (option, form) => String(option.filial_id ?? '') === String(form.filial_id ?? '') && String(option.unidade_administrativa_id ?? '') === String(form.unidade_administrativa_id ?? '') },
       { name: 'local_id', label: 'Local', type: 'select', valueType: 'number', lookupKey: 'locais', disabled: (form) => !form.departamento_id, filterOption: (option, form) => String(option.filial_id ?? '') === String(form.filial_id ?? '') && String(option.unidade_administrativa_id ?? '') === String(form.unidade_administrativa_id ?? '') && String(option.departamento_id ?? '') === String(form.departamento_id ?? '') },
-      { name: 'responsavel_id', label: 'Responsável', type: 'select', valueType: 'number', lookupKey: 'responsaveis', disabled: (form) => !form.departamento_id, filterOption: (option, form) => String(option.filial_id ?? '') === String(form.filial_id ?? '') && String(option.departamento_id ?? '') === String(form.departamento_id ?? '') },
+      {
+        name: 'responsavel_id',
+        label: 'Responsável',
+        type: 'select',
+        valueType: 'number',
+        lookupKey: 'responsaveis',
+        disabled: (form) => !form.departamento_id,
+        filterOption: (option, form) =>
+          filterResponsavelByDepartamento(option, form.filial_id, form.departamento_id),
+      },
       {
         name: 'numero_tombo',
         label: 'Número do tombo (plaqueta)',
@@ -299,7 +375,14 @@ export const moduleCrudConfig: Record<string, ModuleConfig> = {
         label: 'Produto de equipamento',
         type: 'select',
         placeholder: 'Selecione o produto',
+        lookupKey: 'tipos_produtos',
         visibleWhen: (form) => String(form.categoria ?? '').toLowerCase().includes('equip'),
+        filterOption: (option, form, lookups) => {
+          const categoria = normalizeText(form.categoria ?? '');
+          if (!categoria) return false;
+          const tipoNome = resolveTipoBemNome(option, lookups);
+          return categoria.includes('equip') && (tipoNome === categoria || tipoNome.includes('equip') || categoria.includes(tipoNome));
+        },
         options: [
           { value: 'Projetor', label: 'Projetor' },
           { value: 'Nobreak', label: 'Nobreak' },
@@ -313,7 +396,15 @@ export const moduleCrudConfig: Record<string, ModuleConfig> = {
         label: 'Produto de informática',
         type: 'select',
         placeholder: 'Selecione o produto',
+        lookupKey: 'tipos_produtos',
         visibleWhen: (form) => String(form.categoria ?? '').toLowerCase().includes('inform'),
+        filterOption: (option, form, lookups) => {
+          const categoria = normalizeText(form.categoria ?? '');
+          if (!categoria) return false;
+          const tipoNome = resolveTipoBemNome(option, lookups);
+          const matchesTipo = tipoNome === categoria || tipoNome.includes('inform') || categoria.includes(tipoNome);
+          return categoria.includes('inform') && matchesTipo;
+        },
         options: [
           { value: 'Computador', label: 'Computador' },
           { value: 'Notebook', label: 'Notebook' },
@@ -328,7 +419,14 @@ export const moduleCrudConfig: Record<string, ModuleConfig> = {
         label: 'Produto de mobiliário',
         type: 'select',
         placeholder: 'Selecione o produto',
+        lookupKey: 'tipos_produtos',
         visibleWhen: (form) => String(form.categoria ?? '').toLowerCase().includes('mobili'),
+        filterOption: (option, form, lookups) => {
+          const categoria = normalizeText(form.categoria ?? '');
+          if (!categoria) return false;
+          const tipoNome = resolveTipoBemNome(option, lookups);
+          return categoria.includes('mobili') && (tipoNome === categoria || tipoNome.includes('mobili') || categoria.includes(tipoNome));
+        },
         options: [
           { value: 'Cadeira', label: 'Cadeira' },
           { value: 'Mesa', label: 'Mesa' },
@@ -342,7 +440,14 @@ export const moduleCrudConfig: Record<string, ModuleConfig> = {
         label: 'Produto de utensílio',
         type: 'select',
         placeholder: 'Selecione o produto',
+        lookupKey: 'tipos_produtos',
         visibleWhen: (form) => String(form.categoria ?? '').toLowerCase().includes('utens'),
+        filterOption: (option, form, lookups) => {
+          const categoria = normalizeText(form.categoria ?? '');
+          if (!categoria) return false;
+          const tipoNome = resolveTipoBemNome(option, lookups);
+          return categoria.includes('utens') && (tipoNome === categoria || tipoNome.includes('utens') || categoria.includes(tipoNome));
+        },
         options: [
           { value: 'Copa/Cozinha', label: 'Copa/Cozinha' },
           { value: 'Limpeza', label: 'Limpeza' },
@@ -356,7 +461,14 @@ export const moduleCrudConfig: Record<string, ModuleConfig> = {
         label: 'Tipo de veículo',
         type: 'select',
         placeholder: 'Selecione o veículo',
+        lookupKey: 'tipos_produtos',
         visibleWhen: (form) => String(form.categoria ?? '').toLowerCase().includes('veic'),
+        filterOption: (option, form, lookups) => {
+          const categoria = normalizeText(form.categoria ?? '');
+          if (!categoria) return false;
+          const tipoNome = resolveTipoBemNome(option, lookups);
+          return categoria.includes('veic') && (tipoNome === categoria || tipoNome.includes('veic') || categoria.includes(tipoNome));
+        },
         options: [
           { value: 'Carro', label: 'Carro' },
           { value: 'Moto', label: 'Moto' },
@@ -616,11 +728,29 @@ export const moduleCrudConfig: Record<string, ModuleConfig> = {
       { name: 'origem_unidade_administrativa_id', label: 'Origem unidade', type: 'select', valueType: 'number', lookupKey: 'unidades', clearOnChange: ['origem_departamento_id', 'origem_local_id'], filterOption: (option, form) => !form.filial_id || String(option.filial_id ?? '') === String(form.filial_id ?? '') },
       { name: 'origem_departamento_id', label: 'Origem departamento', type: 'select', valueType: 'number', lookupKey: 'departamentos', clearOnChange: ['origem_local_id'], disabled: (form) => !form.origem_unidade_administrativa_id, filterOption: (option, form) => String(option.filial_id ?? '') === String(form.filial_id ?? '') && String(option.unidade_administrativa_id ?? '') === String(form.origem_unidade_administrativa_id ?? '') },
       { name: 'origem_local_id', label: 'Origem local', type: 'select', valueType: 'number', lookupKey: 'locais', disabled: (form) => !form.origem_departamento_id, filterOption: (option, form) => String(option.filial_id ?? '') === String(form.filial_id ?? '') && String(option.unidade_administrativa_id ?? '') === String(form.origem_unidade_administrativa_id ?? '') && String(option.departamento_id ?? '') === String(form.origem_departamento_id ?? '') },
-      { name: 'origem_responsavel_id', label: 'Responsável de origem', type: 'select', valueType: 'number', lookupKey: 'responsaveis', disabled: () => true, filterOption: (option, form) => String(option.filial_id ?? '') === String(form.filial_id ?? '') && String(option.departamento_id ?? '') === String(form.origem_departamento_id ?? '') },
+      {
+        name: 'origem_responsavel_id',
+        label: 'Responsável de origem',
+        type: 'select',
+        valueType: 'number',
+        lookupKey: 'responsaveis',
+        disabled: () => true,
+        filterOption: (option, form) =>
+          filterResponsavelByDepartamento(option, form.filial_id, form.origem_departamento_id),
+      },
       { name: 'destino_unidade_administrativa_id', label: 'Destino unidade', type: 'select', valueType: 'number', lookupKey: 'unidades', clearOnChange: ['destino_departamento_id', 'destino_local_id'], filterOption: (option, form) => !form.filial_id || String(option.filial_id ?? '') === String(form.filial_id ?? '') },
       { name: 'destino_departamento_id', label: 'Destino departamento', type: 'select', valueType: 'number', lookupKey: 'departamentos', clearOnChange: ['destino_local_id', 'destino_responsavel_id'], disabled: (form) => !form.destino_unidade_administrativa_id, filterOption: (option, form) => String(option.filial_id ?? '') === String(form.filial_id ?? '') && String(option.unidade_administrativa_id ?? '') === String(form.destino_unidade_administrativa_id ?? '') },
       { name: 'destino_local_id', label: 'Destino local', type: 'select', valueType: 'number', lookupKey: 'locais', disabled: (form) => !form.destino_departamento_id, filterOption: (option, form) => String(option.filial_id ?? '') === String(form.filial_id ?? '') && String(option.unidade_administrativa_id ?? '') === String(form.destino_unidade_administrativa_id ?? '') && String(option.departamento_id ?? '') === String(form.destino_departamento_id ?? '') },
-      { name: 'destino_responsavel_id', label: 'Responsável de destino', type: 'select', valueType: 'number', lookupKey: 'responsaveis', disabled: (form) => !form.destino_departamento_id, filterOption: (option, form) => String(option.filial_id ?? '') === String(form.filial_id ?? '') && String(option.departamento_id ?? '') === String(form.destino_departamento_id ?? '') },
+      {
+        name: 'destino_responsavel_id',
+        label: 'Responsável de destino',
+        type: 'select',
+        valueType: 'number',
+        lookupKey: 'responsaveis',
+        disabled: (form) => !form.destino_departamento_id,
+        filterOption: (option, form) =>
+          filterResponsavelByDepartamento(option, form.filial_id, form.destino_departamento_id),
+      },
       { name: 'atualizar_responsavel_bem', label: 'Atualizar responsável do bem', type: 'select', defaultValue: '0', options: [{ value: '0', label: 'Não' }, { value: '1', label: 'Sim' }] },
       { name: 'data_transferencia', label: 'Data da transferência', type: 'date' },
       { name: 'motivo', label: 'Motivo', type: 'text' },
@@ -631,6 +761,90 @@ export const moduleCrudConfig: Record<string, ModuleConfig> = {
       { label: 'Origem', render: (item, context) => primaryCell(context.getLookupLabel('unidades', item.origem_unidade_administrativa_id), `${context.getLookupLabel('departamentos', item.origem_departamento_id)} / ${context.getLookupLabel('locais', item.origem_local_id)} • ${context.getLookupLabel('responsaveis', item.origem_responsavel_id)}`) },
       { label: 'Destino', render: (item, context) => primaryCell(context.getLookupLabel('unidades', item.destino_unidade_administrativa_id), `${context.getLookupLabel('departamentos', item.destino_departamento_id)} / ${context.getLookupLabel('locais', item.destino_local_id)} • ${item.destino_responsavel_id ? context.getLookupLabel('responsaveis', item.destino_responsavel_id) : 'Sem responsável'}`) },
       { label: 'Motivo', render: (item) => primaryCell(item.motivo, item.observacoes ?? 'Sem observações') },
+    ],
+  },
+  'tipos-produtos': {
+    key: 'tipos-produtos',
+    label: 'Tipos de Produto',
+    summary: 'Catálogo de produtos vinculados ao tipo do bem',
+    endpoint: 'tipos-produtos',
+    createLabel: 'Novo produto',
+    emptyMessage: 'Nenhum produto cadastrado.',
+    lookups: [tipoBemLookup],
+    fields: [
+      { name: 'empresa_id', label: 'Empresa', type: 'number', hidden: true, valueType: 'number', defaultValue: ({ empresaId }) => String(empresaId ?? '') },
+      {
+        name: 'tipo_bem_id',
+        label: 'Tipo do bem',
+        type: 'select',
+        valueType: 'number',
+        lookupKey: 'tipos_bens',
+        required: true,
+        filterOption: (option, _form, lookups) => {
+          const all = Array.isArray(lookups.tipos_bens) ? lookups.tipos_bens : [];
+          const currentKey =
+            normalizeText(option.nome) ||
+            normalizeText(option.tipo_bem) ||
+            normalizeText(option.nome_regra) ||
+            normalizeText(option.id);
+          const firstWithKey = all.find((entry) => {
+            const key =
+              normalizeText(entry.nome) ||
+              normalizeText(entry.tipo_bem) ||
+              normalizeText(entry.nome_regra) ||
+              normalizeText(entry.id);
+            return key === currentKey;
+          });
+          return firstWithKey === option;
+        },
+      },
+      { name: 'nome', label: 'Nome do produto', type: 'text', required: true, placeholder: 'Ex.: Computador, Cadeira, Monitor' },
+      { name: 'descricao', label: 'Descrição', type: 'textarea', placeholder: 'Detalhes ou observações do produto' },
+      { name: 'ativo', label: 'Status', type: 'select', defaultValue: '1', options: [{ value: '1', label: 'Ativo' }, { value: '0', label: 'Inativo' }] },
+    ],
+    columns: [
+      { label: 'Produto', render: (item) => primaryCell(item.nome, item.descricao ?? 'Sem descrição') },
+      { label: 'Tipo do bem', render: (item, context) => context.getLookupLabel('tipos_bens', item.tipo_bem_id) },
+      {
+        label: 'Status',
+        render: (item) => {
+          const raw = item.ativo;
+          const ativo =
+            raw === 1 ||
+            raw === true ||
+            String(raw ?? '').toLowerCase() === '1' ||
+            String(raw ?? '').toLowerCase() === 'true';
+          return (
+            <span className={ativo ? 'text-[var(--ink)]' : 'text-[var(--muted)]'}>
+              {ativo ? 'Ativo' : 'Inativo'}
+            </span>
+          );
+        },
+      },
+    ],
+  },
+  'tipos-bens': {
+    key: 'tipos-bens',
+    label: 'Tipos de Bem Patrimonial',
+    summary: 'Catálogo de tipos de bem patrimonial',
+    endpoint: 'tipos-bens-patrimoniais',
+    createLabel: 'Novo tipo de bem',
+    emptyMessage: 'Nenhum tipo de bem cadastrado.',
+    lookups: [],
+    fields: [
+      {
+        name: 'empresa_id',
+        label: 'Empresa',
+        type: 'number',
+        hidden: true,
+        valueType: 'number',
+        defaultValue: ({ empresaId }) => String(empresaId ?? ''),
+      },
+      { name: 'nome', label: 'Nome do tipo de bem', type: 'text', required: true, placeholder: 'Ex.: Equipamentos, Imóveis, Veículos' },
+    ],
+    columns: [
+      { label: 'Tipo de bem', render: (item) => primaryCell(item.nome, `ID ${item.id ?? '-'}`) },
+      { label: 'Criado em', render: (item) => String(item.created_at ?? 'Não informado') },
     ],
   },
   'baixas-bens': {
@@ -685,9 +899,10 @@ export const moduleCrudConfig: Record<string, ModuleConfig> = {
             return false;
           }
 
-          return (
-            String(option.filial_id ?? '') === String(form.filial_id ?? '') &&
-            String(option.departamento_id ?? '') === String(bemSelecionado.departamento_id ?? '')
+          return filterResponsavelByDepartamento(
+            option,
+            String(form.filial_id ?? ''),
+            String(bemSelecionado.departamento_id ?? ''),
           );
         },
       },

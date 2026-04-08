@@ -1,9 +1,17 @@
 'use client';
 
+import dynamic from 'next/dynamic';
 import { useRouter } from 'next/navigation';
 import { startTransition, useMemo, useState } from 'react';
 
-import GenericModuleManagement from '@/components/GenericModuleManagement';
+const GenericModuleManagement = dynamic(() => import('@/components/GenericModuleManagement'), {
+  loading: () => (
+    <div className="panel-surface flex items-center gap-2 rounded-[16px] border border-[var(--line)] px-4 py-3 text-[13px] text-[var(--muted)]">
+      <span className="inline-flex h-4 w-4 animate-spin rounded-full border-2 border-[var(--line)] border-t-[var(--accent)]" />
+      Carregando dados de responsáveis...
+    </div>
+  ),
+});
 
 type ResponsaveisUnifiedManagementProps = {
   empresaId: number | null;

@@ -273,7 +273,7 @@ function getResponsavelFieldError(fieldName: string, value: string) {
       return "CPF incompleto.";
     }
     if (!isValidCpf(value)) {
-      return "CPF invÃ¡lido.";
+      return "CPF inválido.";
     }
     return null;
   }
@@ -286,7 +286,7 @@ function getResponsavelFieldError(fieldName: string, value: string) {
       return "Telefone incompleto.";
     }
     if (digits.length > 11) {
-      return "Telefone invÃ¡lido.";
+      return "Telefone inválido.";
     }
     return null;
   }
@@ -912,7 +912,7 @@ export default function GenericModuleManagement({
       setError(
         fetchError instanceof Error
           ? fetchError.message
-          : `NÃ£o foi possÃ­vel consultar ${config.label.toLowerCase()}.`,
+          : `Não foi possível consultar ${config.label.toLowerCase()}.`,
       );
     } finally {
       setLoading(false);
@@ -954,7 +954,7 @@ export default function GenericModuleManagement({
     if (!lookup || !item) {
       return typeof id === "number" || typeof id === "string"
         ? `#${id}`
-        : "NÃ£o informado";
+        : "Não informado";
     }
     return lookup.label(item);
   }
@@ -1119,7 +1119,7 @@ export default function GenericModuleManagement({
       setError(
         firstError ??
           payload?.message ??
-          `NÃ£o foi possÃ­vel salvar ${config.label.toLowerCase()}.`,
+          `Não foi possível salvar ${config.label.toLowerCase()}.`,
       );
       return null;
     }
@@ -1175,7 +1175,7 @@ export default function GenericModuleManagement({
       return;
     }
     if (isResponsaveisModule && hasResponsavelFieldErrors) {
-      setErrorTitle("Campos invÃ¡lidos");
+      setErrorTitle("Campos inválidos");
       setError("Corrija CPF e telefone antes de salvar.");
       return;
     }
@@ -1185,7 +1185,7 @@ export default function GenericModuleManagement({
     setConfirmDialog({
       title: `Excluir ${config.label.toLowerCase()}`,
       description:
-        "Essa a\u00e7\u00e3o remove o registro selecionado do sistema. Deseja continuar?",
+        "Essa a��o remove o registro selecionado do sistema. Deseja continuar?",
       confirmLabel: "Excluir",
       tone: "danger",
       action: async () => {
@@ -1202,10 +1202,10 @@ export default function GenericModuleManagement({
           return;
         }
         if (!response.ok) {
-          setErrorTitle("Falha na exclusão");
+          setErrorTitle("Falha na exclusao");
           setError(
             payload?.message ??
-              `NÃ£o foi possÃ­vel excluir ${config.label.toLowerCase()}.`,
+              `Não foi possível excluir ${config.label.toLowerCase()}.`,
           );
           return;
         }
@@ -1228,12 +1228,12 @@ export default function GenericModuleManagement({
       message?: string;
     } | null;
     if (handleUnauthorizedClientResponse(response.status, payload?.message)) {
-      throw new Error("SessÃ£o expirada.");
+      throw new Error("Sessão expirada.");
     }
     if (!response.ok || !payload?.data) {
       throw new Error(
         payload?.message ??
-          `NÃ£o foi possÃ­vel atualizar ${config.label.toLowerCase()}.`,
+          `Não foi possível atualizar ${config.label.toLowerCase()}.`,
       );
     }
     const refreshedRecord = payload.data;
@@ -1255,7 +1255,7 @@ export default function GenericModuleManagement({
       const remainingSlots = Math.max(0, 5 - totalImageCount);
       if (remainingSlots === 0) {
         setErrorTitle("Limite de imagens");
-        setError("Este bem permite no mÃ¡ximo 5 imagens.");
+        setError("Este bem permite no máximo 5 imagens.");
         event.target.value = "";
         return;
       }
@@ -1295,7 +1295,7 @@ export default function GenericModuleManagement({
       }
       if (!response.ok) {
         throw new Error(
-          payload?.message ?? "NÃ£o foi possÃ­vel enviar as imagens do bem.",
+          payload?.message ?? "Não foi possível enviar as imagens do bem.",
         );
       }
       setMessageTitle("Upload de imagens");
@@ -1306,7 +1306,7 @@ export default function GenericModuleManagement({
       setError(
         uploadError instanceof Error
           ? uploadError.message
-          : "NÃ£o foi possÃ­vel enviar as imagens do bem.",
+          : "Não foi possível enviar as imagens do bem.",
       );
     } finally {
       event.target.value = "";
@@ -1358,7 +1358,7 @@ export default function GenericModuleManagement({
       }
       if (!response.ok) {
         throw new Error(
-          payload?.message ?? "NÃ£o foi possÃ­vel enviar os documentos do bem.",
+          payload?.message ?? "Não foi possível enviar os documentos do bem.",
         );
       }
       setMessageTitle("Upload de Nota Fiscal");
@@ -1369,7 +1369,7 @@ export default function GenericModuleManagement({
       setError(
         uploadError instanceof Error
           ? uploadError.message
-          : "NÃ£o foi possÃ­vel enviar os documentos do bem.",
+          : "Não foi possível enviar os documentos do bem.",
       );
     } finally {
       event.target.value = "";
@@ -1416,7 +1416,7 @@ export default function GenericModuleManagement({
           }
           if (!response.ok) {
             throw new Error(
-              payload?.message ?? "NÃ£o foi possÃ­vel remover a imagem do bem.",
+              payload?.message ?? "Não foi possível remover a imagem do bem.",
             );
           }
           setMessageTitle("Imagem removida");
@@ -1427,7 +1427,7 @@ export default function GenericModuleManagement({
           setError(
             deleteError instanceof Error
               ? deleteError.message
-              : "NÃ£o foi possÃ­vel remover a imagem do bem.",
+              : "Não foi possível remover a imagem do bem.",
           );
         }
       },
@@ -1476,7 +1476,7 @@ export default function GenericModuleManagement({
           if (!response.ok) {
             throw new Error(
               payload?.message ??
-                "NÃ£o foi possÃ­vel remover o documento do bem.",
+                "Não foi possível remover o documento do bem.",
             );
           }
           setMessageTitle("Nota Fiscal removida");
@@ -1487,7 +1487,7 @@ export default function GenericModuleManagement({
           setError(
             deleteError instanceof Error
               ? deleteError.message
-              : "NÃ£o foi possÃ­vel remover o documento do bem.",
+              : "Não foi possível remover o documento do bem.",
           );
         }
       },
@@ -1553,7 +1553,7 @@ export default function GenericModuleManagement({
       }
       if (!response.ok) {
         throw new Error(
-          payload?.message ?? "NÃ£o foi possÃ­vel definir a imagem principal.",
+          payload?.message ?? "Não foi possível definir a imagem principal.",
         );
       }
       setMessageTitle("Imagem principal definida");
@@ -1564,7 +1564,7 @@ export default function GenericModuleManagement({
       setError(
         principalError instanceof Error
           ? principalError.message
-          : "NÃ£o foi possÃ­vel definir a imagem principal.",
+          : "Não foi possível definir a imagem principal.",
       );
     }
   }
@@ -1612,7 +1612,7 @@ export default function GenericModuleManagement({
       }
       if (!response.ok) {
         throw new Error(
-          payload?.message ?? "NÃ£o foi possÃ­vel reordenar as imagens.",
+          payload?.message ?? "Não foi possível reordenar as imagens.",
         );
       }
       setMessageTitle("Ordem das imagens");
@@ -1625,7 +1625,7 @@ export default function GenericModuleManagement({
       setError(
         reorderError instanceof Error
           ? reorderError.message
-          : "NÃ£o foi possÃ­vel reordenar as imagens.",
+          : "Não foi possível reordenar as imagens.",
       );
     }
   }
@@ -1668,7 +1668,7 @@ export default function GenericModuleManagement({
       }
       if (!response.ok) {
         throw new Error(
-          payload?.message ?? "NÃ£o foi possÃ­vel atualizar o tipo do documento.",
+          payload?.message ?? "Não foi possível atualizar o tipo do documento.",
         );
       }
       setMessageTitle("Tipo do documento");
@@ -1681,7 +1681,7 @@ export default function GenericModuleManagement({
       setError(
         documentTypeError instanceof Error
           ? documentTypeError.message
-          : "NÃ£o foi possÃ­vel atualizar o tipo do documento.",
+          : "Não foi possível atualizar o tipo do documento.",
       );
     }
   }
@@ -1714,7 +1714,7 @@ export default function GenericModuleManagement({
         if (!imageResponse.ok) {
           throw new Error(
             imagePayload?.message ??
-              "NÃ£o foi possÃ­vel enviar as imagens do bem.",
+              "Não foi possível enviar as imagens do bem.",
           );
         }
       }
@@ -1742,7 +1742,7 @@ export default function GenericModuleManagement({
           if (!documentResponse.ok) {
             throw new Error(
               documentPayload?.message ??
-                "NÃ£o foi possÃ­vel enviar os documentos do bem.",
+                "Não foi possível enviar os documentos do bem.",
             );
           }
         }
@@ -1761,7 +1761,7 @@ export default function GenericModuleManagement({
       setError(
         uploadError instanceof Error
           ? uploadError.message
-          : "NÃ£o foi possÃ­vel concluir o envio dos anexos.",
+          : "Não foi possível concluir o envio dos anexos.",
       );
       return false;
     } finally {
@@ -1869,12 +1869,12 @@ export default function GenericModuleManagement({
                 </p>
                 <p className="mt-1 text-[13px] leading-5 text-[var(--muted)]">
                   
-                  Layout da plaqueta no padrÃ£o fÃ­sico de patrimÃ´nio, com nÃºmero
-                  visÃ­vel e cÃ³digo de barras para leitura.
+                  Layout da plaqueta no padrão físico de patrimônio, com número
+                  visível e código de barras para leitura.
                 </p>
               </div>
               <p className="text-[12px] font-medium text-[var(--muted)]">
-                A leitura pode abrir a consulta pÃºblica do item no celular.
+                A leitura pode abrir a consulta pública do item no celular.
               </p>
             </div>
             <div className="mt-4 grid gap-3 md:grid-cols-2 xl:grid-cols-3">
@@ -1910,7 +1910,7 @@ export default function GenericModuleManagement({
                       {column.label}
                     </th>
                   ))}
-                  <th className="px-4 py-3.5 text-right">AÃ§Ãµes</th>
+                  <th className="px-4 py-3.5 text-right">Ações</th>
                 </tr>
               </thead><tbody>
                 
@@ -2128,7 +2128,7 @@ export default function GenericModuleManagement({
                               </div>
                               <p className="mt-1 text-xs leading-5 text-[var(--muted)]">
                                 
-                                AtÃ© 5 fotos do bem. Os arquivos selecionados
+                                Até 5 fotos do bem. Os arquivos selecionados
                                 serao enviados ao concluir.
                               </p>
                             </div>
@@ -2262,7 +2262,7 @@ export default function GenericModuleManagement({
                                           >
                                             
                                             <span className="text-xs leading-none">
-                                              â†
+                                              ←
                                             </span>
                                           </button>
                                           <button
@@ -2279,7 +2279,7 @@ export default function GenericModuleManagement({
                                           >
                                             
                                             <span className="text-xs leading-none">
-                                              â†’
+                                              →
                                             </span>
                                           </button>
                                         </div>
@@ -2456,7 +2456,7 @@ export default function GenericModuleManagement({
                                           <div>
                                             
                                             <p className="text-xs font-semibold uppercase tracking-[0.16em] text-[var(--muted)]">
-                                              Documento fiscal eletrÃ´nico
+                                              Documento fiscal eletrônico
                                             </p>
                                             <p className="mt-2 text-sm font-semibold text-[var(--ink)]">
                                               NF-e em XML
@@ -2968,14 +2968,14 @@ export default function GenericModuleManagement({
                     
                     {isReadOnly
                       ? hasSteps && activeStepIndex < modalSteps.length - 1
-                        ? "PrÃ³xima etapa"
+                        ? "Próxima etapa"
                         : "Fechar"
                       : isAssetAttachmentsStep
                         ? "Concluir"
                         : hasSteps && activeStepIndex < modalSteps.length - 1
                           ? "Continuar"
                           : modalMode === "edit"
-                            ? "Salvar alteraÃ§Ãµes"
+                            ? "Salvar alterações"
                             : "Salvar cadastro"}
                   </button>
                 </div>
@@ -3039,8 +3039,8 @@ export default function GenericModuleManagement({
               <p className="text-[12px] leading-5 text-[var(--muted)]">
                 
                 {assetPreview.type === "image"
-                  ? "VisualizaÃ§Ã£o ampliada da imagem anexada ao patrimonio."
-                  : "VisualizaÃ§Ã£o do documento fiscal vinculado ao bem."}
+                  ? "Visualização ampliada da imagem anexada ao patrimonio."
+                  : "Visualização do documento fiscal vinculado ao bem."}
               </p>
             </div>
             <div className="mt-3 flex min-h-[60vh] items-center justify-center rounded-[20px] border border-[var(--line)] bg-[#f8fafc] p-3">
@@ -3061,12 +3061,12 @@ export default function GenericModuleManagement({
                 <div className="rounded-[18px] border border-dashed border-[var(--line)] bg-white px-6 py-8 text-center">
                   
                   <p className="text-sm font-semibold text-[var(--ink)]">
-                    VisualizaÃ§Ã£o interna indisponivel
+                    Visualização interna indisponivel
                   </p>
                   <p className="mt-2 text-sm leading-6 text-[var(--muted)]">
                     
                     Este arquivo nao pode ser exibido diretamente no painel. Use
-                    a opÃ§Ã£o "Abrir em nova guia".
+                    a opção "Abrir em nova guia".
                   </p>
                 </div>
               )}

@@ -54,6 +54,8 @@ export default async function ModuloPage({ params }: PageProps) {
 
   const crudSlugs = new Set([
     'bens',
+    'tipos-bens',
+    'tipos-produtos',
     'plaquetas',
     'inventarios',
     'transferencias-bens',
