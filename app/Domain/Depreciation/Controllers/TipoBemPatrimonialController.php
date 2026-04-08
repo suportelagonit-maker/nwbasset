@@ -6,9 +6,14 @@ use App\Domain\AssetRegistry\Models\BemPatrimonial;
 use App\Domain\Depreciation\Models\RegraDepreciacaoTipoBem;
 use App\Domain\Depreciation\Models\TipoBemPatrimonial;
 use App\Domain\Depreciation\Resources\TipoBemPatrimonialResource;
+use App\Domain\Depreciation\Requests\StoreTipoBemPatrimonialRequest;
+use App\Domain\Depreciation\Requests\UpdateTipoBemPatrimonialRequest;
 use App\Http\Controllers\Controller;
+use App\Domain\AssetRegistry\Models\TipoProduto;
 use Illuminate\Http\Request;
+use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Str;
 
 class TipoBemPatrimonialController extends Controller
 {
@@ -52,6 +57,71 @@ class TipoBemPatrimonialController extends Controller
         return TipoBemPatrimonialResource::collection($query->get());
     }
 
+    public function store(StoreTipoBemPatrimonialRequest $request)
+    {
+        if (! Schema::hasTable('tipos_bens_patrimoniais')) {
+            return response()->json(['message' => 'Tabela tipos_bens_patrimoniais não existe. Rode as migrations.'], 400);
+        }
+
+        $payload = $request->validated();
+        $payload['empresa_id'] = (int) $request->attributes->get('empresa_id');
+
+        $tipo = TipoBemPatrimonial::query()->create($payload);
+
+        return new TipoBemPatrimonialResource($tipo);
+    }
+
+    public function update(UpdateTipoBemPatrimonialRequest $request, TipoBemPatrimonial $tipo_bem)
+    {
+        if (! Schema::hasTable('tipos_bens_patrimoniais')) {
+            return response()->json(['message' => 'Tabela tipos_bens_patrimoniais não existe. Rode as migrations.'], 400);
+        }
+
+        if ((int) $tipo_bem->empresa_id !== (int) $request->attributes->get('empresa_id')) {
+            abort(403, 'Acesso negado a tipo de bem de outra empresa.');
+        }
+
+        $tipo_bem->update($request->validated());
+
+        return new TipoBemPatrimonialResource($tipo_bem);
+    }
+
+    public function destroy(Request $request, TipoBemPatrimonial $tipo_bem)
+    {
+        if (! Schema::hasTable('tipos_bens_patrimoniais')) {
+            return response()->json(['message' => 'Tabela tipos_bens_patrimoniais não existe. Rode as migrations.'], 400);
+        }
+
+        if ((int) $tipo_bem->empresa_id !== (int) $request->attributes->get('empresa_id')) {
+            abort(403, 'Acesso negado a tipo de bem de outra empresa.');
+        }
+
+        if ($tipo_bem->regrasDepreciacao()->exists()) {
+            return response()->json([
+                'message' => 'Não é possível excluir: existem regras de depreciação vinculadas a este tipo de bem.',
+            ], 409);
+        }
+
+        if (Schema::hasTable('tipos_produtos') && TipoProduto::query()
+            ->where('empresa_id', $tipo_bem->empresa_id)
+            ->where('tipo_bem_id', $tipo_bem->id)
+            ->exists()) {
+            return response()->json([
+                'message' => 'Não é possível excluir: existem tipos de produto vinculados a este tipo de bem.',
+            ], 409);
+        }
+
+        try {
+            $tipo_bem->delete();
+        } catch (QueryException $exception) {
+            return response()->json([
+                'message' => 'Não foi possível excluir. Remova os vínculos antes de tentar novamente.',
+            ], 409);
+        }
+
+        return response()->json(['message' => 'Tipo de bem excluído com sucesso.']);
+    }
+
     private function montarFallbackTipos(int $empresaId)
     {
         return collect(self::TIPOS_PADRAO)
@@ -79,7 +149,7 @@ class TipoBemPatrimonialController extends Controller
         $tiposExistentes = TipoBemPatrimonial::query()
             ->where('empresa_id', $empresaId)
             ->pluck('nome')
-            ->map(static fn (string $nome): string => mb_strtolower(trim($nome)))
+            ->map(fn (string $nome): string => $this->normalizarNome($nome))
             ->all();
 
         $indice = array_fill_keys($tiposExistentes, true);
@@ -104,7 +174,7 @@ class TipoBemPatrimonialController extends Controller
         $inserir = [];
 
         foreach ($tipos as $nome) {
-            $chave = mb_strtolower($nome);
+            $chave = $this->normalizarNome($nome);
 
             if (isset($indice[$chave])) {
                 continue;
@@ -122,5 +192,10 @@ class TipoBemPatrimonialController extends Controller
         if ($inserir !== []) {
             TipoBemPatrimonial::query()->insert($inserir);
         }
+    }
+
+    private function normalizarNome(string $valor): string
+    {
+        return Str::lower(Str::ascii(trim($valor)));
     }
 }

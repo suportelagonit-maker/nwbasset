@@ -8,6 +8,7 @@ use App\Domain\AssetRegistry\Controllers\BemPatrimonialController;
 use App\Domain\AssetRegistry\Controllers\BemPatrimonialDocumentoController;
 use App\Domain\AssetRegistry\Controllers\BemPatrimonialImagemController;
 use App\Domain\AssetRegistry\Controllers\PlaquetaPatrimonialController;
+use App\Domain\AssetRegistry\Controllers\TipoProdutoController;
 use App\Domain\AssetRegistry\Controllers\PublicPlaquetaLookupController;
 use App\Domain\Audit\Controllers\AuditoriaPatrimonialController;
 use App\Domain\Auth\Controllers\AuthController;
@@ -89,6 +90,8 @@ Route::prefix('v1')->group(function (): void {
                 ->parameters(['locais' => 'local']);
             Route::apiResource('responsaveis', ResponsavelController::class)
                 ->parameters(['responsaveis' => 'responsavel']);
+            Route::apiResource('tipos-produtos', TipoProdutoController::class)
+                ->parameters(['tipos-produtos' => 'tipos_produto']);
         });
 
         Route::middleware(['empresa.context', 'role.permission:movimentacoes'])->group(function (): void {
@@ -103,7 +106,9 @@ Route::prefix('v1')->group(function (): void {
         });
 
         Route::middleware(['empresa.context', 'role.permission:depreciacoes'])->group(function (): void {
-            Route::get('tipos-bens-patrimoniais', [TipoBemPatrimonialController::class, 'index']);
+            Route::apiResource('tipos-bens-patrimoniais', TipoBemPatrimonialController::class)
+                ->parameters(['tipos-bens-patrimoniais' => 'tipo_bem'])
+                ->only(['index', 'store', 'update', 'destroy']);
             Route::apiResource('regras-depreciacao', RegraDepreciacaoTipoBemController::class)
                 ->parameters(['regras-depreciacao' => 'regra_depreciacao']);
             Route::apiResource('parametros-depreciacao', ParametroDepreciacaoController::class)

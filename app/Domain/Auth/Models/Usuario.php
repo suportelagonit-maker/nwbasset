@@ -122,6 +122,10 @@ class Usuario extends Authenticatable
 
     public function roleForEmpresa(?int $empresaId = null): string
     {
+        if ($this->isSuperAdmin()) {
+            return RoleEnum::SUPER_ADMIN->value;
+        }
+
         $empresaId ??= $this->empresaPadrao()?->id;
 
         if ($empresaId !== null) {

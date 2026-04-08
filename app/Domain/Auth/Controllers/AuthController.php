@@ -6,14 +6,24 @@ use App\Domain\Auth\DTOs\LoginData;
 use App\Domain\Auth\Requests\LoginRequest;
 use App\Domain\Auth\Resources\UsuarioResource;
 use App\Domain\Auth\Services\AuthService;
+use App\Domain\Auth\Services\CaptchaValidationService;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 class AuthController extends Controller
 {
-    public function login(LoginRequest $request, AuthService $authService): JsonResponse
+    public function login(
+        LoginRequest $request,
+        AuthService $authService,
+        CaptchaValidationService $captchaValidationService,
+    ): JsonResponse
     {
+        $captchaValidationService->validateOrFail(
+            $request->input('captcha_token'),
+            $request->ip(),
+        );
+
         $result = $authService->login(LoginData::fromArray($request->validated()));
 
         return response()->json([
@@ -23,6 +33,8 @@ class AuthController extends Controller
                 ? [
                     'id' => $result['empresa_atual']->id,
                     'nome_fantasia' => $result['empresa_atual']->nome_fantasia,
+                    'cnpj' => $result['empresa_atual']->cnpj,
+                    'logo_url' => $result['empresa_atual']->logo_url,
                 ]
                 : null,
             'permissoes' => $result['permissoes'],
