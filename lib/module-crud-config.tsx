@@ -65,11 +65,7 @@ const regraDepreciacaoLookup = {
 const plaquetaDisponivelLookup = {
   key: 'plaquetas_disponiveis',
   path: 'plaquetas?disponivel_para_vinculo=1&per_page=500',
-  label: (item: Record<string, unknown>) => {
-    const numero = String(item.numero_plaqueta ?? item.codigo_plaqueta ?? item.id ?? '');
-    const status = String(item.status ?? '');
-    return status ? `Plaqueta ${numero} (${status})` : `Plaqueta ${numero}`;
-  },
+  label: (item: Record<string, unknown>) => String(item.numero_plaqueta ?? item.codigo_plaqueta ?? item.id ?? ''),
 } as const;
 
 const tiposProdutoLookup = {
@@ -310,25 +306,26 @@ export const moduleCrudConfig: Record<string, ModuleConfig> = {
       },
       {
         name: 'numero_tombo',
-        label: 'Número do tombo (plaqueta)',
+        label: 'Numero da Plaqueta',
         type: 'select',
         required: true,
         lookupKey: 'plaquetas_disponiveis',
         lookupValueKey: 'numero_plaqueta',
-        placeholder: 'Selecione a plaqueta cadastrada',
+        placeholder: 'Selecione a plaqueta disponivel',
         disabled: (form) => !form.filial_id,
         filterOption: (option, form) => {
           const numeroOpcao = String(option.numero_plaqueta ?? option.codigo_plaqueta ?? '');
           const numeroSelecionado = String(form.numero_tombo ?? '');
           const statusOpcao = String(option.status ?? '').toUpperCase();
-          const mesmaFilial = !form.filial_id || String(option.filial_id ?? '') === String(form.filial_id ?? '');
+          const opcaoSemFilial = option.filial_id === null || option.filial_id === undefined || String(option.filial_id ?? '').trim() === '';
+          const mesmaFilial = !form.filial_id || opcaoSemFilial || String(option.filial_id ?? '') === String(form.filial_id ?? '');
           const disponivel = option.bem_patrimonial_id === null || option.bem_patrimonial_id === undefined;
           const statusPermitido = ['EM_ESTOQUE', 'GERADA', 'VINCULADA', 'APLICADA'].includes(statusOpcao);
           return mesmaFilial && statusPermitido && (disponivel || (numeroSelecionado !== '' && numeroOpcao === numeroSelecionado));
         },
         visibleWhen: (form) => Boolean(form.categoria),
       },
-      { name: 'numero_serie', label: 'Número de série', type: 'text', visibleWhen: (form) => Boolean(form.categoria) },
+      { name: 'numero_serie', label: 'Número de Série / Tag Service', type: 'text', visibleWhen: (form) => Boolean(form.categoria) },
       { name: 'descricao', label: 'Descrição', type: 'textarea', required: true, visibleWhen: (form) => Boolean(form.categoria) },
       {
         name: 'categoria',

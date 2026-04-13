@@ -1,6 +1,6 @@
 "use client";
 import type { ChangeEvent, ReactNode } from "react";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { handleUnauthorizedClientResponse } from "@/lib/client-auth";
 import { getCrudModuleConfig } from "@/lib/module-crud-config";
 import PatrimonioEtiquetaCard from "./PatrimonioEtiquetaCard";
@@ -111,6 +111,12 @@ type PendingDocumentUpload = {
   tipoDocumento: string;
   previewUrl: string;
   mimeType: string;
+};
+type AssetDraftPayload = {
+  version: 1;
+  form: Record<string, string>;
+  activeStepIndex: number;
+  savedAt: string;
 };
 const documentTypeOptions = [
   { value: "NF_E", label: "NF-e" },
@@ -273,7 +279,7 @@ function getResponsavelFieldError(fieldName: string, value: string) {
       return "CPF incompleto.";
     }
     if (!isValidCpf(value)) {
-      return "CPF invÃ¡lido.";
+      return "CPF inválido.";
     }
     return null;
   }
@@ -286,7 +292,7 @@ function getResponsavelFieldError(fieldName: string, value: string) {
       return "Telefone incompleto.";
     }
     if (digits.length > 11) {
-      return "Telefone invÃ¡lido.";
+      return "Telefone inválido.";
     }
     return null;
   }
@@ -685,6 +691,9 @@ export default function GenericModuleManagement({
   const [assetPreview, setAssetPreview] = useState<AssetPreviewState | null>(
     null,
   );
+  const [assetDraftSnapshot, setAssetDraftSnapshot] =
+    useState<AssetDraftPayload | null>(null);
+  const assetDraftTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const isReadOnly = modalMode === "view";
   const isPlaquetasModule = config.key === "plaquetas";
   const plaquetaPreviewItems = useMemo(
@@ -722,12 +731,24 @@ export default function GenericModuleManagement({
   const steppedBodyMinHeightClassName =
     config.steppedBodyMinHeightClassName ?? "min-h-[420px] lg:min-h-[448px]";
   const isAssetModule = config.key === "bens";
+  const assetDraftStorageKey = useMemo(
+    () => `nwbasset:bens:draft:v1:${empresaId ?? "sem-empresa"}`,
+    [empresaId],
+  );
   const isTipoProdutoModule = config.key === "tipos-produtos";
   const isCompactHeader = headerVariant === "compact";
   const isAssetAttachmentsStep = isAssetModule && currentStep?.key === "anexos";
   const isResponsaveisModule = config.key === "responsaveis";
   const isResponsabilidadeBensModule = config.key === "responsabilidade-bens";
   const isTransferenciasBensModule = config.key === "transferencias-bens";
+  const hasAssetDraft = useMemo(() => {
+    if (!assetDraftSnapshot?.form) {
+      return false;
+    }
+    return Object.values(assetDraftSnapshot.form).some(
+      (value) => String(value ?? "").trim() !== "",
+    );
+  }, [assetDraftSnapshot]);
   const selectedImages = getRecordImages(selectedRecord);
   const selectedDocuments = getRecordDocuments(selectedRecord);
   const visibleImages = selectedImages.slice(0, 5);
@@ -881,6 +902,129 @@ export default function GenericModuleManagement({
     () => Object.values(responsavelFieldErrors).some((error) => Boolean(error)),
     [responsavelFieldErrors],
   );
+  const hasCreateData = useMemo(() => {
+    return Object.values(form).some((value) => String(value ?? "").trim() !== "");
+  }, [form]);
+  const hasEditChanges = useMemo(() => {
+    if (modalMode !== "edit" || !selectedRecord) {
+      return false;
+    }
+    const initial = createInitialForm(selectedRecord);
+    return JSON.stringify(initial) !== JSON.stringify(form);
+  }, [form, modalMode, selectedRecord]);
+  const shouldConfirmClose =
+    !isReadOnly &&
+    ((modalMode === "create" && hasCreateData) ||
+      (modalMode === "edit" && hasEditChanges) ||
+      pendingImages.length > 0 ||
+      pendingDocuments.length > 0);
+
+  function readAssetDraft(): AssetDraftPayload | null {
+    if (!isAssetModule || typeof window === "undefined") {
+      return null;
+    }
+    try {
+      const raw = window.localStorage.getItem(assetDraftStorageKey);
+      if (!raw) {
+        return null;
+      }
+      const parsed = JSON.parse(raw) as Partial<AssetDraftPayload> | null;
+      if (!parsed || parsed.version !== 1 || !parsed.form) {
+        return null;
+      }
+      return {
+        version: 1,
+        form: parsed.form,
+        activeStepIndex: Number(parsed.activeStepIndex ?? 0),
+        savedAt: String(parsed.savedAt ?? ""),
+      };
+    } catch {
+      return null;
+    }
+  }
+
+  function clearAssetDraft() {
+    if (!isAssetModule || typeof window === "undefined") {
+      return;
+    }
+    window.localStorage.removeItem(assetDraftStorageKey);
+    setAssetDraftSnapshot(null);
+  }
+  function requestDiscardDraft() {
+    if (!hasAssetDraft) {
+      clearAssetDraft();
+      return;
+    }
+    setConfirmDialog({
+      title: "Descartar rascunho local",
+      description:
+        "Tem certeza dessa alteracao? O rascunho local sera removido e nao podera ser recuperado.",
+      confirmLabel: "Descartar",
+      tone: "danger",
+      action: () => {
+        clearAssetDraft();
+        setMessageTitle("Rascunho descartado");
+        setMessage("O rascunho local foi descartado com sucesso.");
+      },
+    });
+  }
+  function requestCloseModal() {
+    if (!shouldConfirmClose) {
+      resetModal();
+      return;
+    }
+    setConfirmDialog({
+      title: "Descartar alteracoes",
+      description:
+        "Tem certeza dessa alteracao? Existem dados nao salvos e eles serao perdidos ao fechar.",
+      confirmLabel: "Fechar sem salvar",
+      tone: "danger",
+      action: () => {
+        resetModal();
+      },
+    });
+  }
+
+  function persistAssetDraft(nextForm: Record<string, string>, stepIndex: number) {
+    if (!isAssetModule || modalMode !== "create" || isReadOnly || typeof window === "undefined") {
+      return;
+    }
+    const payload: AssetDraftPayload = {
+      version: 1,
+      form: nextForm,
+      activeStepIndex: stepIndex,
+      savedAt: new Date().toISOString(),
+    };
+    window.localStorage.setItem(assetDraftStorageKey, JSON.stringify(payload));
+    setAssetDraftSnapshot(payload);
+  }
+
+  useEffect(() => {
+    if (!isAssetModule) {
+      return;
+    }
+    setAssetDraftSnapshot(readAssetDraft());
+  }, [assetDraftStorageKey, isAssetModule, modalMode]);
+
+  useEffect(() => {
+    if (!isAssetModule || modalMode !== "create" || isReadOnly) {
+      return;
+    }
+    if (assetDraftTimerRef.current) {
+      clearTimeout(assetDraftTimerRef.current);
+    }
+    assetDraftTimerRef.current = setTimeout(() => {
+      persistAssetDraft(form, activeStepIndex);
+    }, 700);
+
+    return () => {
+      if (assetDraftTimerRef.current) {
+        clearTimeout(assetDraftTimerRef.current);
+        assetDraftTimerRef.current = null;
+      }
+    };
+  }, [activeStepIndex, form, isAssetModule, isReadOnly, modalMode]);
+
   async function refreshAll() {
     await Promise.all([loadRecords(), loadLookups()]);
   }
@@ -912,7 +1056,7 @@ export default function GenericModuleManagement({
       setError(
         fetchError instanceof Error
           ? fetchError.message
-          : `NÃ£o foi possÃ­vel consultar ${config.label.toLowerCase()}.`,
+          : `Não foi possível consultar ${config.label.toLowerCase()}.`,
       );
     } finally {
       setLoading(false);
@@ -954,7 +1098,7 @@ export default function GenericModuleManagement({
     if (!lookup || !item) {
       return typeof id === "number" || typeof id === "string"
         ? `#${id}`
-        : "NÃ£o informado";
+        : "Não informado";
     }
     return lookup.label(item);
   }
@@ -997,9 +1141,25 @@ export default function GenericModuleManagement({
   function openCreateModal() {
     setError(null);
     setSelectedRecord(null);
-    setForm(createInitialForm(null));
+    const initialForm = createInitialForm(null);
+    const draft = readAssetDraft();
+    if (isAssetModule && draft) {
+      setForm({ ...initialForm, ...draft.form });
+      setActiveStepIndex(
+        Math.min(
+          Math.max(draft.activeStepIndex, 0),
+          Math.max((modalSteps.length || 1) - 1, 0),
+        ),
+      );
+      setMessageTitle("Rascunho recuperado");
+      setMessage(
+        "Recuperamos automaticamente o rascunho local do cadastro de bem.",
+      );
+    } else {
+      setForm(initialForm);
+      setActiveStepIndex(0);
+    }
     setDataFimIndeterminada(false);
-    setActiveStepIndex(0);
     setModalMode("create");
   }
   function openViewModal(record: Record<string, unknown>) {
@@ -1119,7 +1279,7 @@ export default function GenericModuleManagement({
       setError(
         firstError ??
           payload?.message ??
-          `NÃ£o foi possÃ­vel salvar ${config.label.toLowerCase()}.`,
+          `Não foi possível salvar ${config.label.toLowerCase()}.`,
       );
       return null;
     }
@@ -1131,6 +1291,9 @@ export default function GenericModuleManagement({
         ? `${config.label} atualizado com sucesso.`
         : `${config.label} cadastrado com sucesso.`,
     );
+    if (modalMode === "create") {
+      clearAssetDraft();
+    }
     if (!closeAfterSave) {
       setSelectedRecord(payload.data);
       setForm(createInitialForm(payload.data));
@@ -1175,11 +1338,35 @@ export default function GenericModuleManagement({
       return;
     }
     if (isResponsaveisModule && hasResponsavelFieldErrors) {
-      setErrorTitle("Campos invÃ¡lidos");
+      setErrorTitle("Campos inválidos");
       setError("Corrija CPF e telefone antes de salvar.");
       return;
     }
     await handleSubmit();
+  }
+  function requestPrimaryAction() {
+    if (isReadOnly || (hasSteps && activeStepIndex < modalSteps.length - 1)) {
+      void handlePrimaryAction();
+      return;
+    }
+    if (isResponsaveisModule && hasResponsavelFieldErrors) {
+      void handlePrimaryAction();
+      return;
+    }
+    const title = modalMode === "edit" ? "Confirmar alteracao" : "Confirmar salvamento";
+    const description =
+      modalMode === "edit"
+        ? "Tem certeza dessa alteracao? Os dados do registro serao atualizados."
+        : "Tem certeza desse salvamento? O novo registro sera criado no sistema.";
+    setConfirmDialog({
+      title,
+      description,
+      confirmLabel: modalMode === "edit" ? "Salvar alteracoes" : "Salvar cadastro",
+      tone: "primary",
+      action: async () => {
+        await handlePrimaryAction();
+      },
+    });
   }
   async function handleDelete(record: Record<string, unknown>) {
     setConfirmDialog({
@@ -1202,10 +1389,10 @@ export default function GenericModuleManagement({
           return;
         }
         if (!response.ok) {
-          setErrorTitle("Falha na exclusão");
+          setErrorTitle("Falha na exclus�o");
           setError(
             payload?.message ??
-              `NÃ£o foi possÃ­vel excluir ${config.label.toLowerCase()}.`,
+              `Não foi possível excluir ${config.label.toLowerCase()}.`,
           );
           return;
         }
@@ -1228,12 +1415,12 @@ export default function GenericModuleManagement({
       message?: string;
     } | null;
     if (handleUnauthorizedClientResponse(response.status, payload?.message)) {
-      throw new Error("SessÃ£o expirada.");
+      throw new Error("Sessão expirada.");
     }
     if (!response.ok || !payload?.data) {
       throw new Error(
         payload?.message ??
-          `NÃ£o foi possÃ­vel atualizar ${config.label.toLowerCase()}.`,
+          `Não foi possível atualizar ${config.label.toLowerCase()}.`,
       );
     }
     const refreshedRecord = payload.data;
@@ -1255,7 +1442,7 @@ export default function GenericModuleManagement({
       const remainingSlots = Math.max(0, 5 - totalImageCount);
       if (remainingSlots === 0) {
         setErrorTitle("Limite de imagens");
-        setError("Este bem permite no mÃ¡ximo 5 imagens.");
+        setError("Este bem permite no máximo 5 imagens.");
         event.target.value = "";
         return;
       }
@@ -1295,7 +1482,7 @@ export default function GenericModuleManagement({
       }
       if (!response.ok) {
         throw new Error(
-          payload?.message ?? "NÃ£o foi possÃ­vel enviar as imagens do bem.",
+          payload?.message ?? "Não foi possível enviar as imagens do bem.",
         );
       }
       setMessageTitle("Upload de imagens");
@@ -1306,7 +1493,7 @@ export default function GenericModuleManagement({
       setError(
         uploadError instanceof Error
           ? uploadError.message
-          : "NÃ£o foi possÃ­vel enviar as imagens do bem.",
+          : "Não foi possível enviar as imagens do bem.",
       );
     } finally {
       event.target.value = "";
@@ -1358,7 +1545,7 @@ export default function GenericModuleManagement({
       }
       if (!response.ok) {
         throw new Error(
-          payload?.message ?? "NÃ£o foi possÃ­vel enviar os documentos do bem.",
+          payload?.message ?? "Não foi possível enviar os documentos do bem.",
         );
       }
       setMessageTitle("Upload de Nota Fiscal");
@@ -1369,7 +1556,7 @@ export default function GenericModuleManagement({
       setError(
         uploadError instanceof Error
           ? uploadError.message
-          : "NÃ£o foi possÃ­vel enviar os documentos do bem.",
+          : "Não foi possível enviar os documentos do bem.",
       );
     } finally {
       event.target.value = "";
@@ -1416,7 +1603,7 @@ export default function GenericModuleManagement({
           }
           if (!response.ok) {
             throw new Error(
-              payload?.message ?? "NÃ£o foi possÃ­vel remover a imagem do bem.",
+              payload?.message ?? "Não foi possível remover a imagem do bem.",
             );
           }
           setMessageTitle("Imagem removida");
@@ -1427,7 +1614,7 @@ export default function GenericModuleManagement({
           setError(
             deleteError instanceof Error
               ? deleteError.message
-              : "NÃ£o foi possÃ­vel remover a imagem do bem.",
+              : "Não foi possível remover a imagem do bem.",
           );
         }
       },
@@ -1476,7 +1663,7 @@ export default function GenericModuleManagement({
           if (!response.ok) {
             throw new Error(
               payload?.message ??
-                "NÃ£o foi possÃ­vel remover o documento do bem.",
+                "Não foi possível remover o documento do bem.",
             );
           }
           setMessageTitle("Nota Fiscal removida");
@@ -1487,7 +1674,7 @@ export default function GenericModuleManagement({
           setError(
             deleteError instanceof Error
               ? deleteError.message
-              : "NÃ£o foi possÃ­vel remover o documento do bem.",
+              : "Não foi possível remover o documento do bem.",
           );
         }
       },
@@ -1553,7 +1740,7 @@ export default function GenericModuleManagement({
       }
       if (!response.ok) {
         throw new Error(
-          payload?.message ?? "NÃ£o foi possÃ­vel definir a imagem principal.",
+          payload?.message ?? "Não foi possível definir a imagem principal.",
         );
       }
       setMessageTitle("Imagem principal definida");
@@ -1564,7 +1751,7 @@ export default function GenericModuleManagement({
       setError(
         principalError instanceof Error
           ? principalError.message
-          : "NÃ£o foi possÃ­vel definir a imagem principal.",
+          : "Não foi possível definir a imagem principal.",
       );
     }
   }
@@ -1612,7 +1799,7 @@ export default function GenericModuleManagement({
       }
       if (!response.ok) {
         throw new Error(
-          payload?.message ?? "NÃ£o foi possÃ­vel reordenar as imagens.",
+          payload?.message ?? "Não foi possível reordenar as imagens.",
         );
       }
       setMessageTitle("Ordem das imagens");
@@ -1625,7 +1812,7 @@ export default function GenericModuleManagement({
       setError(
         reorderError instanceof Error
           ? reorderError.message
-          : "NÃ£o foi possÃ­vel reordenar as imagens.",
+          : "Não foi possível reordenar as imagens.",
       );
     }
   }
@@ -1668,7 +1855,7 @@ export default function GenericModuleManagement({
       }
       if (!response.ok) {
         throw new Error(
-          payload?.message ?? "NÃ£o foi possÃ­vel atualizar o tipo do documento.",
+          payload?.message ?? "Não foi possível atualizar o tipo do documento.",
         );
       }
       setMessageTitle("Tipo do documento");
@@ -1681,7 +1868,7 @@ export default function GenericModuleManagement({
       setError(
         documentTypeError instanceof Error
           ? documentTypeError.message
-          : "NÃ£o foi possÃ­vel atualizar o tipo do documento.",
+          : "Não foi possível atualizar o tipo do documento.",
       );
     }
   }
@@ -1714,7 +1901,7 @@ export default function GenericModuleManagement({
         if (!imageResponse.ok) {
           throw new Error(
             imagePayload?.message ??
-              "NÃ£o foi possÃ­vel enviar as imagens do bem.",
+              "Não foi possível enviar as imagens do bem.",
           );
         }
       }
@@ -1742,7 +1929,7 @@ export default function GenericModuleManagement({
           if (!documentResponse.ok) {
             throw new Error(
               documentPayload?.message ??
-                "NÃ£o foi possÃ­vel enviar os documentos do bem.",
+                "Não foi possível enviar os documentos do bem.",
             );
           }
         }
@@ -1761,7 +1948,7 @@ export default function GenericModuleManagement({
       setError(
         uploadError instanceof Error
           ? uploadError.message
-          : "NÃ£o foi possÃ­vel concluir o envio dos anexos.",
+          : "Não foi possível concluir o envio dos anexos.",
       );
       return false;
     } finally {
@@ -1869,12 +2056,12 @@ export default function GenericModuleManagement({
                 </p>
                 <p className="mt-1 text-[13px] leading-5 text-[var(--muted)]">
                   
-                  Layout da plaqueta no padrÃ£o fÃ­sico de patrimÃ´nio, com nÃºmero
-                  visÃ­vel e cÃ³digo de barras para leitura.
+                  Layout da plaqueta no padrão físico de patrimônio, com número
+                  visível e código de barras para leitura.
                 </p>
               </div>
               <p className="text-[12px] font-medium text-[var(--muted)]">
-                A leitura pode abrir a consulta pÃºblica do item no celular.
+                A leitura pode abrir a consulta pública do item no celular.
               </p>
             </div>
             <div className="mt-4 grid gap-3 md:grid-cols-2 xl:grid-cols-3">
@@ -1910,7 +2097,7 @@ export default function GenericModuleManagement({
                       {column.label}
                     </th>
                   ))}
-                  <th className="px-4 py-3.5 text-right">AÃ§Ãµes</th>
+                  <th className="px-4 py-3.5 text-right">Ações</th>
                 </tr>
               </thead><tbody>
                 
@@ -1925,77 +2112,122 @@ export default function GenericModuleManagement({
                       Carregando dados...
                     </td>
                   </tr>
-                ) : filteredRecords.length === 0 ? (
-                  <tr>
-                    
-                    <td
-                      colSpan={config.columns.length + 1}
-                      className="px-4 py-8 text-center text-sm text-[var(--muted)]"
-                    >
-                      
-                      {config.emptyMessage}
-                    </td>
-                  </tr>
                 ) : (
-                  filteredRecords.map((record, index) => {
-                    const fallbackKey = `${record.id ?? 'no-id'}::${record.nome ?? record.descricao ?? index}`;
-                    return (
-                      <tr
-                        key={String(record.id ?? fallbackKey)}
-                        className="border-t border-[var(--line)] text-[13px] text-[var(--ink)]"
-                      >
-                        
-                        {config.columns.map((column) => (
-                          <td
-                            key={column.label}
-                            className="px-4 py-3.5 align-top"
-                          >
-                            
-                            {column.render(record, {
-                              lookups,
-                              getLookupLabel,
-                            })}
-                          </td>
-                        ))}
-                        <td className="px-4 py-3.5">
-                          
-                          <div className="flex items-center justify-end gap-2">
-                            
-                            <button
-                              type="button"
-                              onClick={() => openViewModal(record)}
-                              className="inline-flex h-8.5 w-8.5 items-center justify-center rounded-full border border-[var(--line)] bg-white text-[var(--ink)] transition hover:border-[var(--accent)] hover:text-[var(--accent)]"
-                              aria-label={`Visualizar ${config.label.toLowerCase()}`}
-                              title="Visualizar"
-                            >
-                              
-                              <EyeIcon />
-                            </button>
-                            <button
-                              type="button"
-                              onClick={() => openEditModal(record)}
-                              className="inline-flex h-8.5 w-8.5 items-center justify-center rounded-full border border-[var(--line)] bg-white text-[var(--ink)] transition hover:border-[var(--accent)] hover:text-[var(--accent)]"
-                              aria-label={`Editar ${config.label.toLowerCase()}`}
-                              title="Editar"
-                            >
-                              
-                              <PencilIcon />
-                            </button>
-                            <button
-                              type="button"
-                              onClick={() => void handleDelete(record)}
-                              className="inline-flex h-8.5 w-8.5 items-center justify-center rounded-full border border-[rgba(190,18,60,0.15)] bg-white text-[var(--rose)] transition hover:border-[rgba(190,18,60,0.35)] hover:bg-[rgba(190,18,60,0.06)]"
-                              aria-label={`Excluir ${config.label.toLowerCase()}`}
-                              title="Excluir"
-                            >
-                              
-                              <TrashIcon />
-                            </button>
+                  <>
+                    {isAssetModule && hasAssetDraft ? (
+                      <tr className="border-t border-[var(--line)] bg-[rgba(246,164,0,0.08)] text-[13px] text-[var(--ink)]">
+                        <td
+                          colSpan={config.columns.length + 1}
+                          className="px-4 py-3.5"
+                        >
+                          <div className="flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
+                            <div>
+                              <p className="text-sm font-semibold">
+                                Rascunho local de novo bem
+                              </p>
+                              <p className="text-xs text-[var(--muted)]">
+                                Salvo automaticamente em{" "}
+                                {assetDraftSnapshot?.savedAt
+                                  ? new Date(
+                                      assetDraftSnapshot.savedAt,
+                                    ).toLocaleString("pt-BR")
+                                  : "agora"}
+                                . Este item ainda nao foi cadastrado no banco.
+                              </p>
+                            </div>
+                            <div className="flex items-center gap-2">
+                              <button
+                                type="button"
+                                onClick={openCreateModal}
+                                className="inline-flex h-8 items-center justify-center rounded-full border border-[var(--line)] bg-white px-3 text-xs font-semibold text-[var(--ink)] transition hover:border-[var(--accent)] hover:text-[var(--accent)]"
+                              >
+                                Continuar rascunho
+                              </button>
+                              <button
+                                type="button"
+                                onClick={requestDiscardDraft}
+                                className="inline-flex h-8 items-center justify-center rounded-full border border-[rgba(190,18,60,0.2)] bg-white px-3 text-xs font-semibold text-[var(--rose)] transition hover:bg-[rgba(190,18,60,0.06)]"
+                              >
+                                Descartar
+                              </button>
+                            </div>
                           </div>
                         </td>
                       </tr>
-                    );
-                  })
+                    ) : null}
+                    {filteredRecords.length === 0 ? (
+                      <tr>
+                        
+                        <td
+                          colSpan={config.columns.length + 1}
+                          className="px-4 py-8 text-center text-sm text-[var(--muted)]"
+                        >
+                          
+                          {config.emptyMessage}
+                        </td>
+                      </tr>
+                    ) : (
+                      filteredRecords.map((record, index) => {
+                        const fallbackKey = `${record.id ?? 'no-id'}::${record.nome ?? record.descricao ?? index}`;
+                        return (
+                          <tr
+                            key={String(record.id ?? fallbackKey)}
+                            className="border-t border-[var(--line)] text-[13px] text-[var(--ink)]"
+                          >
+                            
+                            {config.columns.map((column) => (
+                              <td
+                                key={column.label}
+                                className="px-4 py-3.5 align-top"
+                              >
+                                
+                                {column.render(record, {
+                                  lookups,
+                                  getLookupLabel,
+                                })}
+                              </td>
+                            ))}
+                            <td className="px-4 py-3.5">
+                              
+                              <div className="flex items-center justify-end gap-2">
+                                
+                                <button
+                                  type="button"
+                                  onClick={() => openViewModal(record)}
+                                  className="inline-flex h-8.5 w-8.5 items-center justify-center rounded-full border border-[var(--line)] bg-white text-[var(--ink)] transition hover:border-[var(--accent)] hover:text-[var(--accent)]"
+                                  aria-label={`Visualizar ${config.label.toLowerCase()}`}
+                                  title="Visualizar"
+                                >
+                                  
+                                  <EyeIcon />
+                                </button>
+                                <button
+                                  type="button"
+                                  onClick={() => openEditModal(record)}
+                                  className="inline-flex h-8.5 w-8.5 items-center justify-center rounded-full border border-[var(--line)] bg-white text-[var(--ink)] transition hover:border-[var(--accent)] hover:text-[var(--accent)]"
+                                  aria-label={`Editar ${config.label.toLowerCase()}`}
+                                  title="Editar"
+                                >
+                                  
+                                  <PencilIcon />
+                                </button>
+                                <button
+                                  type="button"
+                                  onClick={() => void handleDelete(record)}
+                                  className="inline-flex h-8.5 w-8.5 items-center justify-center rounded-full border border-[rgba(190,18,60,0.15)] bg-white text-[var(--rose)] transition hover:border-[rgba(190,18,60,0.35)] hover:bg-[rgba(190,18,60,0.06)]"
+                                  aria-label={`Excluir ${config.label.toLowerCase()}`}
+                                  title="Excluir"
+                                >
+                                  
+                                  <TrashIcon />
+                                </button>
+                              </div>
+                            </td>
+                          </tr>
+                        );
+                      })
+                    )}
+                  </>
                 )}
               </tbody></table>
           </div>
@@ -2031,7 +2263,7 @@ export default function GenericModuleManagement({
               </div>
               <button
                 type="button"
-                onClick={resetModal}
+                onClick={requestCloseModal}
                 className="inline-flex h-9 items-center justify-center self-start rounded-full border border-[var(--line)] bg-white px-4 text-[13px] font-semibold text-[var(--ink)] transition hover:border-[var(--accent)] hover:text-[var(--accent)]"
               >
                 
@@ -2128,7 +2360,7 @@ export default function GenericModuleManagement({
                               </div>
                               <p className="mt-1 text-xs leading-5 text-[var(--muted)]">
                                 
-                                AtÃ© 5 fotos do bem. Os arquivos selecionados
+                                Até 5 fotos do bem. Os arquivos selecionados
                                 serao enviados ao concluir.
                               </p>
                             </div>
@@ -2262,7 +2494,7 @@ export default function GenericModuleManagement({
                                           >
                                             
                                             <span className="text-xs leading-none">
-                                              â†
+                                              � �
                                             </span>
                                           </button>
                                           <button
@@ -2279,7 +2511,7 @@ export default function GenericModuleManagement({
                                           >
                                             
                                             <span className="text-xs leading-none">
-                                              â†’
+                                              � 
                                             </span>
                                           </button>
                                         </div>
@@ -2456,7 +2688,7 @@ export default function GenericModuleManagement({
                                           <div>
                                             
                                             <p className="text-xs font-semibold uppercase tracking-[0.16em] text-[var(--muted)]">
-                                              Documento fiscal eletrÃ´nico
+                                              Documento fiscal eletrônico
                                             </p>
                                             <p className="mt-2 text-sm font-semibold text-[var(--ink)]">
                                               NF-e em XML
@@ -2962,20 +3194,20 @@ export default function GenericModuleManagement({
                   
                   <button
                     type="button"
-                    onClick={() => void handlePrimaryAction()}
+                    onClick={requestPrimaryAction}
                     className="inline-flex h-9 min-w-[128px] items-center justify-center rounded-full bg-[var(--accent)] px-4 text-[13px] font-semibold text-white transition hover:opacity-90"
                   >
                     
                     {isReadOnly
                       ? hasSteps && activeStepIndex < modalSteps.length - 1
-                        ? "PrÃ³xima etapa"
+                        ? "Próxima etapa"
                         : "Fechar"
                       : isAssetAttachmentsStep
                         ? "Concluir"
                         : hasSteps && activeStepIndex < modalSteps.length - 1
                           ? "Continuar"
                           : modalMode === "edit"
-                            ? "Salvar alteraÃ§Ãµes"
+                            ? "Salvar alterações"
                             : "Salvar cadastro"}
                   </button>
                 </div>
@@ -3039,8 +3271,8 @@ export default function GenericModuleManagement({
               <p className="text-[12px] leading-5 text-[var(--muted)]">
                 
                 {assetPreview.type === "image"
-                  ? "VisualizaÃ§Ã£o ampliada da imagem anexada ao patrimonio."
-                  : "VisualizaÃ§Ã£o do documento fiscal vinculado ao bem."}
+                  ? "Visualização ampliada da imagem anexada ao patrimonio."
+                  : "Visualização do documento fiscal vinculado ao bem."}
               </p>
             </div>
             <div className="mt-3 flex min-h-[60vh] items-center justify-center rounded-[20px] border border-[var(--line)] bg-[#f8fafc] p-3">
@@ -3061,12 +3293,12 @@ export default function GenericModuleManagement({
                 <div className="rounded-[18px] border border-dashed border-[var(--line)] bg-white px-6 py-8 text-center">
                   
                   <p className="text-sm font-semibold text-[var(--ink)]">
-                    VisualizaÃ§Ã£o interna indisponivel
+                    Visualização interna indisponivel
                   </p>
                   <p className="mt-2 text-sm leading-6 text-[var(--muted)]">
                     
                     Este arquivo nao pode ser exibido diretamente no painel. Use
-                    a opÃ§Ã£o "Abrir em nova guia".
+                    a opção "Abrir em nova guia".
                   </p>
                 </div>
               )}

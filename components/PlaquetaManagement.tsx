@@ -99,7 +99,7 @@ function formatStatus(status: string) {
     case 'INATIVA':
       return 'Inativa';
     case 'SUBSTITUIDA':
-      return 'Substituída';
+      return 'Substituida';
     default:
       return status;
   }
@@ -230,7 +230,7 @@ export default function PlaquetaManagement({ empresaId, empresaNome, empresaLogo
         if (handleUnauthorizedClientResponse(plaquetasResponse.status, message)) {
           return;
         }
-        throw new Error(message || 'Não foi possível consultar as plaquetas.');
+        throw new Error(message || 'Nao foi possivel consultar as plaquetas.');
       }
 
       if (!filiaisResponse.ok) {
@@ -238,7 +238,7 @@ export default function PlaquetaManagement({ empresaId, empresaNome, empresaLogo
         if (handleUnauthorizedClientResponse(filiaisResponse.status, message)) {
           return;
         }
-        throw new Error(message || 'Não foi possível consultar as filiais.');
+        throw new Error(message || 'Nao foi possivel consultar as filiais.');
       }
 
       if (!bensResponse.ok) {
@@ -246,7 +246,7 @@ export default function PlaquetaManagement({ empresaId, empresaNome, empresaLogo
         if (handleUnauthorizedClientResponse(bensResponse.status, message)) {
           return;
         }
-        throw new Error(message || 'Não foi possível consultar os bens patrimoniais.');
+        throw new Error(message || 'Nao foi possivel consultar os bens patrimoniais.');
       }
 
       const [plaquetasPayload, filiaisPayload, bensPayload] = await Promise.all([
@@ -273,6 +273,15 @@ export default function PlaquetaManagement({ empresaId, empresaNome, empresaLogo
       return;
     }
 
+    const numeroPlaqueta = createForm.numero_plaqueta.trim();
+    const codigoBarras = createForm.codigo_barras_conteudo.trim() || numeroPlaqueta;
+
+    if (!numeroPlaqueta) {
+      setError('Informe o numero visivel da plaqueta.');
+      setMessage(null);
+      return;
+    }
+
     setSaving(true);
 
     try {
@@ -284,18 +293,25 @@ export default function PlaquetaManagement({ empresaId, empresaNome, empresaLogo
         },
         body: JSON.stringify({
           empresa_id: empresaId,
-          numero_plaqueta: createForm.numero_plaqueta,
-          codigo_barras_conteudo: createForm.codigo_barras_conteudo,
+          numero_plaqueta: numeroPlaqueta,
+          codigo_barras_conteudo: codigoBarras,
           observacoes: createForm.observacoes || null,
         }),
       });
 
       if (!response.ok) {
-        const message = await response.text();
+        const payload = (await response.json().catch(() => null)) as {
+          message?: string;
+          errors?: Record<string, string[]>;
+        } | null;
+        const validationMessage = payload?.errors
+          ? Object.values(payload.errors).flat().find(Boolean)
+          : null;
+        const message = validationMessage || payload?.message || null;
         if (handleUnauthorizedClientResponse(response.status, message)) {
           return;
         }
-        throw new Error(message || 'Não foi possível cadastrar a plaqueta.');
+        throw new Error(message || 'Nao foi possivel cadastrar a plaqueta.');
       }
 
       setShowCreateModal(false);
@@ -338,7 +354,7 @@ export default function PlaquetaManagement({ empresaId, empresaNome, empresaLogo
         if (handleUnauthorizedClientResponse(response.status, message)) {
           return;
         }
-        throw new Error(message || 'Não foi possível importar as plaquetas.');
+        throw new Error(message || 'Nao foi possivel importar as plaquetas.');
       }
 
       const payload = (await response.json()) as {
@@ -348,7 +364,7 @@ export default function PlaquetaManagement({ empresaId, empresaNome, empresaLogo
       setShowImportModal(false);
       setImportFile(null);
       setMessage(
-        `Importação concluída. Importadas: ${resumo?.importadas ?? 0}. Atualizadas: ${resumo?.atualizadas ?? 0}. Ignoradas: ${resumo?.ignoradas ?? 0}.`,
+        `Importacao concluida. Importadas: ${resumo?.importadas ?? 0}. Atualizadas: ${resumo?.atualizadas ?? 0}. Ignoradas: ${resumo?.ignoradas ?? 0}.`,
       );
       setError(null);
       await loadData();
@@ -387,7 +403,7 @@ export default function PlaquetaManagement({ empresaId, empresaNome, empresaLogo
         if (handleUnauthorizedClientResponse(response.status, message)) {
           return;
         }
-        throw new Error(message || 'Não foi possível vincular a plaqueta ao bem.');
+        throw new Error(message || 'Nao foi possivel vincular a plaqueta ao bem.');
       }
 
       setBindPlaqueta(null);
@@ -424,7 +440,7 @@ export default function PlaquetaManagement({ empresaId, empresaNome, empresaLogo
       const message = await response.text();
       if (handleUnauthorizedClientResponse(response.status, message)) {
       }
-      throw new Error(message || 'Não foi possível remover a plaqueta.');
+      throw new Error(message || 'Nao foi possivel remover a plaqueta.');
     }
 
     await loadData();
@@ -489,7 +505,7 @@ export default function PlaquetaManagement({ empresaId, empresaNome, empresaLogo
       if (lastInvalidReadRef.current !== cleanValue || now - lastInvalidAtRef.current > 1000) {
         lastInvalidReadRef.current = cleanValue;
         lastInvalidAtRef.current = now;
-        setScannerError(`Leitura parcial (${cleanValue}). Continue apontando até ler o código completo.`);
+        setScannerError(`Leitura parcial (${cleanValue}). Continue apontando ate ler o codigo completo.`);
       }
       return false;
     }
@@ -516,7 +532,7 @@ export default function PlaquetaManagement({ empresaId, empresaNome, empresaLogo
       codigo_barras_conteudo: scanCandidate.rawValue,
       numero_plaqueta: current.numero_plaqueta || scanCandidate.numeroPlaqueta,
     }));
-    setMessage(`Leitura confirmada. código: ${scanCandidate.rawValue} · Plaqueta: ${scanCandidate.numeroPlaqueta}.`);
+    setMessage(`Leitura confirmada. Codigo: ${scanCandidate.rawValue} - Plaqueta: ${scanCandidate.numeroPlaqueta}.`);
     setError(null);
     setScannerError(null);
     setScanCandidate(null);
@@ -563,7 +579,7 @@ export default function PlaquetaManagement({ empresaId, empresaNome, empresaLogo
 
   async function startScannerWithZxing() {
     if (!videoRef.current) {
-      throw new Error('Não foi possivel iniciar a camera.');
+      throw new Error('Nao foi possivel iniciar a camera.');
     }
 
     const hints = new Map<DecodeHintType, unknown>();
@@ -663,7 +679,7 @@ export default function PlaquetaManagement({ empresaId, empresaNome, empresaLogo
             const scanCtx = scanCanvas.getContext('2d', { willReadFrequently: true });
 
             if (!scanCtx) {
-              throw new Error('Não foi possivel processar a imagem da camera.');
+              throw new Error('Nao foi possivel processar a imagem da camera.');
             }
 
             scanCtx.drawImage(video, safeX, safeY, safeWidth, safeHeight, 0, 0, safeWidth, safeHeight);
@@ -718,7 +734,7 @@ export default function PlaquetaManagement({ empresaId, empresaNome, empresaLogo
 
     try {
       if (!navigator.mediaDevices?.getUserMedia) {
-        throw new Error('Este navegador Não possui suporte · câmera.');
+        throw new Error('Este navegador nao possui suporte a camera.');
       }
 
       try {
@@ -756,7 +772,7 @@ export default function PlaquetaManagement({ empresaId, empresaNome, empresaLogo
       streamRef.current = stream;
 
       if (!videoRef.current) {
-        throw new Error('Não foi possível iniciar a câmera.');
+        throw new Error('Nao foi possivel iniciar a camera.');
       }
 
       videoRef.current.srcObject = stream;
@@ -783,7 +799,7 @@ export default function PlaquetaManagement({ empresaId, empresaNome, empresaLogo
             }
           }
         } catch {
-          // segue tentando até detectar
+          // segue tentando ate detectar
         }
 
         animationFrameRef.current = requestAnimationFrame(() => {
@@ -795,7 +811,7 @@ export default function PlaquetaManagement({ empresaId, empresaNome, empresaLogo
         void tick();
       });
     } catch (scanError) {
-      setScannerError(scanError instanceof Error ? scanError.message : 'Não foi possível iniciar o leitor de código.');
+      setScannerError(scanError instanceof Error ? scanError.message : 'Nao foi possivel iniciar o leitor de codigo.');
       stopScanner();
     }
   }
@@ -832,7 +848,7 @@ export default function PlaquetaManagement({ empresaId, empresaNome, empresaLogo
                 Controle de etiquetas patrimoniais
               </h2>
               <p className="mt-3 max-w-3xl text-sm leading-7 text-[var(--muted)]">
-                Cadastre ou importe as etiquetas já impressas pela gráfica e vincule cada código de barras ao bem patrimonial correto.
+                Cadastre ou importe as etiquetas ja impressas pela grafica e vincule cada codigo de barras ao bem patrimonial correto.
               </p>
             </div>
 
@@ -870,7 +886,7 @@ export default function PlaquetaManagement({ empresaId, empresaNome, empresaLogo
             <div>
               <p className="text-[12px] font-semibold uppercase tracking-[0.18em] text-[var(--muted)]">Modelo da etiqueta patrimonial</p>
               <p className="mt-2 text-sm leading-6 text-[var(--muted)]">
-                O mesmo código impresso na gráfica pode ser lido pelo celular para localizar o bem no inventário.
+                O mesmo codigo impresso na grafica pode ser lido pelo celular para localizar o bem no inventario.
               </p>
             </div>
             <p className="text-xs font-medium text-[var(--muted)]">Exemplo visual</p>
@@ -893,7 +909,7 @@ export default function PlaquetaManagement({ empresaId, empresaNome, empresaLogo
             <div>
               <p className="text-[12px] font-semibold uppercase tracking-[0.18em] text-[var(--muted)]">Plaquetas cadastradas</p>
               <p className="mt-2 text-sm leading-6 text-[var(--muted)]">
-                Cadastre manualmente, importe em lote e vincule ao bem quando a etiqueta física for aplicada.
+                Cadastre manualmente, importe em lote e vincule ao bem quando a etiqueta fisica for aplicada.
               </p>
             </div>
 
@@ -907,10 +923,10 @@ export default function PlaquetaManagement({ empresaId, empresaNome, empresaLogo
               <thead>
                 <tr className="border-b border-[var(--line)] text-left text-[11px] uppercase tracking-[0.18em] text-[var(--muted)]">
                   <th className="pb-4 pr-4 font-semibold">Plaqueta</th>
-                  <th className="pb-4 pr-4 font-semibold">código de barras</th>
+                  <th className="pb-4 pr-4 font-semibold">codigo de barras</th>
                   <th className="pb-4 pr-4 font-semibold">Bem vinculado</th>
                   <th className="pb-4 pr-4 font-semibold">Status</th>
-                  <th className="pb-4 font-semibold text-right">Ações</th>
+                  <th className="pb-4 font-semibold text-right">Acoes</th>
                 </tr>
               </thead>
               <tbody>
@@ -930,8 +946,19 @@ export default function PlaquetaManagement({ empresaId, empresaNome, empresaLogo
                   plaquetas.map((plaqueta) => (
                     <tr key={plaqueta.id} className="border-b border-[rgba(226,232,240,0.7)] text-sm text-[var(--ink)] last:border-b-0">
                       <td className="py-4 pr-4">
-                        <p className="font-semibold">patrimônio {plaqueta.numero_plaqueta}</p>
-                        <p className="text-xs text-[var(--muted)]">ID {plaqueta.id}</p>
+                        <div className="flex flex-col gap-2">
+                          <div className="h-[56px] w-[125px] overflow-hidden">
+                            <PatrimonioEtiquetaCard
+                              numeroPlaqueta={plaqueta.numero_plaqueta}
+                              barcodeValue={plaqueta.codigo_barras_conteudo}
+                              empresaId={empresaId}
+                              empresaNome={empresaNome}
+                              logoSrc={empresaLogoUrl}
+                              className="origin-top-left scale-50 shadow-none"
+                            />
+                          </div>
+                          <p className="text-xs text-[var(--muted)]">ID {plaqueta.id}</p>
+                        </div>
                       </td>
                       <td className="py-4 pr-4">
                         <p className="font-semibold">{plaqueta.codigo_barras_conteudo}</p>
@@ -942,11 +969,11 @@ export default function PlaquetaManagement({ empresaId, empresaNome, empresaLogo
                           <>
                             <p className="font-semibold">{plaqueta.bem_patrimonial_descricao ?? 'Bem vinculado'}</p>
                             <p className="text-xs text-[var(--muted)]">
-                              Tombo {plaqueta.bem_patrimonial_numero_tombo ?? '-'} · {plaqueta.filial_nome ?? 'Sem filial'}
+                              Tombo {plaqueta.bem_patrimonial_numero_tombo ?? '-'} - {plaqueta.filial_nome ?? 'Sem filial'}
                             </p>
                           </>
                         ) : (
-                          <p className="text-sm text-[var(--muted)]">Disponível para vínculo</p>
+                          <p className="text-sm text-[var(--muted)]">Disponivel para vinculo</p>
                         )}
                       </td>
                       <td className="py-4 pr-4">
@@ -1010,7 +1037,7 @@ export default function PlaquetaManagement({ empresaId, empresaNome, empresaLogo
               <div>
                 <p className="modal-kicker">Plaquetas</p>
                 <h3 className="modal-title">Nova etiqueta impressa</h3>
-                <p className="modal-subtitle">Cadastre a numeração e o código de barras exatamente como vieram da gráfica.</p>
+                <p className="modal-subtitle">Cadastre a numeracao e o codigo de barras exatamente como vieram da grafica.</p>
               </div>
               <button type="button" className="admin-btn-secondary" onClick={() => setShowCreateModal(false)}>
                 Fechar
@@ -1020,7 +1047,7 @@ export default function PlaquetaManagement({ empresaId, empresaNome, empresaLogo
             <div className="modal-body space-y-4">
               <div className="grid gap-4 md:grid-cols-2">
                 <label className="admin-field">
-                  <span className="admin-field-label">número visóvel da plaqueta</span>
+                  <span className="admin-field-label">numero visivel da plaqueta</span>
                   <input
                     className="admin-input"
                     value={createForm.numero_plaqueta}
@@ -1029,7 +1056,7 @@ export default function PlaquetaManagement({ empresaId, empresaNome, empresaLogo
                   />
                 </label>
                 <label className="admin-field">
-                  <span className="admin-field-label">código de barras impresso</span>
+                  <span className="admin-field-label">codigo de barras impresso</span>
                   <input
                     className="admin-input"
                     value={createForm.codigo_barras_conteudo}
@@ -1048,17 +1075,17 @@ export default function PlaquetaManagement({ empresaId, empresaNome, empresaLogo
                     setShowScannerModal(true);
                   }}
                 >
-                  Ler código (câmera)
+                  Ler codigo (camera)
                 </button>
               </div>
               <label className="admin-field">
-                <span className="admin-field-label">Observações</span>
+                <span className="admin-field-label">Observacoes</span>
                 <textarea
                   className="admin-textarea"
                   rows={4}
                   value={createForm.observacoes}
                   onChange={(event) => setCreateForm((current) => ({ ...current, observacoes: event.target.value }))}
-                  placeholder="Lote impresso, fornecedor da gráfica ou observações internas."
+                  placeholder="Lote impresso, fornecedor da grafica ou observacoes internas."
                 />
               </label>
             </div>
@@ -1082,7 +1109,7 @@ export default function PlaquetaManagement({ empresaId, empresaNome, empresaLogo
               <div>
                 <p className="modal-kicker">Plaquetas</p>
                 <h3 className="modal-title">Importar etiquetas impressas</h3>
-                <p className="modal-subtitle">A planilha deve conter as colunas número da plaqueta e código de barras.</p>
+                <p className="modal-subtitle">A planilha deve conter as colunas numero da plaqueta e codigo de barras.</p>
               </div>
               <button type="button" className="admin-btn-secondary" onClick={() => setShowImportModal(false)}>
                 Fechar
@@ -1096,7 +1123,7 @@ export default function PlaquetaManagement({ empresaId, empresaNome, empresaLogo
               </div>
 
               <label className="admin-field">
-                <span className="admin-field-label">Arquivo da importação</span>
+                <span className="admin-field-label">Arquivo da importacao</span>
                 <input
                   type="file"
                   className="admin-input file:mr-3 file:rounded-full file:border-0 file:bg-[rgba(246,164,0,0.14)] file:px-3 file:py-2 file:text-xs file:font-semibold file:text-[var(--accent-deep)]"
@@ -1123,10 +1150,10 @@ export default function PlaquetaManagement({ empresaId, empresaNome, empresaLogo
           <div className="modal-card max-w-xl">
             <div className="modal-header">
               <div>
-                <p className="modal-kicker">Leitor de código de barras</p>
-                <h3 className="modal-title">Escanear etiqueta física</h3>
+                <p className="modal-kicker">Leitor de codigo de barras</p>
+                <h3 className="modal-title">Escanear etiqueta fisica</h3>
                 <p className="modal-subtitle">
-                  Aponte a câmera para o código de barras da etiqueta impressa. O campo ser? preenchido automaticamente.
+                  Aponte a camera para o codigo de barras da etiqueta impressa. O campo sera preenchido automaticamente.
                 </p>
               </div>
               <button
@@ -1145,11 +1172,11 @@ export default function PlaquetaManagement({ empresaId, empresaNome, empresaLogo
               {scanCandidate ? (
                 <div className="space-y-3 rounded-2xl border border-[var(--line)] bg-[rgba(248,250,252,0.9)] p-4">
                   <div>
-                    <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[var(--muted)]">código lido</p>
+                    <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[var(--muted)]">codigo lido</p>
                     <p className="mt-1 text-base font-semibold text-[var(--ink)]">{scanCandidate.rawValue}</p>
                   </div>
                   <div>
-                    <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[var(--muted)]">número da plaqueta identificado</p>
+                    <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[var(--muted)]">numero da plaqueta identificado</p>
                     <p className="mt-1 text-base font-semibold text-[var(--ink)]">{scanCandidate.numeroPlaqueta}</p>
                   </div>
                 </div>
@@ -1164,7 +1191,7 @@ export default function PlaquetaManagement({ empresaId, empresaNome, empresaLogo
                     </div>
                   ) : (
                     <p className="text-sm text-[var(--muted)]">
-                      A leitura só · aceita quando identificar ao menos 4 dígitos numéricos da plaqueta.
+                      A leitura so e aceita quando identificar ao menos 4 digitos numericos da plaqueta.
                     </p>
                   )}
                 </>
@@ -1204,7 +1231,7 @@ export default function PlaquetaManagement({ empresaId, empresaNome, empresaLogo
               <div>
                 <p className="modal-kicker">Plaquetas</p>
                 <h3 className="modal-title">Vincular etiqueta ao bem</h3>
-                <p className="modal-subtitle">Use a plaqueta já impressa e associe ao bem patrimonial correto da empresa.</p>
+                <p className="modal-subtitle">Use a plaqueta ja impressa e associe ao bem patrimonial correto da empresa.</p>
               </div>
               <button type="button" className="admin-btn-secondary" onClick={() => setBindPlaqueta(null)}>
                 Fechar
@@ -1253,7 +1280,7 @@ export default function PlaquetaManagement({ empresaId, empresaNome, empresaLogo
                       <option value="">Selecione</option>
                       {bensDaFilial.map((bem) => (
                         <option key={bem.id} value={bem.id}>
-                          {bem.numero_tombo} · {bem.descricao}
+                          {bem.numero_tombo} - {bem.descricao}
                         </option>
                       ))}
                     </select>

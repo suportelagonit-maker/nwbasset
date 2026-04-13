@@ -66,7 +66,7 @@ export default function PatrimonioEtiquetaCard({
 
       <div className="flex w-[48%] flex-col justify-between pl-3">
         <div className="text-right">
-          <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-[#101828]">patrimônio</p>
+          <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-[#101828]">patrimonio</p>
         </div>
 
         <div className="overflow-hidden">

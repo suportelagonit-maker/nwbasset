@@ -32,7 +32,7 @@ export default function SystemConfirmDialog({
       <div className="panel-surface admin-dialog-shell overflow-hidden rounded-[24px] p-3 md:p-3.5 shadow-[0_22px_64px_rgba(15,23,42,0.18)]">
         <div className="flex items-start justify-between gap-4 border-b border-[var(--line)] pb-3">
           <div className="min-w-0">
-            <p className="admin-modal-kicker">Confirmação</p>
+            <p className="admin-modal-kicker">Confirmacao</p>
             <h3 className="admin-modal-title">{title}</h3>
             <p className="admin-modal-copy max-w-none">{description}</p>
           </div>
@@ -55,8 +55,8 @@ export default function SystemConfirmDialog({
         <div className="mt-3 rounded-[18px] border border-[var(--line)] bg-[#fafafa] px-3 py-3">
           <p className="text-[12px] leading-5 text-[var(--muted)]">
             {tone === 'danger'
-              ? 'Esta ação altera permanentemente o estado atual do registro.'
-              : 'Confira os dados antes de confirmar a operação.'}
+              ? 'Esta acao altera permanentemente o estado atual do registro.'
+              : 'Confira os dados antes de confirmar a operacao.'}
           </p>
         </div>
 
