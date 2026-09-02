@@ -14,6 +14,13 @@ services:
   backend:
     volumes:
       - ./backend:/var/www/html
+      # vendor/ NAO pode vir do bind mount. O Laravel carrega mais de mil
+      # arquivos do vendor por requisicao, e ler isso do sistema de arquivos do
+      # Windows atraves do bind mount levava ~10s por request. Mantendo o vendor
+      # num volume do proprio Docker, a requisicao volta para a casa dos ms.
+      # Popule uma vez com:
+      #   docker compose exec backend composer install
+      - nwbasset-vendor:/var/www/html/vendor
       # O storage continua no volume nomeado: uploads nao devem depender do
       # sistema de arquivos do host nem sumir ao trocar de maquina.
       - nwbasset-storage:/var/www/html/storage/app/public
@@ -22,3 +29,7 @@ services:
       # "migrate:fresh", que DERRUBA TODAS AS TABELAS do banco conectado —
       # por isso o alvo precisa ser explicito e nunca o banco da aplicacao.
       DB_TEST_DATABASE: nwbasset_testing
+
+volumes:
+  nwbasset-vendor:
+    name: nwbasset-vendor
