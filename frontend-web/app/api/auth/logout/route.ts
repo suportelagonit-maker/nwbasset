@@ -11,8 +11,7 @@ import {
   USER_NAME_COOKIE,
 } from '@/lib/auth-session';
 
-const API_BASE_URL = (process.env.NEXT_PUBLIC_API_BASE_URL ?? 'http://127.0.0.1:5000/api/v1').replace(/\/$/, '');
-
+import { API_BASE_URL } from '@/lib/api-base';
 export async function POST(request: Request) {
   const token = request.headers.get('cookie')
     ?.split(';')

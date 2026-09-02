@@ -3,8 +3,8 @@ import Image from 'next/image';
 import EtiquetaPrintActions from '@/components/EtiquetaPrintActions';
 import PatrimonioEtiquetaCard from '@/components/PatrimonioEtiquetaCard';
 
-const API_BASE_URL = (process.env.NEXT_PUBLIC_API_BASE_URL ?? 'http://127.0.0.1:5000/api/v1').replace(/\/$/, '');
 
+import { API_BASE_URL } from '@/lib/api-base';
 type LookupPayload = {
   data: {
     plaqueta: {

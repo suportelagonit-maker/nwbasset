@@ -2,8 +2,8 @@ import { type NextRequest } from 'next/server';
 
 import { getAuthSession } from '@/lib/auth-session';
 
-const API_BASE_URL = (process.env.NEXT_PUBLIC_API_BASE_URL ?? 'http://127.0.0.1:5000/api/v1').replace(/\/$/, '');
 
+import { API_BASE_URL } from '@/lib/api-base';
 async function proxyRequest(request: NextRequest, path: string[]) {
   const session = await getAuthSession();
 

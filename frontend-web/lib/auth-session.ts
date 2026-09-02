@@ -1,5 +1,6 @@
 import { cookies } from 'next/headers';
 
+import { API_BASE_URL } from './api-base';
 export const AUTH_TOKEN_COOKIE = 'nwbasset_token';
 export const EMPRESA_ID_COOKIE = 'nwbasset_empresa_id';
 export const DASHBOARD_SCOPE_COOKIE = 'nwbasset_dashboard_scope';
@@ -10,7 +11,6 @@ export const ACTIVE_EMPRESA_CNPJ_COOKIE = 'nwbasset_empresa_cnpj';
 export const ACTIVE_EMPRESA_LOGO_COOKIE = 'nwbasset_empresa_logo';
 export const EMPRESAS_OPTIONS_COOKIE = 'nwbasset_empresas_options';
 export const USER_IS_SUPER_ADMIN_COOKIE = 'nwbasset_is_super_admin';
-const API_BASE_URL = (process.env.NEXT_PUBLIC_API_BASE_URL ?? 'http://127.0.0.1:5000/api/v1').replace(/\/$/, '');
 
 export type EmpresaSessionOption = {
   id: number;

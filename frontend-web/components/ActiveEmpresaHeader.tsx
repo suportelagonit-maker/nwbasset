@@ -37,7 +37,7 @@ export default function ActiveEmpresaHeader({
       }),
     [empresaId, empresaLogoUrl, empresaNome],
   );
-  const currentLogoSrc = useResolvedLogoSrc(logoCandidates, '/LogoAsset.png');
+  const currentLogoSrc = useResolvedLogoSrc(logoCandidates, '/logoasset.png');
 
   if (!empresaNome) {
     return null;

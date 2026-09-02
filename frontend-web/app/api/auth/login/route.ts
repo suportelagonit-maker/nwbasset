@@ -13,7 +13,7 @@ import {
   USER_NAME_COOKIE,
 } from '@/lib/auth-session';
 
-const API_BASE_URL = (process.env.NEXT_PUBLIC_API_BASE_URL ?? 'http://127.0.0.1:5000/api/v1').replace(/\/$/, '');
+import { API_BASE_URL } from '@/lib/api-base';
 
 type EmpresaPayload = {
   id: number;
@@ -39,7 +39,7 @@ export async function POST(request: Request) {
     });
   } catch {
     return NextResponse.json(
-      { message: 'API Laravel indisponivel em http://127.0.0.1:5000. Inicie o backend e tente novamente.' },
+      { message: `API Laravel indisponivel em ${API_BASE_URL}. Verifique se o backend esta no ar e tente novamente.` },
       { status: 503 },
     );
   }

@@ -1,3 +1,5 @@
+import { API_BASE_URL } from './api-base';
+
 type ApiFilters = Record<string, number | undefined>;
 
 type ApiSession = {
@@ -54,7 +56,6 @@ export type DashboardOverview = {
   bens_por_departamento: BensPorDepartamentoItem[];
 };
 
-const API_BASE_URL = (process.env.NEXT_PUBLIC_API_BASE_URL ?? 'http://127.0.0.1:5000/api/v1').replace(/\/$/, '');
 
 function buildUrl(path: string, filters: ApiFilters = {}): string {
   const url = new URL(`${API_BASE_URL}/${path.replace(/^\//, '')}`);

@@ -36,3 +36,6 @@ build/
 
 # Docker: dados locais que nao devem ir para o repositorio
 docker/data/
+
+# Artefato de build incremental do TypeScript
+*.tsbuildinfo

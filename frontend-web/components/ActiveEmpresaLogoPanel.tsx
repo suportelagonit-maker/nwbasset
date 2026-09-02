@@ -67,7 +67,7 @@ export default function ActiveEmpresaLogoPanel({
       empresaNome,
     });
   }, [empresaId, empresaNome, previewUrl]);
-  const currentLogoSrc = useResolvedLogoSrc(logoCandidates, '/LogoAsset.png');
+  const currentLogoSrc = useResolvedLogoSrc(logoCandidates, '/logoasset.png');
 
   useEffect(() => {
     return () => {

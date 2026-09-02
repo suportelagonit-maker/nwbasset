@@ -83,6 +83,12 @@ services:
     restart: unless-stopped
     depends_on:
       - backend
+    environment:
+      # Endereco usado pelas rotas de servidor do Next (app/api/**) e pelos
+      # componentes de servidor, que rodam DENTRO deste container. Aqui
+      # "localhost" seria o proprio frontend, entao e preciso o nome do servico
+      # na rede interna. Lido em tempo de execucao, sem rebuild.
+      API_BASE_URL_INTERNAL: ${API_BASE_URL_INTERNAL:-http://backend/api/v1}
     ports:
       - "${FRONTEND_PORT:-5001}:5001"
     networks:
