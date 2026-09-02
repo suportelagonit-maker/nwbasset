@@ -6,13 +6,25 @@ set -e
 
 cd /var/www/html
 
-# O symlink public/storage do repositorio aponta para um caminho absoluto de
-# Windows (C:/Sistema/nwbasset/storage/app/public) e nao funciona em Linux.
-# Recriamos apontando para o caminho do container.
-if [ -L public/storage ] || [ -e public/storage ]; then
+# public/storage precisa apontar para storage/app/public para o Apache servir os
+# uploads. O compose monta o volume nos dois caminhos, entao normalmente
+# public/storage ja chega aqui como diretorio pronto e nada precisa ser feito.
+#
+# So criamos o symlink quando o caminho nao existe — por exemplo se alguem subir
+# o container sem o volume. E se a criacao falhar, o erro aparece: a versao
+# anterior silenciava a falha com "|| true" e todo upload passava a devolver 403
+# sem nenhuma pista no log.
+if [ -d public/storage ] && [ ! -L public/storage ]; then
+    echo "public/storage: diretorio montado, symlink dispensado."
+else
     rm -rf public/storage
+    if php artisan storage:link --quiet; then
+        echo "public/storage: symlink criado."
+    else
+        echo "AVISO: nao foi possivel criar public/storage. Os uploads vao" >&2
+        echo "responder 403 ou 404 ate que o volume seja montado nesse caminho." >&2
+    fi
 fi
-php artisan storage:link --quiet || true
 
 # Diretorios que precisam existir e ser graváveis mesmo com volume montado.
 mkdir -p storage/framework/cache storage/framework/sessions storage/framework/views \

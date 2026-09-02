@@ -67,6 +67,13 @@ services:
       # Uploads (imagens de bens, notas fiscais, logos) nao estao no Git.
       # Precisam de volume proprio ou se perdem a cada recriacao do container.
       - nwbasset-storage:/var/www/html/storage/app/public
+      # O MESMO volume tambem em public/storage, que e por onde o Apache serve
+      # os arquivos. O padrao do Laravel e um symlink criado por storage:link,
+      # mas symlink do Linux nao pode ser criado dentro de um bind mount do
+      # Windows — em desenvolvimento ele falhava e todo upload retornava 403.
+      # Montar o volume nos dois caminhos dispensa o symlink e funciona igual
+      # em qualquer sistema operacional.
+      - nwbasset-storage:/var/www/html/public/storage
     networks:
       - nwbasset-network
 
