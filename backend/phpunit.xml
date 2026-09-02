@@ -23,12 +23,16 @@
         <env name="BCRYPT_ROUNDS" value="4"/>
         <env name="BROADCAST_CONNECTION" value="null"/>
         <env name="CACHE_STORE" value="array"/>
-        <env name="DB_CONNECTION" value="pgsql"/>
-        <env name="DB_DATABASE" value="nwbasset_testing"/>
-        <env name="DB_HOST" value="127.0.0.1"/>
-        <env name="DB_PORT" value="5432"/>
-        <env name="DB_USERNAME" value="postgres"/>
-        <env name="DB_PASSWORD" value="postgres"/>
+        <!-- ATENCAO: os testes rodam "migrate:fresh", que DERRUBA TODAS AS
+             TABELAS do banco conectado. O nome do banco de teste usa
+             force="true" para vencer qualquer DB_DATABASE vindo do ambiente
+             (o container define DB_DATABASE=nwbasset, o banco da aplicacao).
+             Sem o force, rodar a suite dentro do Docker apagaria os dados reais.
+             tests/TestCase.php aborta a execucao se o alvo nao for de teste. -->
+        <env name="DB_CONNECTION" value="pgsql" force="true"/>
+        <env name="DB_DATABASE" value="nwbasset_testing" force="true"/>
+        <!-- Host, porta e credenciais vem do ambiente, para a mesma suite rodar
+             na maquina (PostgreSQL nativo) e no container (servico postgres). -->
         <env name="DB_URL" value=""/>
         <env name="MAIL_MAILER" value="array"/>
         <env name="QUEUE_CONNECTION" value="sync"/>

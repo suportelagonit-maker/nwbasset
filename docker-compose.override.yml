@@ -1,0 +1,24 @@
+# Ajustes de DESENVOLVIMENTO. O Docker Compose carrega este arquivo
+# automaticamente junto do docker-compose.yml quando ele existe.
+#
+# Na VPS este arquivo NAO deve existir (ou suba com
+# "docker compose -f docker-compose.yml up -d", ignorando o override).
+#
+# O que ele muda:
+#   - monta o codigo do host por cima da imagem, para editar sem rebuild;
+#   - com isso o vendor/ do host passa a valer, e ele tem as dependencias de
+#     desenvolvimento (phpunit, mockery, faker) que a imagem de producao nao
+#     instala, por usar "composer install --no-dev".
+
+services:
+  backend:
+    volumes:
+      - ./backend:/var/www/html
+      # O storage continua no volume nomeado: uploads nao devem depender do
+      # sistema de arquivos do host nem sumir ao trocar de maquina.
+      - nwbasset-storage:/var/www/html/storage/app/public
+    environment:
+      # Banco exclusivo dos testes automatizados. Os testes rodam
+      # "migrate:fresh", que DERRUBA TODAS AS TABELAS do banco conectado —
+      # por isso o alvo precisa ser explicito e nunca o banco da aplicacao.
+      DB_TEST_DATABASE: nwbasset_testing
