@@ -1,0 +1,430 @@
+
+> dev
+> next dev --port 5001 --webpack
+
+▲ Next.js 16.1.6 (webpack)
+- Local:         http://localhost:5001
+- Network:       http://192.168.0.32:5001
+- Environments: .env.local
+
+✓ Starting...
+✓ Ready in 1571ms
+○ Compiling /dashboard/modulos/[slug] ...
+ GET /dashboard/modulos/tipos-produtos 200 in 20.8s (compile: 20.3s, proxy.ts: 67ms, render: 512ms)
+ GET /logos/empresas/6-6160ed2e-e5d6-40b8-848c-7d62128484a3.png 404 in 2.0s (compile: 1829ms, render: 197ms)
+ GET /dashboard/modulos/tipos-produtos 200 in 273ms (compile: 91ms, proxy.ts: 33ms, render: 149ms)
+ GET /storage/logos/empresas/6-6160ed2e-e5d6-40b8-848c-7d62128484a3.png 404 in 75ms (compile: 11ms, render: 64ms)
+⨯ TypeError: fetch failed
+    at async proxyRequest (app\api\admin\[...path]\route.ts:27:20)
+  25 |         ? await request.formData()
+  26 |         : await request.text();
+> 27 |   const response = await fetch(targetUrl, {
+     |                    ^
+  28 |     method: request.method,
+  29 |     headers: {
+  30 |       Accept: 'application/json', {
+  [cause]: Error: connect ECONNREFUSED 127.0.0.1:5000
+      at <unknown> (Error: connect ECONNREFUSED 127.0.0.1:5000) {
+    errno: -4078,
+    code: 'ECONNREFUSED',
+    syscall: 'connect',
+    address: '127.0.0.1',
+    port: 5000
+  }
+}
+ GET /api/admin/tipos-bens-patrimoniais 500 in 2.6s (compile: 2.4s, render: 245ms)
+⨯ TypeError: fetch failed
+    at async proxyRequest (app\api\admin\[...path]\route.ts:27:20)
+  25 |         ? await request.formData()
+  26 |         : await request.text();
+> 27 |   const response = await fetch(targetUrl, {
+     |                    ^
+  28 |     method: request.method,
+  29 |     headers: {
+  30 |       Accept: 'application/json', {
+  [cause]: Error: connect ECONNREFUSED 127.0.0.1:5000
+      at <unknown> (Error: connect ECONNREFUSED 127.0.0.1:5000) {
+    errno: -4078,
+    code: 'ECONNREFUSED',
+    syscall: 'connect',
+    address: '127.0.0.1',
+    port: 5000
+  }
+}
+ GET /api/admin/tipos-produtos 500 in 2.7s (compile: 2.4s, render: 370ms)
+ GET /logos/empresas/6/logopatrimonio.png 404 in 442ms (compile: 8ms, render: 434ms)
+ GET /logos/empresas/6/logoasset.png 404 in 61ms (compile: 8ms, render: 53ms)
+ GET /logos/empresas/6/logo.png 404 in 70ms (compile: 6ms, render: 64ms)
+ GET /dashboard/modulos/tipos-produtos 200 in 282ms (compile: 84ms, proxy.ts: 19ms, render: 179ms)
+ GET /logos/empresas/6-6160ed2e-e5d6-40b8-848c-7d62128484a3.png 404 in 137ms (compile: 91ms, render: 46ms)
+ GET /storage/logos/empresas/6-6160ed2e-e5d6-40b8-848c-7d62128484a3.png 404 in 51ms (compile: 6ms, render: 45ms)
+ GET /logos/empresas/6/logopatrimonio.png 404 in 62ms (compile: 10ms, render: 52ms)
+ GET /logos/empresas/6/logoasset.png 404 in 55ms (compile: 11ms, render: 44ms)
+ GET /logos/empresas/6/logo.png 404 in 43ms (compile: 5ms, render: 38ms)
+ GET /api/admin/tipos-produtos 200 in 1115ms (compile: 61ms, render: 1054ms)
+ GET /api/admin/tipos-bens-patrimoniais 200 in 1564ms (compile: 47ms, render: 1517ms)
+ GET /dashboard/modulos/tipos-bens 200 in 160ms (compile: 93ms, proxy.ts: 19ms, render: 48ms)
+ GET /api/admin/tipos-bens-patrimoniais 200 in 609ms (compile: 71ms, render: 538ms)
+ GET /api/admin/tipos-bens-patrimoniais 200 in 1056ms (compile: 66ms, render: 990ms)
+ GET /dashboard/modulos/tipos-produtos 200 in 144ms (compile: 82ms, proxy.ts: 17ms, render: 45ms)
+ GET /api/admin/tipos-produtos 200 in 568ms (compile: 70ms, render: 498ms)
+ GET /api/admin/tipos-bens-patrimoniais 200 in 927ms (compile: 13ms, render: 914ms)
+ GET /api/admin/tipos-produtos 200 in 1348ms (compile: 11ms, render: 1337ms)
+ GET /api/admin/tipos-bens-patrimoniais 200 in 1675ms (compile: 7ms, render: 1668ms)
+ GET /dashboard/modulos/tipos-produtos 200 in 411ms (compile: 301ms, proxy.ts: 16ms, render: 94ms)
+ GET /dashboard/modulos/tipos-produtos 200 in 1053ms (compile: 189ms, proxy.ts: 114ms, render: 749ms)
+⚠ Fast Refresh had to perform a full reload. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
+⚠ Fast Refresh had to perform a full reload. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
+ GET /logos/empresas/6-6160ed2e-e5d6-40b8-848c-7d62128484a3.png 404 in 2.1s (compile: 1827ms, render: 274ms)
+⚠ Fast Refresh had to perform a full reload. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
+ GET /dashboard/modulos/tipos-produtos 200 in 1281ms (compile: 147ms, proxy.ts: 699ms, render: 435ms)
+ GET /storage/logos/empresas/6-6160ed2e-e5d6-40b8-848c-7d62128484a3.png 404 in 195ms (compile: 21ms, render: 174ms)
+ GET /api/admin/tipos-produtos 200 in 2.7s (compile: 1622ms, render: 1109ms)
+ GET /api/admin/tipos-bens-patrimoniais 200 in 2.7s (compile: 1619ms, render: 1114ms)
+ GET /logos/empresas/6-6160ed2e-e5d6-40b8-848c-7d62128484a3.png 404 in 179ms (compile: 109ms, render: 69ms)
+ GET /storage/logos/empresas/6-6160ed2e-e5d6-40b8-848c-7d62128484a3.png 404 in 111ms (compile: 11ms, render: 100ms)
+ GET /logos/empresas/6/logopatrimonio.png 404 in 79ms (compile: 10ms, render: 69ms)
+ GET /logos/empresas/6/logoasset.png 404 in 80ms (compile: 9ms, render: 70ms)
+ GET /logos/empresas/6/logo.png 404 in 90ms (compile: 19ms, render: 71ms)
+ GET /api/admin/tipos-produtos 200 in 1337ms (compile: 85ms, render: 1252ms)
+ GET /api/admin/tipos-bens-patrimoniais 200 in 2.1s (compile: 72ms, render: 2.0s)
+ GET /dashboard/modulos/tipos-bens 200 in 175ms (compile: 85ms, proxy.ts: 52ms, render: 38ms)
+ GET /api/admin/tipos-bens-patrimoniais 200 in 835ms (compile: 81ms, render: 754ms)
+ GET /api/admin/tipos-bens-patrimoniais 200 in 1571ms (compile: 74ms, render: 1497ms)
+ GET /dashboard/modulos/depreciacoes 200 in 179ms (compile: 74ms, proxy.ts: 18ms, render: 87ms)
+ GET /api/admin/regras-depreciacao?empresa_id=6&per_page=500 200 in 835ms (compile: 67ms, render: 768ms)
+ GET /api/admin/metodos-depreciacao?per_page=200 200 in 1200ms (compile: 55ms, render: 1145ms)
+ GET /api/admin/tipos-bens-patrimoniais?empresa_id=6 200 in 1738ms (compile: 54ms, render: 1684ms)
+ GET /api/admin/regras-depreciacao?empresa_id=6&per_page=500 200 in 2.3s (compile: 52ms, render: 2.2s)
+ GET /api/admin/metodos-depreciacao?per_page=200 200 in 2.8s (compile: 51ms, render: 2.7s)
+ GET /api/admin/tipos-bens-patrimoniais?empresa_id=6 200 in 3.2s (compile: 51ms, render: 3.2s)
+○ Compiling /dashboard/patrimonio ...
+ GET /dashboard/patrimonio 200 in 6.7s (compile: 6.6s, proxy.ts: 21ms, render: 63ms)
+ GET /api/dashboard/patrimonio/overview?empresa_id=6 200 in 1845ms (compile: 949ms, render: 896ms)
+ GET /api/dashboard/patrimonio/overview?empresa_id=6 200 in 2.5s (compile: 951ms, render: 1513ms)
+ GET /dashboard/modulos/bens 200 in 198ms (compile: 121ms, proxy.ts: 11ms, render: 66ms)
+ GET /api/admin/bens 200 in 828ms (compile: 87ms, render: 741ms)
+ GET /api/admin/filiais 200 in 1465ms (compile: 70ms, render: 1395ms)
+ GET /api/admin/departamentos 200 in 2.1s (compile: 69ms, render: 2.0s)
+ GET /api/admin/unidades-administrativas 200 in 2.6s (compile: 67ms, render: 2.6s)
+ GET /api/admin/locais 200 in 3.2s (compile: 66ms, render: 3.2s)
+ GET /api/admin/responsaveis 200 in 3.8s (compile: 65ms, render: 3.8s)
+ GET /api/admin/tipos-bens-patrimoniais 200 in 3.6s (compile: 55ms, render: 3.5s)
+ GET /api/admin/tipos-produtos?per_page=500&ativo=1 200 in 3.6s (compile: 50ms, render: 3.5s)
+ GET /api/admin/plaquetas?disponivel_para_vinculo=1&per_page=500 200 in 3.5s (compile: 5ms, render: 3.5s)
+ GET /api/admin/regras-depreciacao?per_page=500&ativo=1&base_regra=fiscal 200 in 3.6s (compile: 44ms, render: 3.6s)
+ GET /api/admin/bens 200 in 3.6s (compile: 53ms, render: 3.5s)
+ GET /api/admin/filiais 200 in 3.5s (compile: 51ms, render: 3.5s)
+ GET /api/admin/unidades-administrativas 200 in 3.5s (compile: 36ms, render: 3.5s)
+ GET /api/admin/departamentos 200 in 3.3s (compile: 47ms, render: 3.2s)
+ GET /api/admin/locais 200 in 3.2s (compile: 57ms, render: 3.1s)
+ GET /api/admin/responsaveis 200 in 3.0s (compile: 6ms, render: 3.0s)
+ GET /api/admin/tipos-bens-patrimoniais 200 in 2.9s (compile: 33ms, render: 2.9s)
+ GET /api/admin/tipos-produtos?per_page=500&ativo=1 200 in 2.8s (compile: 58ms, render: 2.8s)
+ GET /api/admin/plaquetas?disponivel_para_vinculo=1&per_page=500 200 in 2.7s (compile: 5ms, render: 2.7s)
+ GET /api/admin/regras-depreciacao?per_page=500&ativo=1&base_regra=fiscal 200 in 2.7s (compile: 34ms, render: 2.7s)
+○ Compiling /dashboard/modulos/plaquetas ...
+ GET /dashboard/modulos/plaquetas 200 in 4.0s (compile: 3.9s, proxy.ts: 15ms, render: 79ms)
+ GET /api/admin/plaquetas?per_page=200 200 in 691ms (compile: 107ms, render: 584ms)
+ GET /api/admin/filiais?per_page=100 200 in 1094ms (compile: 84ms, render: 1010ms)
+ GET /api/admin/bens?per_page=300 200 in 1671ms (compile: 78ms, render: 1593ms)
+ GET /logos/empresas/6-6160ed2e-e5d6-40b8-848c-7d62128484a3.png 404 in 1008ms (compile: 881ms, render: 128ms)
+ GET /storage/logos/empresas/6-6160ed2e-e5d6-40b8-848c-7d62128484a3.png 404 in 49ms (compile: 5ms, render: 44ms)
+ GET /logos/empresas/6/logopatrimonio.png 404 in 85ms (compile: 6ms, render: 79ms)
+ GET /logos/empresas/6/logoasset.png 404 in 49ms (compile: 6ms, render: 44ms)
+ GET /logos/empresas/6/logo.png 404 in 56ms (compile: 7ms, render: 50ms)
+ GET /api/admin/filiais?per_page=100 200 in 2.2s (compile: 77ms, render: 2.2s)
+ GET /api/admin/plaquetas?per_page=200 200 in 2.5s (compile: 11ms, render: 2.5s)
+ GET /api/admin/bens?per_page=300 200 in 3.0s (compile: 8ms, render: 3.0s)
+ GET /dashboard/modulos/plaquetas 200 in 397ms (compile: 254ms, proxy.ts: 34ms, render: 109ms)
+ GET /dashboard/modulos/plaquetas 200 in 108ms (compile: 16ms, proxy.ts: 25ms, render: 67ms)
+ GET /dashboard/modulos/plaquetas 200 in 287ms (compile: 190ms, proxy.ts: 18ms, render: 79ms)
+ GET /dashboard/modulos/plaquetas 200 in 246ms (compile: 151ms, proxy.ts: 15ms, render: 79ms)
+ GET /dashboard/modulos/plaquetas 200 in 295ms (compile: 178ms, proxy.ts: 24ms, render: 94ms)
+ GET /dashboard/modulos/plaquetas 200 in 217ms (compile: 153ms, proxy.ts: 14ms, render: 51ms)
+ GET /dashboard/modulos/plaquetas 200 in 185ms (compile: 90ms, proxy.ts: 15ms, render: 80ms)
+⚠ Fast Refresh had to perform a full reload. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
+⨯ ./components/PlaquetaManagement.tsx
+Error:   x Expected ';', got '-'
+    ,-[C:\Sistema\nwbasset\frontend-web\components\PlaquetaManagement.tsx:23:1]
+ 20 |   link_consulta: string;
+ 21 |   status: string;
+ 22 |   observacoes: string | null;
+ 23 |   bem_patrimonial_descricao-: string | null;
+    :                            ^
+ 24 |   bem_patrimonial_numero_tombo-: string | null;
+ 25 |   filial_nome-: string | null;
+ 25 | };
+    `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./components/PlaquetaManagement.tsx
+./app/dashboard/modulos/plaquetas/page.tsx
+○ Compiling /_error ...
+⨯ ./components/PlaquetaManagement.tsx
+Error:   x Expected ';', got '-'
+    ,-[C:\Sistema\nwbasset\frontend-web\components\PlaquetaManagement.tsx:23:1]
+ 20 |   link_consulta: string;
+ 21 |   status: string;
+ 22 |   observacoes: string | null;
+ 23 |   bem_patrimonial_descricao-: string | null;
+    :                            ^
+ 24 |   bem_patrimonial_numero_tombo-: string | null;
+ 25 |   filial_nome-: string | null;
+ 25 | };
+    `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./components/PlaquetaManagement.tsx
+./app/dashboard/modulos/plaquetas/page.tsx
+ GET /dashboard/modulos/plaquetas 500 in 12.9s (compile: 12.6s, proxy.ts: 21ms, render: 269ms)
+ GET /dashboard/modulos/plaquetas 500 in 12.9s (compile: 12.6s, proxy.ts: 27ms, render: 250ms)
+ GET /dashboard/modulos/plaquetas 500 in 56ms (compile: 15ms, proxy.ts: 16ms, render: 25ms)
+ GET /dashboard/modulos/plaquetas 500 in 82ms (compile: 20ms, proxy.ts: 27ms, render: 35ms)
+ GET /dashboard/modulos/plaquetas 500 in 73ms (compile: 14ms, proxy.ts: 26ms, render: 33ms)
+<w> [webpack.cache.PackFileCacheStrategy] Caching failed for pack: Error: ENOENT: no such file or directory, rename 'C:\Sistema\nwbasset\frontend-web\.next\dev\cache\webpack\client-development-fallback\0.pack.gz_' -> 'C:\Sistema\nwbasset\frontend-web\.next\dev\cache\webpack\client-development-fallback\0.pack.gz'
+⚠ Fast Refresh had to perform a full reload due to a runtime error.
+⚠ Fast Refresh had to perform a full reload due to a runtime error.
+⨯ ./components/GenericModuleManagement.tsx
+Error:   x Expected ';', '}' or <eof>
+   ,-[C:\Sistema\nwbasset\frontend-web\components\GenericModuleManagement.tsx:2:1]
+ 1 | "use client";
+ 2 | impNaort type { ChangeEvent, ReactNaode } frNaom "react";
+   : ^^^^|^^^ ^^^^
+   :     `-- This is the expression part of an expression statement
+ 3 | impNaort { useEffect, useMemNao, useState } frNaom "react";
+ 4 | impNaort { handleUnauthNaorizedClientRAtecoespNaonse } frNaom "@/lib/client-auth";
+ 4 | impNaort { getCrudMNaoduleCNaonfig } frNaom "@/lib/mNaodule-crud-cNaonfig";
+   `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./components/GenericModuleManagement.tsx
+./components/ResponsaveisUnifiedManagement.tsx
+ GET /dashboard/modulos/plaquetas 500 in 221ms (compile: 22ms, proxy.ts: 135ms, render: 63ms)
+⚠ Fast Refresh had to perform a full reload. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
+⚠ Fast Refresh had to perform a full reload. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
+⚠ Fast Refresh had to perform a full reload. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
+ GET /dashboard/modulos/plaquetas 200 in 568ms (compile: 348ms, proxy.ts: 24ms, render: 197ms)
+ GET /dashboard/modulos/plaquetas 200 in 97ms (compile: 9ms, proxy.ts: 12ms, render: 76ms)
+ GET /logos/empresas/6-6160ed2e-e5d6-40b8-848c-7d62128484a3.png 404 in 2.2s (compile: 2.1s, render: 138ms)
+ GET /storage/logos/empresas/6-6160ed2e-e5d6-40b8-848c-7d62128484a3.png 404 in 63ms (compile: 8ms, render: 55ms)
+ GET /logos/empresas/6/logopatrimonio.png 404 in 83ms (compile: 12ms, render: 70ms)
+ GET /logos/empresas/6/logoasset.png 404 in 69ms (compile: 8ms, render: 62ms)
+ GET /logos/empresas/6/logo.png 404 in 58ms (compile: 6ms, render: 52ms)
+ GET /api/admin/plaquetas?per_page=200 200 in 2.6s (compile: 1698ms, render: 950ms)
+ GET /api/admin/filiais?per_page=100 200 in 3.5s (compile: 1696ms, render: 1755ms)
+ GET /api/admin/bens?per_page=300 200 in 4.3s (compile: 1696ms, render: 2.6s)
+ GET /dashboard/modulos/plaquetas 200 in 251ms (compile: 156ms, proxy.ts: 16ms, render: 79ms)
+⨯ ./components/SystemConfirmDialog.tsx
+Error:   x Unterminated string constant
+    ,-[C:\Sistema\nwbasset\frontend-web\components\SystemConfirmDialog.tsx:19:1]
+ 16 |   open,
+ 17 |   title,
+ 18 |   description,
+ 19 |   confirmLabel = 'Confirmacao<div className="admin-dialog-overlay">
+    :                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ 20 |       <div className="panel-surface admin-dialog-shell overflow-hidden rounded-[24px] p-3 md:p-3.5 shadow-[0_22px_64px_rgba(15,23,42,0.18)]">
+ 21 |         <div className="flex items-start justify-between gap-4 border-b border-[var(--line)] pb-3">
+ 21 |           <div className="min-w-0">
+    `----
+  x Expected ',', got 'ident'
+    ,-[C:\Sistema\nwbasset\frontend-web\components\SystemConfirmDialog.tsx:20:1]
+ 17 |   title,
+ 18 |   description,
+ 19 |   confirmLabel = 'Confirmacao<div className="admin-dialog-overlay">
+ 20 |       <div className="panel-surface admin-dialog-shell overflow-hidden rounded-[24px] p-3 md:p-3.5 shadow-[0_22px_64px_rgba(15,23,42,0.18)]">
+    :            ^^^^^^^^^
+ 21 |         <div className="flex items-start justify-between gap-4 border-b border-[var(--line)] pb-3">
+ 22 |           <div className="min-w-0">
+ 22 |             <p className="admin-modal-kicker">Confirmacao</p>
+    `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./components/SystemConfirmDialog.tsx
+./components/GenericModuleManagement.tsx
+⨯ ./components/SystemConfirmDialog.tsx
+Error:   x Unterminated string constant
+    ,-[C:\Sistema\nwbasset\frontend-web\components\SystemConfirmDialog.tsx:19:1]
+ 16 |   open,
+ 17 |   title,
+ 18 |   description,
+ 19 |   confirmLabel = 'Confirmacao<div className="admin-dialog-overlay">
+    :                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ 20 |       <div className="panel-surface admin-dialog-shell overflow-hidden rounded-[24px] p-3 md:p-3.5 shadow-[0_22px_64px_rgba(15,23,42,0.18)]">
+ 21 |         <div className="flex items-start justify-between gap-4 border-b border-[var(--line)] pb-3">
+ 21 |           <div className="min-w-0">
+    `----
+  x Expected ',', got 'ident'
+    ,-[C:\Sistema\nwbasset\frontend-web\components\SystemConfirmDialog.tsx:20:1]
+ 17 |   title,
+ 18 |   description,
+ 19 |   confirmLabel = 'Confirmacao<div className="admin-dialog-overlay">
+ 20 |       <div className="panel-surface admin-dialog-shell overflow-hidden rounded-[24px] p-3 md:p-3.5 shadow-[0_22px_64px_rgba(15,23,42,0.18)]">
+    :            ^^^^^^^^^
+ 21 |         <div className="flex items-start justify-between gap-4 border-b border-[var(--line)] pb-3">
+ 22 |           <div className="min-w-0">
+ 22 |             <p className="admin-modal-kicker">Confirmacao</p>
+    `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./components/SystemConfirmDialog.tsx
+./components/GenericModuleManagement.tsx
+ GET /dashboard/modulos/plaquetas 200 in 450ms (compile: 334ms, proxy.ts: 27ms, render: 89ms)
+ GET /dashboard/modulos/plaquetas 200 in 234ms (compile: 146ms, proxy.ts: 16ms, render: 71ms)
+ GET /dashboard/modulos/plaquetas 200 in 173ms (compile: 82ms, proxy.ts: 15ms, render: 76ms)
+ GET /dashboard/modulos/plaquetas 200 in 357ms (compile: 199ms, proxy.ts: 83ms, render: 75ms)
+ GET /dashboard/modulos/plaquetas 200 in 391ms (compile: 250ms, proxy.ts: 49ms, render: 91ms)
+ GET /dashboard/modulos/plaquetas 200 in 97ms (compile: 15ms, proxy.ts: 19ms, render: 63ms)
+ POST /api/admin/plaquetas/estoque 201 in 3.1s (compile: 1826ms, render: 1269ms)
+ GET /api/admin/filiais?per_page=100 200 in 829ms (compile: 42ms, render: 788ms)
+ GET /api/admin/plaquetas?per_page=200 200 in 1376ms (compile: 42ms, render: 1333ms)
+ GET /api/admin/bens?per_page=300 200 in 2.0s (compile: 41ms, render: 1962ms)
+ GET /logos/empresas/6-6160ed2e-e5d6-40b8-848c-7d62128484a3.png 404 in 1535ms (compile: 1393ms, render: 142ms)
+ GET /dashboard/modulos/plaquetas 200 in 209ms (compile: 30ms, proxy.ts: 19ms, render: 161ms)
+ GET /storage/logos/empresas/6-6160ed2e-e5d6-40b8-848c-7d62128484a3.png 404 in 52ms (compile: 7ms, render: 45ms)
+ GET /logos/empresas/6/logopatrimonio.png 404 in 87ms (compile: 9ms, render: 78ms)
+ GET /logos/empresas/6/logoasset.png 404 in 72ms (compile: 8ms, render: 64ms)
+ GET /logos/empresas/6/logo.png 404 in 53ms (compile: 5ms, render: 48ms)
+ GET /dashboard/modulos/plaquetas 200 in 341ms (compile: 218ms, proxy.ts: 20ms, render: 103ms)
+ GET /logos/empresas/6-6160ed2e-e5d6-40b8-848c-7d62128484a3.png 404 in 1109ms (compile: 979ms, render: 130ms)
+ GET /storage/logos/empresas/6-6160ed2e-e5d6-40b8-848c-7d62128484a3.png 404 in 47ms (compile: 6ms, render: 42ms)
+ GET /logos/empresas/6/logopatrimonio.png 404 in 61ms (compile: 9ms, render: 53ms)
+ GET /logos/empresas/6/logoasset.png 404 in 63ms (compile: 8ms, render: 55ms)
+ GET /logos/empresas/6/logo.png 404 in 72ms (compile: 8ms, render: 65ms)
+ GET /dashboard/modulos/plaquetas 200 in 187ms (compile: 104ms, proxy.ts: 18ms, render: 64ms)
+ GET /logos/empresas/6-6160ed2e-e5d6-40b8-848c-7d62128484a3.png 404 in 167ms (compile: 22ms, render: 145ms)
+ GET /storage/logos/empresas/6-6160ed2e-e5d6-40b8-848c-7d62128484a3.png 404 in 47ms (compile: 9ms, render: 39ms)
+ GET /logos/empresas/6/logopatrimonio.png 404 in 79ms (compile: 11ms, render: 68ms)
+ GET /logos/empresas/6/logoasset.png 404 in 132ms (compile: 9ms, render: 123ms)
+ GET /logos/empresas/6/logo.png 404 in 53ms (compile: 8ms, render: 44ms)
+ GET /dashboard/modulos/plaquetas 200 in 380ms (compile: 181ms, proxy.ts: 106ms, render: 93ms)
+ GET /logos/empresas/6-6160ed2e-e5d6-40b8-848c-7d62128484a3.png 404 in 1327ms (compile: 1171ms, render: 157ms)
+ GET /storage/logos/empresas/6-6160ed2e-e5d6-40b8-848c-7d62128484a3.png 404 in 56ms (compile: 7ms, render: 48ms)
+ GET /logos/empresas/6/logopatrimonio.png 404 in 55ms (compile: 9ms, render: 46ms)
+ GET /logos/empresas/6/logoasset.png 404 in 60ms (compile: 8ms, render: 52ms)
+ GET /logos/empresas/6/logo.png 404 in 61ms (compile: 9ms, render: 52ms)
+ GET /logos/empresas/6-6160ed2e-e5d6-40b8-848c-7d62128484a3.png 404 in 88ms (compile: 15ms, render: 74ms)
+ GET /storage/logos/empresas/6-6160ed2e-e5d6-40b8-848c-7d62128484a3.png 404 in 71ms (compile: 8ms, render: 63ms)
+ GET /logos/empresas/6/logopatrimonio.png 404 in 63ms (compile: 9ms, render: 54ms)
+ GET /logos/empresas/6/logoasset.png 404 in 78ms (compile: 8ms, render: 69ms)
+ GET /logos/empresas/6/logo.png 404 in 56ms (compile: 6ms, render: 50ms)
+ GET /logos/empresas/6-6160ed2e-e5d6-40b8-848c-7d62128484a3.png 404 in 60ms (compile: 10ms, render: 49ms)
+ GET /storage/logos/empresas/6-6160ed2e-e5d6-40b8-848c-7d62128484a3.png 404 in 72ms (compile: 7ms, render: 66ms)
+ GET /logos/empresas/6/logopatrimonio.png 404 in 44ms (compile: 5ms, render: 39ms)
+ GET /logos/empresas/6/logoasset.png 404 in 48ms (compile: 6ms, render: 42ms)
+ GET /logos/empresas/6/logo.png 404 in 57ms (compile: 5ms, render: 52ms)
+ GET /dashboard/modulos/bens 200 in 133ms (compile: 69ms, proxy.ts: 10ms, render: 54ms)
+ GET /api/admin/filiais 200 in 2.3s (compile: 1673ms, render: 673ms)
+ GET /api/admin/locais 200 in 2.9s (compile: 1670ms, render: 1203ms)
+ GET /api/admin/departamentos 200 in 3.3s (compile: 1669ms, render: 1677ms)
+ GET /api/admin/unidades-administrativas 200 in 3.8s (compile: 1667ms, render: 2.2s)
+ GET /api/admin/responsaveis 200 in 4.3s (compile: 1658ms, render: 2.6s)
+ GET /api/admin/bens 200 in 4.8s (compile: 1719ms, render: 3.1s)
+ GET /api/admin/tipos-bens-patrimoniais 200 in 3.0s (compile: 64ms, render: 2.9s)
+ GET /api/admin/tipos-produtos?per_page=500&ativo=1 200 in 2.9s (compile: 4ms, render: 2.9s)
+ GET /api/admin/plaquetas?disponivel_para_vinculo=1&per_page=500 200 in 2.9s (compile: 40ms, render: 2.9s)
+ GET /api/admin/regras-depreciacao?per_page=500&ativo=1&base_regra=fiscal 200 in 3.0s (compile: 5ms, render: 3.0s)
+ GET /api/admin/bens 200 in 3.1s (compile: 36ms, render: 3.1s)
+ GET /api/admin/filiais 200 in 3.1s (compile: 48ms, render: 3.0s)
+ GET /api/admin/unidades-administrativas 200 in 3.1s (compile: 37ms, render: 3.1s)
+ GET /api/admin/departamentos 200 in 3.2s (compile: 6ms, render: 3.2s)
+ GET /api/admin/locais 200 in 3.2s (compile: 39ms, render: 3.2s)
+ GET /api/admin/responsaveis 200 in 3.1s (compile: 45ms, render: 3.1s)
+ GET /api/admin/tipos-bens-patrimoniais 200 in 3.1s (compile: 4ms, render: 3.1s)
+ GET /api/admin/tipos-produtos?per_page=500&ativo=1 200 in 3.1s (compile: 41ms, render: 3.1s)
+ GET /api/admin/plaquetas?disponivel_para_vinculo=1&per_page=500 200 in 3.0s (compile: 5ms, render: 3.0s)
+ GET /api/admin/regras-depreciacao?per_page=500&ativo=1&base_regra=fiscal 200 in 3.1s (compile: 46ms, render: 3.0s)
+ GET /dashboard/modulos/bens 200 in 546ms (compile: 414ms, proxy.ts: 27ms, render: 106ms)
+ GET /dashboard/modulos/bens 200 in 491ms (compile: 341ms, proxy.ts: 22ms, render: 127ms)
+ GET /dashboard/modulos/responsaveis 200 in 123ms (compile: 57ms, proxy.ts: 15ms, render: 51ms)
+ GET /api/admin/responsaveis 200 in 2.1s (compile: 1424ms, render: 708ms)
+ GET /api/admin/filiais 200 in 2.7s (compile: 1432ms, render: 1220ms)
+ GET /api/admin/filiais 200 in 3.1s (compile: 1426ms, render: 1678ms)
+ GET /api/admin/departamentos 200 in 3.6s (compile: 1423ms, render: 2.1s)
+ GET /api/admin/departamentos 200 in 4.0s (compile: 1412ms, render: 2.6s)
+ GET /api/admin/responsaveis 200 in 4.5s (compile: 1449ms, render: 3.1s)
+ POST /api/admin/responsaveis 201 in 740ms (compile: 51ms, render: 690ms)
+ GET /api/admin/responsaveis 200 in 571ms (compile: 33ms, render: 538ms)
+ GET /dashboard/modulos/bens 200 in 165ms (compile: 98ms, proxy.ts: 13ms, render: 54ms)
+ GET /api/admin/filiais 200 in 749ms (compile: 76ms, render: 673ms)
+ GET /api/admin/bens 200 in 1274ms (compile: 101ms, render: 1174ms)
+ GET /api/admin/unidades-administrativas 200 in 1613ms (compile: 13ms, render: 1600ms)
+ GET /api/admin/departamentos 200 in 2.1s (compile: 11ms, render: 2.1s)
+ GET /api/admin/locais 200 in 2.6s (compile: 11ms, render: 2.6s)
+ GET /api/admin/responsaveis 200 in 3.1s (compile: 10ms, render: 3.1s)
+ GET /api/admin/tipos-bens-patrimoniais 200 in 3.0s (compile: 40ms, render: 3.0s)
+ GET /api/admin/tipos-produtos?per_page=500&ativo=1 200 in 3.1s (compile: 8ms, render: 3.1s)
+ GET /api/admin/plaquetas?disponivel_para_vinculo=1&per_page=500 200 in 3.2s (compile: 44ms, render: 3.1s)
+ GET /api/admin/regras-depreciacao?per_page=500&ativo=1&base_regra=fiscal 200 in 3.2s (compile: 73ms, render: 3.2s)
+ GET /api/admin/bens 200 in 3.3s (compile: 71ms, render: 3.2s)
+ GET /api/admin/filiais 200 in 3.4s (compile: 59ms, render: 3.3s)
+ GET /api/admin/unidades-administrativas 200 in 3.4s (compile: 4ms, render: 3.4s)
+ GET /api/admin/departamentos 200 in 3.3s (compile: 51ms, render: 3.3s)
+ GET /api/admin/locais 200 in 3.5s (compile: 5ms, render: 3.5s)
+ GET /api/admin/responsaveis 200 in 3.4s (compile: 35ms, render: 3.3s)
+ GET /api/admin/tipos-bens-patrimoniais 200 in 3.3s (compile: 5ms, render: 3.3s)
+ GET /api/admin/tipos-produtos?per_page=500&ativo=1 200 in 3.3s (compile: 48ms, render: 3.3s)
+ GET /api/admin/plaquetas?disponivel_para_vinculo=1&per_page=500 200 in 3.3s (compile: 4ms, render: 3.3s)
+ GET /api/admin/regras-depreciacao?per_page=500&ativo=1&base_regra=fiscal 200 in 3.3s (compile: 34ms, render: 3.3s)
+ GET /dashboard/modulos/bens 200 in 464ms (compile: 352ms, proxy.ts: 18ms, render: 94ms)
+ GET /dashboard/modulos/bens 200 in 436ms (compile: 314ms, proxy.ts: 19ms, render: 103ms)
+ GET /api/admin/departamentos 200 in 2.2s (compile: 1084ms, render: 1112ms)
+ GET /api/admin/filiais 200 in 2.9s (compile: 1090ms, render: 1830ms)
+ GET /api/admin/unidades-administrativas 200 in 3.6s (compile: 1070ms, render: 2.5s)
+ GET /api/admin/locais 200 in 4.2s (compile: 1065ms, render: 3.1s)
+ GET /api/admin/responsaveis 200 in 4.8s (compile: 1063ms, render: 3.7s)
+ GET /api/admin/bens 200 in 5.7s (compile: 1130ms, render: 4.6s)
+ GET /api/admin/tipos-bens-patrimoniais 200 in 4.1s (compile: 62ms, render: 4.1s)
+ GET /api/admin/tipos-produtos?per_page=500&ativo=1 200 in 4.0s (compile: 33ms, render: 4.0s)
+ GET /api/admin/plaquetas?disponivel_para_vinculo=1&per_page=500 200 in 4.1s (compile: 33ms, render: 4.0s)
+ GET /api/admin/regras-depreciacao?per_page=500&ativo=1&base_regra=fiscal 200 in 4.3s (compile: 29ms, render: 4.3s)
+ GET /dashboard/modulos/bens 200 in 563ms (compile: 178ms, proxy.ts: 16ms, render: 369ms)
+ GET /api/admin/filiais 200 in 1495ms (compile: 69ms, render: 1426ms)
+ GET /api/admin/bens 200 in 2.3s (compile: 79ms, render: 2.2s)
+ GET /api/admin/unidades-administrativas 200 in 3.1s (compile: 23ms, render: 3.1s)
+ GET /api/admin/departamentos 200 in 3.8s (compile: 12ms, render: 3.8s)
+ GET /api/admin/locais 200 in 4.6s (compile: 10ms, render: 4.6s)
+ GET /api/admin/responsaveis 200 in 6.3s (compile: 8ms, render: 6.3s)
+ GET /api/admin/tipos-bens-patrimoniais 200 in 5.9s (compile: 58ms, render: 5.8s)
+○ Compiling /_not-found ...
+ GET /api/admin/tipos-produtos?per_page=500&ativo=1 200 in 5.9s (compile: 74ms, render: 5.9s)
+ GET /api/admin/plaquetas?disponivel_para_vinculo=1&per_page=500 200 in 6.1s (compile: 49ms, render: 6.0s)
+ GET /logos/empresas/6-6160ed2e-e5d6-40b8-848c-7d62128484a3.png 404 in 4.6s (compile: 4.4s, render: 230ms)
+ GET /dashboard/modulos/bens 200 in 276ms (compile: 111ms, proxy.ts: 13ms, render: 152ms)
+ GET /storage/logos/empresas/6-6160ed2e-e5d6-40b8-848c-7d62128484a3.png 404 in 82ms (compile: 11ms, render: 70ms)
+ GET /api/admin/regras-depreciacao?per_page=500&ativo=1&base_regra=fiscal 200 in 6.1s (compile: 49ms, render: 6.0s)
+ GET /logos/empresas/6/logopatrimonio.png 404 in 79ms (compile: 8ms, render: 72ms)
+ GET /logos/empresas/6/logoasset.png 404 in 83ms (compile: 10ms, render: 73ms)
+ GET /logos/empresas/6/logo.png 404 in 78ms (compile: 13ms, render: 64ms)
+ GET /dashboard/modulos/bens 200 in 2.4s (compile: 1039ms, proxy.ts: 220ms, render: 1187ms)
+ GET /api/admin/filiais 200 in 1793ms (compile: 108ms, render: 1685ms)
+ GET /api/admin/bens 200 in 2.9s (compile: 114ms, render: 2.8s)
+ GET /api/admin/unidades-administrativas 200 in 4.6s (compile: 112ms, render: 4.5s)
+ GET /api/admin/departamentos 200 in 5.6s (compile: 107ms, render: 5.5s)
+ GET /api/admin/responsaveis 200 in 7.0s (compile: 106ms, render: 6.8s)
+ GET /logos/empresas/6-6160ed2e-e5d6-40b8-848c-7d62128484a3.png 404 in 133ms (compile: 16ms, render: 117ms)
+ GET /storage/logos/empresas/6-6160ed2e-e5d6-40b8-848c-7d62128484a3.png 404 in 79ms (compile: 10ms, render: 69ms)
+ GET /logos/empresas/6/logopatrimonio.png 404 in 81ms (compile: 8ms, render: 73ms)
+ GET /logos/empresas/6/logoasset.png 404 in 96ms (compile: 10ms, render: 86ms)
+ GET /logos/empresas/6/logo.png 404 in 126ms (compile: 22ms, render: 104ms)
+ GET /api/admin/locais 200 in 8.2s (compile: 105ms, render: 8.1s)
+ GET /api/admin/tipos-bens-patrimoniais 200 in 7.6s (compile: 8ms, render: 7.6s)
+ GET /api/admin/tipos-produtos?per_page=500&ativo=1 200 in 7.4s (compile: 93ms, render: 7.3s)
+ GET /api/admin/plaquetas?disponivel_para_vinculo=1&per_page=500 200 in 6.8s (compile: 6ms, render: 6.8s)
+ GET /api/admin/regras-depreciacao?per_page=500&ativo=1&base_regra=fiscal 200 in 7.0s (compile: 84ms, render: 7.0s)
+^C

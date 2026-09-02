@@ -1,0 +1,13 @@
+
+> dev
+> next dev --port 5001 --webpack -p 5003
+
+▲ Next.js 16.1.6 (webpack)
+- Local:         http://localhost:5003
+- Network:       http://192.168.0.32:5003
+- Environments: .env.local
+
+✓ Starting...
+✓ Ready in 1384ms
+ GET /login 200 in 170ms (compile: 14ms, proxy.ts: 28ms, render: 128ms)
+^C^C
