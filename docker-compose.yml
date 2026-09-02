@@ -1,0 +1,99 @@
+# NWB Asset — gestao patrimonial multiempresa
+#
+# Recursos exclusivos deste sistema. Nao compartilhar containers, redes, volumes
+# ou portas com os demais projetos da maquina (jornada, ncedu, ncinfra).
+#
+# Portas escolhidas apos verificar o que ja estava em uso:
+#   5000 backend  | 5001 frontend | 5436 PostgreSQL
+#   (5432 a 5435 ja estavam ocupadas por outros bancos)
+
+name: nwbasset
+
+services:
+  postgres:
+    image: postgres:18-alpine
+    container_name: nwbasset-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${DB_DATABASE:-nwbasset}
+      POSTGRES_USER: ${DB_USERNAME:-nwbasset}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:?defina DB_PASSWORD no .env da raiz}
+      TZ: America/Sao_Paulo
+    ports:
+      - "${DB_PORT_HOST:-5436}:5432"
+    volumes:
+      # PostgreSQL 18+ espera o mount em /var/lib/postgresql (e nao em
+      # /var/lib/postgresql/data como nas versoes anteriores), para permitir
+      # pg_upgrade --link sem cruzar limite de mount point.
+      - nwbasset-postgres-data:/var/lib/postgresql
+    networks:
+      - nwbasset-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USERNAME:-nwbasset} -d ${DB_DATABASE:-nwbasset}"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 20s
+
+  backend:
+    build:
+      context: .
+      dockerfile: docker/backend/Dockerfile
+      target: production
+    container_name: nwbasset-backend
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      # Estas variaveis vencem o .env do Laravel: o Dotenv do Laravel e imutavel
+      # e nao sobrescreve variaveis reais de ambiente.
+      APP_ENV: ${APP_ENV:-local}
+      APP_DEBUG: ${APP_DEBUG:-true}
+      APP_KEY: ${APP_KEY:?copie APP_KEY do backend/.env para o .env da raiz}
+      APP_URL: ${APP_URL:-http://localhost:5000}
+      DB_CONNECTION: pgsql
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_DATABASE: ${DB_DATABASE:-nwbasset}
+      DB_USERNAME: ${DB_USERNAME:-nwbasset}
+      DB_PASSWORD: ${DB_PASSWORD}
+      AUTH_CAPTCHA_ENABLED: ${AUTH_CAPTCHA_ENABLED:-false}
+      TURNSTILE_SITE_KEY: ${TURNSTILE_SITE_KEY:-}
+      TURNSTILE_SECRET_KEY: ${TURNSTILE_SECRET_KEY:-}
+    ports:
+      - "${BACKEND_PORT:-5000}:80"
+    volumes:
+      # Uploads (imagens de bens, notas fiscais, logos) nao estao no Git.
+      # Precisam de volume proprio ou se perdem a cada recriacao do container.
+      - nwbasset-storage:/var/www/html/storage/app/public
+    networks:
+      - nwbasset-network
+
+  frontend:
+    build:
+      context: .
+      dockerfile: docker/frontend/Dockerfile
+      target: production
+      args:
+        NEXT_PUBLIC_API_BASE_URL: ${NEXT_PUBLIC_API_BASE_URL:-http://localhost:5000/api/v1}
+        NEXT_PUBLIC_LOGIN_CAPTCHA_ENABLED: ${NEXT_PUBLIC_LOGIN_CAPTCHA_ENABLED:-0}
+        NEXT_PUBLIC_TURNSTILE_SITE_KEY: ${NEXT_PUBLIC_TURNSTILE_SITE_KEY:-}
+    container_name: nwbasset-frontend
+    restart: unless-stopped
+    depends_on:
+      - backend
+    ports:
+      - "${FRONTEND_PORT:-5001}:5001"
+    networks:
+      - nwbasset-network
+
+volumes:
+  nwbasset-postgres-data:
+    name: nwbasset-postgres-data
+  nwbasset-storage:
+    name: nwbasset-storage
+
+networks:
+  nwbasset-network:
+    name: nwbasset-network

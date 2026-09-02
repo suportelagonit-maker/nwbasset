@@ -1,0 +1,37 @@
+# Mantem o contexto de build enxuto. Sem isto o Docker envia vendor/,
+# node_modules/, .next/ e todo o historico do Git a cada build.
+
+.git
+**/.git
+**/.git.bak-*
+
+**/node_modules
+backend/vendor
+frontend-web/.next
+frontend-mobile
+
+**/.env
+**/.env.local
+**/.env.*.local
+
+docker/data
+backups
+*.log
+**/*.log
+
+.vscode
+.idea
+**/.DS_Store
+**/Thumbs.db
+
+backend/composer.phar
+backend/.phpunit.result.cache
+backend/storage/logs/*
+backend/storage/framework/cache/*
+backend/storage/framework/sessions/*
+backend/storage/framework/views/*
+backend/public/storage
+
+_oldRun
+tools
+test-results
