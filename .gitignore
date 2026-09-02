@@ -1,0 +1,38 @@
+# Monorepo NWB Asset — regras da raiz.
+# backend/.gitignore, frontend-web/.gitignore e frontend-mobile/.gitignore
+# continuam valendo dentro de cada pasta.
+
+# Backups do git dos repositorios originais, criados na consolidacao do monorepo
+**/.git.bak-*/
+
+# Editor / SO
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+
+# Dependencias
+node_modules/
+vendor/
+
+# Logs de desenvolvimento
+*.log
+!docs/**/*.log
+
+# Variaveis de ambiente — nunca versionar
+.env
+.env.local
+.env.*.local
+.env.production
+!.env.example
+
+# Artefatos de build
+.next/
+out/
+dist/
+build/
+
+# Docker: dados locais que nao devem ir para o repositorio
+docker/data/
