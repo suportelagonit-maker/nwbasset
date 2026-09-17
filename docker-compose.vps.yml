@@ -28,6 +28,13 @@ services:
     # Node 24 em execucao usa as mesmas chamadas novas de escrita.
     security_opt:
       - seccomp=unconfined
+    # 4. O firewall do host so deixa o proprio host abrir conexao com containers
+    #    em portas "conhecidas" (80 responde, 5001 nao). Como o Apache chega ao
+    #    frontend pela porta publicada em 127.0.0.1, que o docker-proxy entrega
+    #    ao container, o Next precisa escutar em 80 aqui.
+    command: ["npx", "next", "start", "--port", "80"]
+    ports: !override
+      - "127.0.0.1:${FRONTEND_PORT:-6200}:80"
 
   # 3. O PostgreSQL 18 (musl) tambem morre com "postmaster.pid: Operation not
   #    permitted" sob o seccomp padrao neste kernel. O nc-tech, nesta mesma VPS,
