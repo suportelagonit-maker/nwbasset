@@ -78,7 +78,9 @@ export default async function ModuloPage({ params }: PageProps) {
   }
 
   if (slug === 'relatorios') {
-    return <ReportsModuleManagement empresaId={session.empresaId} />;
+    return (
+      <ReportsModuleManagement empresaId={session.empresaId} empresaNome={session.empresaNome} empresaCnpj={session.empresaCnpj} />
+    );
   }
 
   if (slug === 'exportacoes') {
@@ -86,7 +88,7 @@ export default async function ModuloPage({ params }: PageProps) {
   }
 
   return (
-    <section className="panel-surface rounded-[28px] p-6">
+    <section className="panel-surface rounded-[22px] p-4 md:rounded-[28px] md:p-6">
       <div className="flex items-start gap-4">
         <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-[rgba(246,164,0,0.12)] text-[var(--accent)]">
           {renderAdminIcon(module.icon)}
