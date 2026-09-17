@@ -2,31 +2,11 @@
 
 import Image from 'next/image';
 
+import CarimboAceite from '@/components/CarimboAceite';
+
 import { formatarData, formatarDataHora, type TermoAceite, type TermoUsoData } from '@/lib/termo-uso';
 
-/** Carimbo do aceite eletrônico: quem, quando, de onde e qual texto. */
-export function CarimboAceite({ aceite, compacto = false }: { aceite: TermoAceite; compacto?: boolean }) {
-  return (
-    <div
-      className={[
-        'termo-carimbo inline-block rounded-[12px] border-[3px] border-[#15803d] bg-[rgba(74,222,128,0.08)] text-[#14532d]',
-        compacto ? 'px-3 py-2' : '-rotate-2 px-5 py-3.5',
-      ].join(' ')}
-      aria-label={`Aceito eletronicamente por ${aceite.nome_usuario} em ${formatarDataHora(aceite.aceito_em)}`}
-    >
-      <p className={['font-bold uppercase tracking-[0.22em]', compacto ? 'text-[9px]' : 'text-[11px]'].join(' ')}>✓ Aceito eletronicamente</p>
-      <p className={['mt-1 font-[family-name:var(--font-heading)] font-semibold tracking-[-0.02em]', compacto ? 'text-[13px]' : 'text-[17px]'].join(' ')}>
-        {aceite.nome_usuario}
-      </p>
-      <p className={['tabular-nums', compacto ? 'text-[11px]' : 'text-[13px]'].join(' ')}>{formatarDataHora(aceite.aceito_em)}</p>
-      <p className={['mt-0.5 opacity-80', compacto ? 'text-[9px]' : 'text-[10px]'].join(' ')}>
-        Versão {aceite.versao}
-        {aceite.ip ? ` · IP ${aceite.ip}` : ''}
-        {!compacto ? ` · Hash ${aceite.hash_conteudo.slice(0, 12)}…` : ''}
-      </p>
-    </div>
-  );
-}
+export { CarimboAceite };
 
 /**
  * O documento do termo, como aparece na tela de aceite, no perfil e na
@@ -45,7 +25,7 @@ export default function TermoDocumento({ termo, aceite }: { termo: TermoUsoData;
             Versão {termo.versao} · publicada em {formatarData(termo.publicado_em)} · identificador {termo.hash.slice(0, 12)}…
           </p>
         </div>
-        {aceite ? <CarimboAceite aceite={aceite} compacto /> : null}
+        {aceite ? <CarimboAceite aceite={aceite} largura={210} /> : null}
       </header>
 
       <div
@@ -66,7 +46,7 @@ export default function TermoDocumento({ termo, aceite }: { termo: TermoUsoData;
               </p>
               <p className="mt-1 break-all font-mono text-[10px]">Hash SHA-256 do texto aceito: {aceite.hash_conteudo}</p>
             </div>
-            <CarimboAceite aceite={aceite} />
+            <CarimboAceite aceite={aceite} largura={320} />
           </div>
         ) : (
           <p className="text-[12px] text-[var(--muted)]">Documento ainda não aceito por este usuário.</p>

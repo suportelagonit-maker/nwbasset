@@ -101,7 +101,7 @@ export default function TermoPerfilCard() {
               <p className="text-[12px] text-[var(--muted)]">{termo.aceite.ip ? `IP ${termo.aceite.ip}` : 'IP não registrado'}</p>
             </div>
           </div>
-          <CarimboAceite aceite={termo.aceite} />
+          <CarimboAceite aceite={termo.aceite} largura={300} />
         </div>
       ) : termo ? (
         <p className="mt-4 rounded-2xl border border-[rgba(246,164,0,0.3)] bg-[rgba(246,164,0,0.08)] px-4 py-3 text-[13px] text-[#7c4a03]">
