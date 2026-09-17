@@ -48,7 +48,7 @@ docker run --rm --network host --security-opt seccomp=unconfined \
 # Imagem de execucao: so copia o que ja foi compilado (mesmo layout do estagio
 # "production" de docker/frontend/Dockerfile).
 cat > "$OUT/Dockerfile" <<'DOCKERFILE'
-FROM node:24-alpine
+FROM node:24-alpine AS production
 WORKDIR /app
 ENV NODE_ENV=production
 ENV PORT=5001
