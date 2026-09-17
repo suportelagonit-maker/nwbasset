@@ -1,7 +1,7 @@
 # Publicação do NWB Asset em VPS
 
-Plano de produção. **Nada aqui foi executado ainda** — o ambiente validado até agora é o
-Docker local, com os três containers de pé e o banco migrado.
+Plano de produção. **Executado em 16/09/2026 — o sistema está no ar em
+https://nwbasset.igrejanovoscomecos.com.br** (ver "Publicação realizada" no fim).
 
 ## O que já está pronto e vai junto
 
@@ -237,7 +237,7 @@ abaixo na ordem em que travam o go-live.
 
 ### Bloqueia o go-live (decidir/providenciar)
 
-1. ~~Domínio~~ — **resolvido**: `nwbasset.igrejanovoscomecos.com.br` → `162.241.100.219`. Próximo passo é o certificado (`acme.sh`) e o vhost.
+1. ~~Domínio~~ — **resolvido**: `nwbasset.igrejanovoscomecos.com.br` → `162.241.100.219`. Certificado e vhost também feitos (ver abaixo).
 2. **Cloudflare Turnstile** — cadastrar o domínio e gerar chaves de produção; hoje o `.env.local` usa a chave de teste `1x000…`.
 3. **`.env` de produção** — `APP_DEBUG=false`, senha nova do banco, `APP_KEY` copiada.
 4. **Senha do administrador** — o seeder cria `admin@nwbasset.local / NwbAsset@123`; trocar no primeiro acesso (ou criar o usuário real e desativar este).
@@ -250,3 +250,43 @@ abaixo na ordem em que travam o go-live.
 - Ícones PWA 192/512 (hoje só o `Favicon.png` 250×120) para o app ser instalável no celular.
 - Monitorar `docker stats`: a VPS tem ≈5 GB livres com os outros sistemas rodando; o conjunto do NWB Asset consome ~600 MB.
 - CentOS 7 ELS: planejar migração da VPS para um SO suportado no médio prazo (fora do escopo do NWB Asset).
+
+---
+
+## Publicação realizada — 16/09/2026
+
+| Item | Como ficou |
+|---|---|
+| Código | `/opt/nwbasset` (clone do GitHub, branch `main`) |
+| Containers | `nwbasset-postgres`, `nwbasset-backend` (`127.0.0.1:6201`), `nwbasset-frontend` (`127.0.0.1:6200`), rede isolada `nwbasset-network` |
+| Subida | `./docker/frontend/build-vps.sh && docker compose -f docker-compose.yml -f docker-compose.vps.yml up -d --build` |
+| Dados | Dump do ambiente local restaurado (3 empresas, 3 filiais, 3 bens, 1 usuário) + uploads (7 arquivos) |
+| TLS | Let's Encrypt via `acme.sh` (webroot `/opt/nwbasset/acme`), instalado em `/etc/ssl/nwbasset/`, renovação pelo cron do acme.sh, `systemctl reload httpd` |
+| Vhosts | `/etc/apache2/conf.d/includes/post_virtualhost_global.conf` (backup `.bak-*-antes-nwbasset`); logs em `/var/log/nwbasset-*.log` |
+| Backup | `/opt/nwbasset/scripts/backup.sh` (cópia versionada em `docker/scripts/backup-vps.sh`), diário às 04:50, `/var/backups/nwbasset`, **cada dump verificado por restauração real**; retenção 14 dias (domingos 90) |
+| CAPTCHA | **Desligado** — sem chaves Turnstile de produção. O rate limit do login está ativo |
+
+### Particularidades desta VPS que o repositório já absorve
+
+Todas estão comentadas em `docker-compose.vps.yml` e `docker/frontend/build-vps.sh`:
+
+1. **Bridge sem internet** (`FORWARD DROP`): build com `network: host`; execução segue na rede isolada.
+2. **Kernel 3.10 + seccomp**: `next build` e PostgreSQL 18 falham com `EPERM` sob o seccomp padrão. O frontend é compilado num container `seccomp=unconfined` (fora do `docker build`) e postgres/frontend rodam com `seccomp=unconfined` — o mesmo que o nc-tech faz nesta máquina.
+3. **Firewall de saída do host**: o host só alcança containers em portas "conhecidas" (80 sim, 5001 não). O frontend escuta na porta 80 dentro do container.
+4. **Proxy `/api`**: o Next tem rotas próprias em `/api/*` (`/api/auth`, `/api/admin`...). O Apache proxia **apenas `/api/v1`** e `/storage` para o Laravel; o resto vai para o Next.
+5. Havia uma regra manual `iptables -A INPUT -s 172.22.0.4 -j DROP` (IP que coube ao container do frontend) — removida; não estava persistida em arquivo. Se o frontend "parar de responder" só a partir do host, verificar `iptables -S INPUT | grep 172.22`.
+
+### Atualizar o sistema na VPS
+
+```bash
+cd /opt/nwbasset && git pull
+./docker/frontend/build-vps.sh                       # só se o frontend mudou
+docker compose -f docker-compose.yml -f docker-compose.vps.yml up -d --build
+docker compose -f docker-compose.yml exec backend php artisan migrate --force   # se houver migration nova
+```
+
+### Pendências pós-publicação
+
+- **Trocar a senha do administrador** (`admin@nwbasset.local`, senha do seed) no primeiro acesso — ou criar o usuário real e desativar este.
+- Cadastrar o domínio no Cloudflare Turnstile e ligar o CAPTCHA (`AUTH_CAPTCHA_ENABLED`, chaves, rebuild do frontend).
+- Cópia externa dos backups (`/var/backups/nwbasset`) — hoje ficam só na VPS.
