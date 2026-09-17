@@ -33,7 +33,7 @@ class MultiCompanyIsolationTest extends TestCase
         $stackB = $this->createEmpresaStack('B');
         $user = $this->createUserForEmpresa($stackA['empresa']);
 
-        Sanctum::actingAs($user);
+        $this->actingAsComTermo($user);
 
         $response = $this->withHeader('X-Empresa-Id', (string) $stackA['empresa']->id)
             ->getJson('/api/v1/bens');
@@ -50,7 +50,7 @@ class MultiCompanyIsolationTest extends TestCase
         $stackB = $this->createEmpresaStack('B');
         $user = $this->createUserForEmpresa($stackA['empresa']);
 
-        Sanctum::actingAs($user);
+        $this->actingAsComTermo($user);
 
         $response = $this->withHeader('X-Empresa-Id', (string) $stackA['empresa']->id)
             ->getJson("/api/v1/bens/{$stackB['bem']->id}");
@@ -64,7 +64,7 @@ class MultiCompanyIsolationTest extends TestCase
         $stackB = $this->createEmpresaStack('B');
         $user = $this->createUserForEmpresa($stackA['empresa']);
 
-        Sanctum::actingAs($user);
+        $this->actingAsComTermo($user);
 
         $response = $this->withHeader('X-Empresa-Id', (string) $stackA['empresa']->id)
             ->getJson('/api/v1/inventario-itens');
@@ -81,7 +81,7 @@ class MultiCompanyIsolationTest extends TestCase
         $stackB = $this->createEmpresaStack('B');
         $user = $this->createUserForEmpresa($stackA['empresa']);
 
-        Sanctum::actingAs($user);
+        $this->actingAsComTermo($user);
 
         $response = $this->withHeader('X-Empresa-Id', (string) $stackB['empresa']->id)
             ->getJson('/api/v1/inventarios');

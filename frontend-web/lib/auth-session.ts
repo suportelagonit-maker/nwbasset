@@ -11,6 +11,8 @@ export const ACTIVE_EMPRESA_CNPJ_COOKIE = 'nwbasset_empresa_cnpj';
 export const ACTIVE_EMPRESA_LOGO_COOKIE = 'nwbasset_empresa_logo';
 export const EMPRESAS_OPTIONS_COOKIE = 'nwbasset_empresas_options';
 export const USER_IS_SUPER_ADMIN_COOKIE = 'nwbasset_is_super_admin';
+/** '1' enquanto o usuário não aceitou a versão vigente do Termo de Uso e LGPD. */
+export const TERMO_PENDENTE_COOKIE = 'nwbasset_termo_pendente';
 
 /**
  * Opções comuns dos cookies de sessão. `secure` é ligado quando a requisição
@@ -42,6 +44,7 @@ export type AuthSession = {
   empresaCnpj: string | null;
   empresaLogoUrl: string | null;
   isSuperAdmin: boolean;
+  termoPendente: boolean;
   empresas: EmpresaSessionOption[];
 };
 
@@ -109,6 +112,7 @@ export async function getAuthSession(): Promise<AuthSession> {
     empresaCnpj: cookieStore.get(ACTIVE_EMPRESA_CNPJ_COOKIE)?.value ?? null,
     empresaLogoUrl: cookieStore.get(ACTIVE_EMPRESA_LOGO_COOKIE)?.value ?? null,
     isSuperAdmin: cookieStore.get(USER_IS_SUPER_ADMIN_COOKIE)?.value === '1',
+    termoPendente: cookieStore.get(TERMO_PENDENTE_COOKIE)?.value === '1',
     empresas: parseEmpresasCookie(cookieStore.get(EMPRESAS_OPTIONS_COOKIE)?.value),
   };
 }

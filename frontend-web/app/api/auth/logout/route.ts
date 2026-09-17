@@ -7,6 +7,7 @@ import {
   EMPRESA_ID_COOKIE,
   EMPRESAS_OPTIONS_COOKIE,
   USER_EMAIL_COOKIE,
+  TERMO_PENDENTE_COOKIE,
   USER_IS_SUPER_ADMIN_COOKIE,
   USER_NAME_COOKIE,
 } from '@/lib/auth-session';
@@ -39,6 +40,7 @@ export async function POST(request: Request) {
   response.cookies.delete(ACTIVE_EMPRESA_CNPJ_COOKIE);
   response.cookies.delete(EMPRESAS_OPTIONS_COOKIE);
   response.cookies.delete(USER_IS_SUPER_ADMIN_COOKIE);
+  response.cookies.delete(TERMO_PENDENTE_COOKIE);
 
   return response;
 }
@@ -53,6 +55,7 @@ export async function GET(request: Request) {
   response.cookies.delete(ACTIVE_EMPRESA_CNPJ_COOKIE);
   response.cookies.delete(EMPRESAS_OPTIONS_COOKIE);
   response.cookies.delete(USER_IS_SUPER_ADMIN_COOKIE);
+  response.cookies.delete(TERMO_PENDENTE_COOKIE);
 
   return response;
 }

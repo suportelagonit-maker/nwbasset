@@ -21,6 +21,10 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->trustProxies(at: '*');
 
         $middleware->statefulApi();
+
+        // Toda a API exige o aceite do Termo de Responsabilidade de Uso e LGPD
+        // (o proprio middleware libera login, me, logout e as rotas do termo).
+        $middleware->api(append: [\App\Http\Middleware\EnsureTermoUsoAceito::class]);
         $middleware->redirectGuestsTo(function (Request $request): ?string {
             if ($request->is('api/*') || $request->expectsJson()) {
                 return null;

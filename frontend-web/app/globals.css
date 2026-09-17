@@ -664,3 +664,67 @@ pre {
     min-width: 0;
   }
 }
+
+/* ------------------------------------------------------------------ */
+/* Termo de Responsabilidade de Uso e LGPD                             */
+/* ------------------------------------------------------------------ */
+
+.termo-conteudo h2 {
+  margin: 22px 0 8px;
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  color: var(--ink);
+}
+
+.termo-conteudo h2:first-of-type {
+  margin-top: 6px;
+}
+
+.termo-conteudo p {
+  margin: 0 0 10px;
+}
+
+.termo-conteudo ul {
+  margin: 0 0 12px;
+  padding-left: 22px;
+  list-style: disc;
+}
+
+.termo-conteudo li {
+  margin-bottom: 4px;
+}
+
+.termo-conteudo .termo-intro {
+  padding: 12px 14px;
+  border-radius: 14px;
+  background: #fafafa;
+  border: 1px solid var(--line);
+}
+
+/* Impressao do termo a partir do visualizador: so o documento sai no papel. */
+@media print {
+  body.termo-viewer-aberto > *:not(.termo-viewer) {
+    display: none !important;
+  }
+
+  body.termo-viewer-aberto .termo-viewer {
+    position: static;
+    display: block;
+    background: #ffffff;
+    backdrop-filter: none;
+  }
+
+  body.termo-viewer-aberto .termo-viewer-corpo {
+    overflow: visible;
+    padding: 0;
+  }
+
+  .termo-documento {
+    border: 0;
+  }
+
+  .termo-carimbo {
+    transform: none;
+  }
+}

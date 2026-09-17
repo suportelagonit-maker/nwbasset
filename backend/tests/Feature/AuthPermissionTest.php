@@ -97,7 +97,7 @@ class AuthPermissionTest extends TestCase
             'permissao' => 'inventarios.visualizar',
         ]);
 
-        Sanctum::actingAs($usuario);
+        $this->actingAsComTermo($usuario);
 
         $response = $this->withHeader('X-Empresa-Id', (string) $empresa->id)
             ->getJson('/api/v1/bens');

@@ -13,6 +13,7 @@ use App\Domain\AssetRegistry\Controllers\PublicPlaquetaLookupController;
 use App\Domain\Audit\Controllers\AuditoriaPatrimonialController;
 use App\Domain\Auth\Controllers\AuthController;
 use App\Domain\Auth\Controllers\RolePermissaoController;
+use App\Domain\Auth\Controllers\TermoUsoController;
 use App\Domain\Auth\Controllers\UsuarioController;
 use App\Domain\Dashboard\Controllers\DashboardPatrimonialController;
 use App\Domain\Depreciation\Controllers\DepreciacaoBemController;
@@ -48,6 +49,8 @@ Route::prefix('v1')->group(function (): void {
     Route::middleware('auth:sanctum')->group(function (): void {
         Route::get('auth/me', [AuthController::class, 'me']);
         Route::post('auth/logout', [AuthController::class, 'logout']);
+        Route::get('termo-uso', [TermoUsoController::class, 'show']);
+        Route::post('termo-uso/aceite', [TermoUsoController::class, 'aceitar']);
         Route::apiResource('empresas', EmpresaController::class)
             ->parameters(['empresas' => 'empresa']);
         Route::post('empresas/{empresa}/logo', [EmpresaController::class, 'uploadLogo']);

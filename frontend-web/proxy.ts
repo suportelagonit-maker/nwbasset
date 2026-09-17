@@ -1,9 +1,9 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 
-import { AUTH_TOKEN_COOKIE, DASHBOARD_SCOPE_COOKIE, EMPRESA_ID_COOKIE } from './lib/auth-session';
+import { AUTH_TOKEN_COOKIE, DASHBOARD_SCOPE_COOKIE, EMPRESA_ID_COOKIE, TERMO_PENDENTE_COOKIE } from './lib/auth-session';
 
-const protectedPrefixes = ['/dashboard', '/users', '/permissoes', '/perfil', '/selecionar-empresa', '/ajuda'];
+const protectedPrefixes = ['/dashboard', '/users', '/permissoes', '/perfil', '/selecionar-empresa', '/ajuda', '/termo'];
 
 export function proxy(request: NextRequest) {
   const token = request.cookies.get(AUTH_TOKEN_COOKIE)?.value;
@@ -14,6 +14,13 @@ export function proxy(request: NextRequest) {
 
   if (!token && isProtected) {
     return NextResponse.redirect(new URL('/login', request.url));
+  }
+
+  // Termo de Responsabilidade de Uso e LGPD pendente: só a página do termo é
+  // acessível (o backend também recusa a API com 428 até o aceite).
+  const termoPendente = request.cookies.get(TERMO_PENDENTE_COOKIE)?.value === '1';
+  if (token && termoPendente && pathname !== '/termo' && (isProtected || pathname === '/login')) {
+    return NextResponse.redirect(new URL('/termo', request.url));
   }
 
   if (token && pathname === '/login') {
@@ -36,5 +43,5 @@ export function proxy(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ['/dashboard/:path*', '/users/:path*', '/permissoes/:path*', '/perfil/:path*', '/selecionar-empresa', '/ajuda', '/login'],
+  matcher: ['/dashboard/:path*', '/users/:path*', '/permissoes/:path*', '/perfil/:path*', '/selecionar-empresa', '/ajuda', '/termo', '/login'],
 };

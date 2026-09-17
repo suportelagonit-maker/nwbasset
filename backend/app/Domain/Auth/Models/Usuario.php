@@ -50,6 +50,11 @@ class Usuario extends Authenticatable
         return $this->belongsTo(Empresa::class, 'empresa_id');
     }
 
+    public function termoUsoAceites(): HasMany
+    {
+        return $this->hasMany(TermoUsoAceite::class, 'usuario_id');
+    }
+
     public function empresas(): BelongsToMany
     {
         return $this->belongsToMany(Empresa::class, 'usuarios_empresas', 'usuario_id', 'empresa_id')

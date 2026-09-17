@@ -283,6 +283,11 @@ cd /opt/nwbasset && git pull
 ./docker/frontend/build-vps.sh                       # só se o frontend mudou
 docker compose -f docker-compose.yml -f docker-compose.vps.yml up -d --build
 docker compose -f docker-compose.yml exec backend php artisan migrate --force   # se houver migration nova
+
+# Termo de Responsabilidade de Uso e LGPD: o texto vigente e a versao ficam em
+# backend/resources/termos e backend/config/termo_uso.php. Nova versao = novo
+# aceite obrigatorio de todos os usuarios no proximo acesso (aceites em
+# termo_uso_aceites, com nome, e-mail, data/hora, IP e hash do texto).
 ```
 
 ### Decisões pós-publicação (16/09/2026)

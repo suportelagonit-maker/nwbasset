@@ -2,8 +2,12 @@
 
 namespace Tests;
 
+use App\Domain\Auth\Models\Usuario;
+use App\Domain\Auth\Services\TermoUsoService;
 use Illuminate\Foundation\Testing\TestCase as BaseTestCase;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Laravel\Sanctum\Sanctum;
 use RuntimeException;
 
 abstract class TestCase extends BaseTestCase
@@ -46,5 +50,18 @@ abstract class TestCase extends BaseTestCase
                 $connection,
             ));
         }
+    }
+
+    /**
+     * Autentica o usuario ja com o Termo de Uso aceito. Toda a API exige o
+     * aceite (EnsureTermoUsoAceito); testes que nao tratam do termo usam este
+     * atalho em vez de Sanctum::actingAs.
+     */
+    protected function actingAsComTermo(Usuario $usuario): Usuario
+    {
+        app(TermoUsoService::class)->registrarAceite($usuario, Request::create('/', 'POST', server: ['REMOTE_ADDR' => '127.0.0.1']));
+        Sanctum::actingAs($usuario);
+
+        return $usuario;
     }
 }

@@ -60,6 +60,20 @@ export const AJUDA_SECOES: AjudaSecao[] = [
         palavras: ['login', 'senha', 'acesso', 'entrar', 'sair', 'logout'],
       },
       {
+        id: 'termo-lgpd',
+        titulo: 'Termo de Responsabilidade e LGPD (primeiro acesso)',
+        objetivo: 'Entender o aceite obrigatório do Termo de Responsabilidade de Uso da Ferramenta e Proteção de Dados, e onde consultá-lo depois.',
+        imagem: '/ajuda/termo.jpg',
+        open: { href: '/perfil', label: 'Abrir meu Perfil' },
+        passos: [
+          { onde: 'Primeiro acesso', acao: 'Logo após o login, o sistema mostra o Termo. Role o documento até o fim, marque "Li e aceito o Termo" e clique em Aceitar e entrar no sistema.', porque: 'Sem o aceite o sistema não pode ser usado: a navegação volta para o termo e a API recusa qualquer operação.' },
+          { onde: 'Registro do aceite', acao: 'O aceite fica gravado com o seu nome, e-mail, data, hora, endereço IP e a versão do texto aceito. Se você não concordar, use "Não aceito · sair".' },
+          { onde: 'Avatar › Perfil › Termo de Responsabilidade e LGPD', acao: 'No seu perfil o termo fica disponível com o carimbo do aceite (nome, data e hora). Clique em Abrir termo para ler no visualizador e em Imprimir / salvar PDF se precisar de uma cópia.' },
+          { onde: 'Nova versão', acao: 'Quando o termo for atualizado, o sistema pede um novo aceite no próximo acesso; os aceites anteriores continuam guardados.' },
+        ],
+        palavras: ['termo', 'lgpd', 'aceite', 'responsabilidade', 'privacidade', 'dados pessoais', 'carimbo'],
+      },
+      {
         id: 'trocar-empresa',
         titulo: 'Como trocar a empresa ativa',
         objetivo: 'Alternar entre as empresas às quais você tem acesso, ou abrir o Painel geral (visão consolidada, para Super admin).',

@@ -10,6 +10,7 @@ import {
   EMPRESAS_OPTIONS_COOKIE,
   USER_EMAIL_COOKIE,
   USER_IS_SUPER_ADMIN_COOKIE,
+  TERMO_PENDENTE_COOKIE,
   USER_NAME_COOKIE,
   sessionCookieOptions,
 } from '@/lib/auth-session';
@@ -61,6 +62,7 @@ export async function POST(request: Request) {
           cnpj?: string | null;
           logo_url?: string | null;
         };
+        termo_pendente?: boolean;
         message?: string;
       }
     | null;
@@ -78,6 +80,7 @@ export async function POST(request: Request) {
   });
 
   nextResponse.cookies.set(AUTH_TOKEN_COOKIE, body.access_token, cookieOptions);
+  nextResponse.cookies.set(TERMO_PENDENTE_COOKIE, body.termo_pendente ? '1' : '0', cookieOptions);
 
   if (body.usuario?.nome) {
     nextResponse.cookies.set(USER_NAME_COOKIE, body.usuario.nome, cookieOptions);

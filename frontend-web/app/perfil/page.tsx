@@ -2,6 +2,7 @@ import { redirect } from 'next/navigation';
 
 import ActiveEmpresaLogoPanel from '@/components/ActiveEmpresaLogoPanel';
 import AdminShell from '@/components/AdminShell';
+import TermoPerfilCard from '@/components/TermoPerfilCard';
 import { getAuthSession } from '@/lib/auth-session';
 
 export default async function PerfilPage() {
@@ -52,6 +53,8 @@ export default async function PerfilPage() {
               </div>
             </div>
           </article>
+
+          <TermoPerfilCard />
 
           <ActiveEmpresaLogoPanel
             empresaId={session.empresaId}

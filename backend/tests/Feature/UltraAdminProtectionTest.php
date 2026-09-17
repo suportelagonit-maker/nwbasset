@@ -45,7 +45,7 @@ class UltraAdminProtectionTest extends TestCase
             'usuarios.excluir',
         ]);
 
-        Sanctum::actingAs($adminEmpresa);
+        $this->actingAsComTermo($adminEmpresa);
 
         $updateResponse = $this->withHeader('X-Empresa-Id', (string) $empresa->id)
             ->putJson("/api/v1/usuarios/{$ultraAdmin->id}", [
@@ -76,7 +76,7 @@ class UltraAdminProtectionTest extends TestCase
             perfilEmpresa: RoleEnum::SUPER_ADMIN->value,
         );
 
-        Sanctum::actingAs($ultraAdmin);
+        $this->actingAsComTermo($ultraAdmin);
 
         $response = $this->withHeader('X-Empresa-Id', (string) $empresa->id)
             ->putJson("/api/v1/usuarios/{$ultraAdmin->id}", [

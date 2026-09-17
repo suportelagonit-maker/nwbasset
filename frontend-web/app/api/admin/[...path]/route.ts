@@ -1,6 +1,6 @@
 import { type NextRequest } from 'next/server';
 
-import { getAuthSession } from '@/lib/auth-session';
+import { TERMO_PENDENTE_COOKIE, getAuthSession, sessionCookieOptions } from '@/lib/auth-session';
 
 
 import { API_BASE_URL } from '@/lib/api-base';
@@ -39,13 +39,14 @@ async function proxyRequest(request: NextRequest, path: string[]) {
   });
 
   const responseBody = await response.text();
+  const headers = new Headers({ 'Content-Type': response.headers.get('content-type') ?? 'application/json' });
 
-  return new Response(responseBody, {
-    status: response.status,
-    headers: {
-      'Content-Type': response.headers.get('content-type') ?? 'application/json',
-    },
-  });
+  if (response.status === 428) {
+    const opts = sessionCookieOptions(request);
+    headers.append('Set-Cookie', `${TERMO_PENDENTE_COOKIE}=1; Path=/; HttpOnly; SameSite=Lax${opts.secure ? '; Secure' : ''}`);
+  }
+
+  return new Response(responseBody, { status: response.status, headers });
 }
 
 type RouteContext = {
