@@ -2,7 +2,7 @@ import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
 
 import DashboardPatrimonioClient from '@/components/DashboardPatrimonioClient';
-import { AUTH_TOKEN_COOKIE, DASHBOARD_SCOPE_COOKIE, EMPRESA_ID_COOKIE } from '@/lib/auth-session';
+import { AUTH_TOKEN_COOKIE, DASHBOARD_SCOPE_COOKIE, EMPRESA_ID_COOKIE, getAuthSession } from '@/lib/auth-session';
 import type { DashboardQueryFilters } from '@/lib/patrimonio-api';
 
 export const dynamic = 'force-dynamic';
@@ -26,6 +26,15 @@ export default async function PatrimonioDashboardPage() {
     filial_id: undefined,
   };
 
-  return <DashboardPatrimonioClient filters={filters} isGeneralView={isGeneralView} />;
+  const session = await getAuthSession();
+
+  return (
+    <DashboardPatrimonioClient
+      filters={filters}
+      isGeneralView={isGeneralView}
+      empresaNome={session.empresaNome}
+      userName={session.userName}
+    />
+  );
 }
 

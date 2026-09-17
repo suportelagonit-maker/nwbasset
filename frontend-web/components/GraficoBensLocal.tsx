@@ -11,11 +11,11 @@ type GraficoBensLocalProps = {
 
 export default function GraficoBensLocal({ data }: GraficoBensLocalProps) {
   return (
-    <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_220px]">
-      <div className="h-[320px]">
+    <div className="grid gap-3 lg:grid-cols-[minmax(0,1fr)_200px]">
+      <div className="h-[290px]">
         <ResponsiveContainer width="100%" height="100%">
           <PieChart>
-            <Pie data={data} dataKey="total_bens" nameKey="local" innerRadius={72} outerRadius={112} paddingAngle={3}>
+            <Pie isAnimationActive={false} data={data} dataKey="total_bens" nameKey="local" innerRadius={72} outerRadius={112} paddingAngle={3}>
               {data.map((entry, index) => (
                 <Cell key={entry.local_id} fill={COLORS[index % COLORS.length]} />
               ))}
@@ -28,12 +28,12 @@ export default function GraficoBensLocal({ data }: GraficoBensLocalProps) {
         </ResponsiveContainer>
       </div>
 
-      <div className="grid gap-2 self-center">
+      <div className="grid gap-1.5 self-center">
         {data.map((entry, index) => (
-          <div key={entry.local_id} className="flex items-center gap-3 rounded-2xl border border-[rgba(17,24,39,0.08)] bg-[#fafafa] px-3 py-2.5">
+          <div key={entry.local_id} className="flex items-center gap-2.5 rounded-[12px] border border-[rgba(17,24,39,0.08)] bg-[#fafafa] px-2.5 py-2">
             <span className="h-3 w-3 rounded-full" style={{ backgroundColor: COLORS[index % COLORS.length] }} />
             <div className="min-w-0">
-              <p className="truncate text-sm font-semibold text-[var(--ink)]">{entry.local ?? 'Sem local'}</p>
+              <p className="truncate text-[13px] font-semibold text-[var(--ink)]">{entry.local ?? 'Sem local'}</p>
               <p className="text-xs text-[var(--muted)]">{entry.total_bens} bens</p>
             </div>
           </div>

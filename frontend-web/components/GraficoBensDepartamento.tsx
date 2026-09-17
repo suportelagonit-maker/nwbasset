@@ -9,7 +9,7 @@ type GraficoBensDepartamentoProps = {
 
 export default function GraficoBensDepartamento({ data }: GraficoBensDepartamentoProps) {
   return (
-    <div className="h-[360px]">
+    <div className="h-[300px]">
       <ResponsiveContainer width="100%" height="100%">
         <BarChart data={data} margin={{ left: 0, right: 0, top: 8, bottom: 8 }}>
           <CartesianGrid stroke="rgba(17,24,39,0.08)" vertical={false} />
@@ -20,7 +20,7 @@ export default function GraficoBensDepartamento({ data }: GraficoBensDepartament
             labelFormatter={(label) => `Departamento ${label}`}
             contentStyle={{ borderRadius: '16px', borderColor: 'rgba(17,24,39,0.12)' }}
           />
-          <Bar dataKey="total_bens" fill="#374151" radius={[10, 10, 2, 2]} />
+          <Bar isAnimationActive={false} dataKey="total_bens" fill="#374151" radius={[8, 8, 2, 2]} />
         </BarChart>
       </ResponsiveContainer>
     </div>
