@@ -285,8 +285,8 @@ docker compose -f docker-compose.yml -f docker-compose.vps.yml up -d --build
 docker compose -f docker-compose.yml exec backend php artisan migrate --force   # se houver migration nova
 ```
 
-### Pendências pós-publicação
+### Decisões pós-publicação (16/09/2026)
 
-- **Trocar a senha do administrador** (`admin@nwbasset.local`, senha do seed) no primeiro acesso — ou criar o usuário real e desativar este.
-- Cadastrar o domínio no Cloudflare Turnstile e ligar o CAPTCHA (`AUTH_CAPTCHA_ENABLED`, chaves, rebuild do frontend).
-- Cópia externa dos backups (`/var/backups/nwbasset`) — hoje ficam só na VPS.
+- **Senha do administrador**: será trocada pelo próprio administrador no primeiro acesso, em *Administração › Usuários* (editar o usuário e preencher o campo de senha, mínimo 8 caracteres).
+- **CAPTCHA**: fica **desligado** por decisão do responsável. A proteção do login é o rate limit (`throttle:login`). Para ligar depois: cadastrar o domínio no Cloudflare Turnstile, preencher as chaves no `.env`, `AUTH_CAPTCHA_ENABLED=true`, `NEXT_PUBLIC_LOGIN_CAPTCHA_ENABLED=1` e reconstruir o frontend.
+- **Cópia externa dos backups**: adiada; será tratada em outro processo. Até lá os backups vivem só em `/var/backups/nwbasset`, na própria VPS.
