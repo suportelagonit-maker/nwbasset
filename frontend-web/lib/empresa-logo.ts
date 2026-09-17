@@ -1,3 +1,32 @@
+/**
+ * Resolução do logo da empresa.
+ *
+ * A fonte oficial é o `logo_url` que o backend devolve (upload feito em
+ * Perfil > Logo da empresa, servido pelo Laravel em /storage/...). Os arquivos
+ * em `public/logos/empresas/` são um legado de antes do upload existir e só
+ * são considerados quando a empresa não tem logo cadastrado.
+ *
+ * Cada candidato que não existe vira um 404 no console do navegador, então a
+ * lista precisa conter apenas caminhos com chance real de existir — nada de
+ * tentar dezenas de combinações de nome/extensão.
+ */
+
+/**
+ * Arquivos que existem de fato em `public/logos/empresas/`. Ao adicionar um
+ * logo legado nessa pasta, inclua o caminho aqui; caso contrário ele não será
+ * procurado. Chave: caminho público; a resolução casa por ID (`6.png`) ou por
+ * nome normalizado (`novoscomecos.png`, `novoscomecos/logopatrimonio.png`).
+ */
+const LEGACY_PUBLIC_LOGOS = [
+  '/logos/empresas/6.png',
+  '/logos/empresas/novos.png',
+  '/logos/empresas/novoscomecos.png',
+  '/logos/empresas/novoscomecos/logopatrimonio.png',
+  '/logos/empresas/novoscomecosniteroi.png',
+] as const;
+
+const LEGACY_PUBLIC_LOGO_SET: ReadonlySet<string> = new Set(LEGACY_PUBLIC_LOGOS);
+
 function trimAndUnquote(value?: string | null) {
   return String(value ?? '')
     .trim()
@@ -24,60 +53,57 @@ function getNameTokens(empresaNome?: string | null) {
   return Array.from(new Set([full, firstTwo, first].filter(Boolean)));
 }
 
-function appendWithExtensions(candidates: string[], basePath: string) {
-  const normalizedBase = basePath.replace(/\/+$/, '');
-
-  candidates.push(`${normalizedBase}/logopatrimonio.png`);
-  candidates.push(`${normalizedBase}/logoasset.png`);
-  candidates.push(`${normalizedBase}/logo.png`);
-  candidates.push(`${normalizedBase}.png`);
-  candidates.push(`${normalizedBase}.jpg`);
-  candidates.push(`${normalizedBase}.jpeg`);
-  candidates.push(`${normalizedBase}.webp`);
+function toPublicPath(value: string) {
+  const withSlash = value.startsWith('/') ? value : `/${value}`;
+  return withSlash.replace(/\/+/g, '/');
 }
 
-function pushRelativeCandidate(candidates: string[], value: string) {
-  const normalized = trimAndUnquote(value);
-  if (!normalized) {
-    return;
-  }
-
-  const withSlash = normalized.startsWith('/') ? normalized : `/${normalized}`;
-  candidates.push(withSlash.replace(/\/+/g, '/'));
-}
-
-function addPathVariants(candidates: string[], path: string) {
-  const cleaned = trimAndUnquote(path);
+/**
+ * Converte o `logo_url` vindo do backend (ou de cadastros antigos) no
+ * endereço que o navegador deve carregar.
+ *
+ * - URL absoluta (http/https): usada como está — é o caso do upload servido
+ *   pelo Laravel, que mora em outra origem (porta/domínio do backend).
+ * - Caminho absoluto de disco (legado, ex.: `C:\...\public\logos\empresas\x.png`):
+ *   reduzido ao trecho público.
+ * - Caminho relativo: normalizado com barra inicial.
+ */
+function resolveExplicitLogo(value: string): string | null {
+  const cleaned = trimAndUnquote(value);
   if (!cleaned) {
-    return;
+    return null;
   }
 
-  const windowsPublicMatch = cleaned.match(/public[\\\/](.+)$/i);
+  if (/^(https?:)?\/\//i.test(cleaned) || cleaned.startsWith('data:') || cleaned.startsWith('blob:')) {
+    return cleaned;
+  }
+
+  const windowsPublicMatch = cleaned.match(/public[\\/](.+)$/i);
   if (windowsPublicMatch?.[1]) {
-    pushRelativeCandidate(candidates, windowsPublicMatch[1].replace(/\\/g, '/'));
+    return toPublicPath(windowsPublicMatch[1].replace(/\\/g, '/'));
   }
 
-  const windowsLogoMatch = cleaned.match(/logos[\\\/]empresas[\\\/](.+)$/i);
+  const windowsLogoMatch = cleaned.match(/logos[\\/]empresas[\\/](.+)$/i);
   if (windowsLogoMatch?.[1]) {
-    pushRelativeCandidate(candidates, `logos/empresas/${windowsLogoMatch[1].replace(/\\/g, '/')}`);
+    return toPublicPath(`logos/empresas/${windowsLogoMatch[1].replace(/\\/g, '/')}`);
   }
 
-  if (/^https?:\/\//i.test(cleaned)) {
-    try {
-      const parsed = new URL(cleaned);
-      pushRelativeCandidate(candidates, parsed.pathname);
+  return toPublicPath(cleaned);
+}
 
-      const logoPathMatch = parsed.pathname.match(/\/logos\/empresas\/(.+)$/i);
-      if (logoPathMatch?.[1]) {
-        pushRelativeCandidate(candidates, `logos/empresas/${logoPathMatch[1]}`);
-      }
-    } catch {
-      // Ignora URL inválida e segue com os demais candidatos.
-    }
-    return;
-  }
+function legacyCandidatesFor(token: string): string[] {
+  const base = `/logos/empresas/${token}`;
+  const guesses = [
+    `${base}.png`,
+    `${base}.jpg`,
+    `${base}.jpeg`,
+    `${base}.webp`,
+    `${base}/logopatrimonio.png`,
+    `${base}/logoasset.png`,
+    `${base}/logo.png`,
+  ];
 
-  pushRelativeCandidate(candidates, cleaned);
+  return guesses.filter((path) => LEGACY_PUBLIC_LOGO_SET.has(path));
 }
 
 export function buildEmpresaLogoCandidates(input: {
@@ -88,22 +114,18 @@ export function buildEmpresaLogoCandidates(input: {
   const { empresaLogoUrl, empresaId, empresaNome } = input;
   const candidates: string[] = [];
 
-  const explicitLogo = trimAndUnquote(empresaLogoUrl);
+  const explicitLogo = resolveExplicitLogo(String(empresaLogoUrl ?? ''));
   if (explicitLogo) {
-    addPathVariants(candidates, explicitLogo);
+    candidates.push(explicitLogo);
   }
 
   if (empresaId && Number.isInteger(empresaId) && empresaId > 0) {
-    appendWithExtensions(candidates, `/logos/empresas/${empresaId}`);
-    appendWithExtensions(candidates, `/logos/empresas/${empresaId}/logo`);
-    appendWithExtensions(candidates, `/logos/empresas/${empresaId}/logopatrimonio`);
+    candidates.push(...legacyCandidatesFor(String(empresaId)));
   }
 
-  const nameTokens = getNameTokens(empresaNome);
-  nameTokens.forEach((token) => {
-    appendWithExtensions(candidates, `/logos/empresas/${token}`);
+  getNameTokens(empresaNome).forEach((token) => {
+    candidates.push(...legacyCandidatesFor(token));
   });
 
-  return Array.from(new Set(candidates.filter(Boolean))).slice(0, 32);
+  return Array.from(new Set(candidates));
 }
-
