@@ -1,0 +1,18 @@
+# Overlay para a VPS Premium (CentOS 7 + cPanel).
+#
+# Nessa maquina a rede bridge do Docker nao tem saida para a internet
+# (FORWARD DROP no firewall): containers conversam entre si normalmente, mas
+# apt-get/npm falham DURANTE O BUILD das imagens. Este overlay faz apenas o
+# build usar a rede do host; em tempo de execucao os servicos continuam na
+# rede isolada nwbasset-network, como no docker-compose.yml.
+#
+#   docker compose -f docker-compose.yml -f docker-compose.vps.yml up -d --build
+
+services:
+  backend:
+    build:
+      network: host
+
+  frontend:
+    build:
+      network: host
