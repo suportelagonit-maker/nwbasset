@@ -1,0 +1,17 @@
+# Fim de linha LF em todo o repositório, independente do sistema operacional.
+# Evita que o Windows marque centenas de arquivos como modificados sem mudança real.
+* text=auto eol=lf
+
+# Binários
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.webp binary
+*.pdf binary
+*.docx binary
+*.mp4 binary
+*.woff binary
+*.woff2 binary
+*.ttf binary
