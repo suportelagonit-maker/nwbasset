@@ -14,6 +14,12 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
+        // Em produção o container só é alcançado pelo proxy reverso (Apache do
+        // cPanel, publicado em 127.0.0.1). Confiar nele é o que permite ao
+        // Laravel enxergar o IP real do cliente (rate limit, auditoria) e o
+        // esquema https (URLs geradas, cookies seguros).
+        $middleware->trustProxies(at: '*');
+
         $middleware->statefulApi();
         $middleware->redirectGuestsTo(function (Request $request): ?string {
             if ($request->is('api/*') || $request->expectsJson()) {

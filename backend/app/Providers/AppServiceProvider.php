@@ -15,7 +15,10 @@ use App\Domain\Organization\Policies\EmpresaPolicy;
 use App\Domain\Organization\Policies\FilialPolicy;
 use App\Domain\Auth\Models\Usuario;
 use App\Domain\Auth\Policies\UsuarioPolicy;
+use Illuminate\Cache\RateLimiting\Limit;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -39,5 +42,13 @@ class AppServiceProvider extends ServiceProvider
         Gate::policy(Perfil::class, PerfilPolicy::class);
         Gate::policy(Permissao::class, PermissaoPolicy::class);
         Gate::policy(AuditoriaEvento::class, AuditoriaEventoPolicy::class);
+
+        // Freio contra força bruta no login: por IP e por par e-mail+IP.
+        // O CAPTCHA continua sendo a primeira barreira; isto cobre o caso de
+        // ele estar desligado ou ser contornado.
+        RateLimiter::for('login', static fn (Request $request): array => [
+            Limit::perMinute(20)->by('login-ip:'.$request->ip()),
+            Limit::perMinute(5)->by('login-conta:'.strtolower((string) $request->input('email')).'|'.$request->ip()),
+        ]);
     }
 }

@@ -10,9 +10,11 @@ import {
   EMPRESA_ID_COOKIE,
   EMPRESAS_OPTIONS_COOKIE,
   USER_IS_SUPER_ADMIN_COOKIE,
+  sessionCookieOptions,
 } from '@/lib/auth-session';
 
 export async function POST(request: Request) {
+  const cookieOptions = sessionCookieOptions(request);
   const cookieStore = await cookies();
   const token = cookieStore.get(AUTH_TOKEN_COOKIE)?.value;
 
@@ -52,28 +54,12 @@ export async function POST(request: Request) {
     const response = NextResponse.json({ ok: true, escopo: 'geral' });
 
     response.cookies.delete(EMPRESA_ID_COOKIE);
-    response.cookies.set(DASHBOARD_SCOPE_COOKIE, 'geral', {
-      httpOnly: true,
-      sameSite: 'lax',
-      path: '/',
-    });
-    response.cookies.set(ACTIVE_EMPRESA_NAME_COOKIE, 'Painel geral', {
-      httpOnly: true,
-      sameSite: 'lax',
-      path: '/',
-    });
+    response.cookies.set(DASHBOARD_SCOPE_COOKIE, 'geral', cookieOptions);
+    response.cookies.set(ACTIVE_EMPRESA_NAME_COOKIE, 'Painel geral', cookieOptions);
     response.cookies.delete(ACTIVE_EMPRESA_CNPJ_COOKIE);
     response.cookies.delete(ACTIVE_EMPRESA_LOGO_COOKIE);
-    response.cookies.set(EMPRESAS_OPTIONS_COOKIE, JSON.stringify(empresas), {
-      httpOnly: true,
-      sameSite: 'lax',
-      path: '/',
-    });
-    response.cookies.set(USER_IS_SUPER_ADMIN_COOKIE, payload?.is_super_admin ? '1' : '0', {
-      httpOnly: true,
-      sameSite: 'lax',
-      path: '/',
-    });
+    response.cookies.set(EMPRESAS_OPTIONS_COOKIE, JSON.stringify(empresas), cookieOptions);
+    response.cookies.set(USER_IS_SUPER_ADMIN_COOKIE, payload?.is_super_admin ? '1' : '0', cookieOptions);
 
     return response;
   }
@@ -84,49 +70,21 @@ export async function POST(request: Request) {
 
   const response = NextResponse.json({ ok: true, empresa_id: empresaId });
 
-  response.cookies.set(EMPRESA_ID_COOKIE, String(empresaId), {
-    httpOnly: true,
-    sameSite: 'lax',
-    path: '/',
-  });
-  response.cookies.set(DASHBOARD_SCOPE_COOKIE, 'empresa', {
-    httpOnly: true,
-    sameSite: 'lax',
-    path: '/',
-  });
-  response.cookies.set(ACTIVE_EMPRESA_NAME_COOKIE, payload?.empresa_nome_fantasia ?? '', {
-    httpOnly: true,
-    sameSite: 'lax',
-    path: '/',
-  });
+  response.cookies.set(EMPRESA_ID_COOKIE, String(empresaId), cookieOptions);
+  response.cookies.set(DASHBOARD_SCOPE_COOKIE, 'empresa', cookieOptions);
+  response.cookies.set(ACTIVE_EMPRESA_NAME_COOKIE, payload?.empresa_nome_fantasia ?? '', cookieOptions);
   if (payload?.empresa_cnpj) {
-    response.cookies.set(ACTIVE_EMPRESA_CNPJ_COOKIE, payload.empresa_cnpj, {
-      httpOnly: true,
-      sameSite: 'lax',
-      path: '/',
-    });
+    response.cookies.set(ACTIVE_EMPRESA_CNPJ_COOKIE, payload.empresa_cnpj, cookieOptions);
   } else {
     response.cookies.delete(ACTIVE_EMPRESA_CNPJ_COOKIE);
   }
   if (payload?.empresa_logo_url) {
-    response.cookies.set(ACTIVE_EMPRESA_LOGO_COOKIE, payload.empresa_logo_url, {
-      httpOnly: true,
-      sameSite: 'lax',
-      path: '/',
-    });
+    response.cookies.set(ACTIVE_EMPRESA_LOGO_COOKIE, payload.empresa_logo_url, cookieOptions);
   } else {
     response.cookies.delete(ACTIVE_EMPRESA_LOGO_COOKIE);
   }
-  response.cookies.set(EMPRESAS_OPTIONS_COOKIE, JSON.stringify(empresas), {
-    httpOnly: true,
-    sameSite: 'lax',
-    path: '/',
-  });
-  response.cookies.set(USER_IS_SUPER_ADMIN_COOKIE, payload?.is_super_admin ? '1' : '0', {
-    httpOnly: true,
-    sameSite: 'lax',
-    path: '/',
-  });
+  response.cookies.set(EMPRESAS_OPTIONS_COOKIE, JSON.stringify(empresas), cookieOptions);
+  response.cookies.set(USER_IS_SUPER_ADMIN_COOKIE, payload?.is_super_admin ? '1' : '0', cookieOptions);
 
   return response;
 }

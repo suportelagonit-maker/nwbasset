@@ -12,6 +12,18 @@ export const ACTIVE_EMPRESA_LOGO_COOKIE = 'nwbasset_empresa_logo';
 export const EMPRESAS_OPTIONS_COOKIE = 'nwbasset_empresas_options';
 export const USER_IS_SUPER_ADMIN_COOKIE = 'nwbasset_is_super_admin';
 
+/**
+ * Opções comuns dos cookies de sessão. `secure` é ligado quando a requisição
+ * chegou por HTTPS — direto ou pelo proxy reverso (cabeçalho X-Forwarded-Proto),
+ * que é o caso da VPS, onde o Apache termina o TLS e fala HTTP com o container.
+ */
+export function sessionCookieOptions(request: Request) {
+  const forwardedProto = request.headers.get('x-forwarded-proto')?.split(',')[0]?.trim();
+  const secure = forwardedProto === 'https' || request.url.startsWith('https://');
+
+  return { httpOnly: true, sameSite: 'lax' as const, path: '/', secure };
+}
+
 export type EmpresaSessionOption = {
   id: number;
   nome_fantasia: string;

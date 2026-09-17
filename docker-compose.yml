@@ -6,6 +6,19 @@
 # Portas escolhidas apos verificar o que ja estava em uso:
 #   5000 backend  | 5001 frontend | 5436 PostgreSQL
 #   (5432 a 5435 ja estavam ocupadas por outros bancos)
+#
+# As portas sao publicadas apenas em 127.0.0.1 (BIND_HOST). Na VPS e o proxy
+# reverso (Apache do cPanel) que expoe o sistema em 80/443; backend, frontend
+# e banco nunca ficam acessiveis pela internet. Para testar de outro aparelho
+# na rede local, use BIND_HOST=0.0.0.0 no .env.
+
+# Logs vao para o stdout/stderr do container, com rotacao pelo Docker, para
+# nao encher o disco (o Laravel usa LOG_CHANNEL=stderr, ver backend).
+x-logging: &default-logging
+  driver: json-file
+  options:
+    max-size: "10m"
+    max-file: "5"
 
 name: nwbasset
 
@@ -14,13 +27,14 @@ services:
     image: postgres:18-alpine
     container_name: nwbasset-postgres
     restart: unless-stopped
+    logging: *default-logging
     environment:
       POSTGRES_DB: ${DB_DATABASE:-nwbasset}
       POSTGRES_USER: ${DB_USERNAME:-nwbasset}
       POSTGRES_PASSWORD: ${DB_PASSWORD:?defina DB_PASSWORD no .env da raiz}
       TZ: America/Sao_Paulo
     ports:
-      - "${DB_PORT_HOST:-5436}:5432"
+      - "${BIND_HOST:-127.0.0.1}:${DB_PORT_HOST:-5436}:5432"
     volumes:
       # PostgreSQL 18+ espera o mount em /var/lib/postgresql (e nao em
       # /var/lib/postgresql/data como nas versoes anteriores), para permitir
@@ -42,6 +56,7 @@ services:
       target: production
     container_name: nwbasset-backend
     restart: unless-stopped
+    logging: *default-logging
     depends_on:
       postgres:
         condition: service_healthy
@@ -52,6 +67,8 @@ services:
       APP_DEBUG: ${APP_DEBUG:-true}
       APP_KEY: ${APP_KEY:?copie APP_KEY do backend/.env para o .env da raiz}
       APP_URL: ${APP_URL:-http://localhost:5000}
+      LOG_CHANNEL: ${LOG_CHANNEL:-stderr}
+      LOG_LEVEL: ${LOG_LEVEL:-info}
       DB_CONNECTION: pgsql
       DB_HOST: postgres
       DB_PORT: 5432
@@ -62,7 +79,7 @@ services:
       TURNSTILE_SITE_KEY: ${TURNSTILE_SITE_KEY:-}
       TURNSTILE_SECRET_KEY: ${TURNSTILE_SECRET_KEY:-}
     ports:
-      - "${BACKEND_PORT:-5000}:80"
+      - "${BIND_HOST:-127.0.0.1}:${BACKEND_PORT:-5000}:80"
     volumes:
       # Uploads (imagens de bens, notas fiscais, logos) nao estao no Git.
       # Precisam de volume proprio ou se perdem a cada recriacao do container.
@@ -88,6 +105,7 @@ services:
         NEXT_PUBLIC_TURNSTILE_SITE_KEY: ${NEXT_PUBLIC_TURNSTILE_SITE_KEY:-}
     container_name: nwbasset-frontend
     restart: unless-stopped
+    logging: *default-logging
     depends_on:
       - backend
     environment:
@@ -97,7 +115,7 @@ services:
       # na rede interna. Lido em tempo de execucao, sem rebuild.
       API_BASE_URL_INTERNAL: ${API_BASE_URL_INTERNAL:-http://backend/api/v1}
     ports:
-      - "${FRONTEND_PORT:-5001}:5001"
+      - "${BIND_HOST:-127.0.0.1}:${FRONTEND_PORT:-5001}:5001"
     networks:
       - nwbasset-network
 

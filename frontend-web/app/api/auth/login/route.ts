@@ -11,6 +11,7 @@ import {
   USER_EMAIL_COOKIE,
   USER_IS_SUPER_ADMIN_COOKIE,
   USER_NAME_COOKIE,
+  sessionCookieOptions,
 } from '@/lib/auth-session';
 
 import { API_BASE_URL } from '@/lib/api-base';
@@ -24,6 +25,7 @@ type EmpresaPayload = {
 };
 
 export async function POST(request: Request) {
+  const cookieOptions = sessionCookieOptions(request);
   const payload = await request.json();
   let response: Response;
 
@@ -75,26 +77,14 @@ export async function POST(request: Request) {
     empresa_id: body.empresa_atual?.id ?? null,
   });
 
-  nextResponse.cookies.set(AUTH_TOKEN_COOKIE, body.access_token, {
-    httpOnly: true,
-    sameSite: 'lax',
-    path: '/',
-  });
+  nextResponse.cookies.set(AUTH_TOKEN_COOKIE, body.access_token, cookieOptions);
 
   if (body.usuario?.nome) {
-    nextResponse.cookies.set(USER_NAME_COOKIE, body.usuario.nome, {
-      httpOnly: true,
-      sameSite: 'lax',
-      path: '/',
-    });
+    nextResponse.cookies.set(USER_NAME_COOKIE, body.usuario.nome, cookieOptions);
   }
 
   if (body.usuario?.email) {
-    nextResponse.cookies.set(USER_EMAIL_COOKIE, body.usuario.email, {
-      httpOnly: true,
-      sameSite: 'lax',
-      path: '/',
-    });
+    nextResponse.cookies.set(USER_EMAIL_COOKIE, body.usuario.email, cookieOptions);
   }
 
   const empresas = Array.isArray(body.usuario?.empresas)
@@ -108,71 +98,35 @@ export async function POST(request: Request) {
     : [];
 
   if (empresas.length > 0) {
-    nextResponse.cookies.set(EMPRESAS_OPTIONS_COOKIE, JSON.stringify(empresas), {
-      httpOnly: true,
-      sameSite: 'lax',
-      path: '/',
-    });
+    nextResponse.cookies.set(EMPRESAS_OPTIONS_COOKIE, JSON.stringify(empresas), cookieOptions);
   } else {
     nextResponse.cookies.delete(EMPRESAS_OPTIONS_COOKIE);
   }
 
-  nextResponse.cookies.set(USER_IS_SUPER_ADMIN_COOKIE, body.usuario?.is_super_admin ? '1' : '0', {
-    httpOnly: true,
-    sameSite: 'lax',
-    path: '/',
-  });
+  nextResponse.cookies.set(USER_IS_SUPER_ADMIN_COOKIE, body.usuario?.is_super_admin ? '1' : '0', cookieOptions);
 
   const empresaAtualId = Number(body.empresa_atual?.id ?? '');
 
   if (Number.isInteger(empresaAtualId) && empresaAtualId > 0) {
-    nextResponse.cookies.set(EMPRESA_ID_COOKIE, String(empresaAtualId), {
-      httpOnly: true,
-      sameSite: 'lax',
-      path: '/',
-    });
-    nextResponse.cookies.set(DASHBOARD_SCOPE_COOKIE, 'empresa', {
-      httpOnly: true,
-      sameSite: 'lax',
-      path: '/',
-    });
-    nextResponse.cookies.set(ACTIVE_EMPRESA_NAME_COOKIE, body.empresa_atual?.nome_fantasia ?? '', {
-      httpOnly: true,
-      sameSite: 'lax',
-      path: '/',
-    });
+    nextResponse.cookies.set(EMPRESA_ID_COOKIE, String(empresaAtualId), cookieOptions);
+    nextResponse.cookies.set(DASHBOARD_SCOPE_COOKIE, 'empresa', cookieOptions);
+    nextResponse.cookies.set(ACTIVE_EMPRESA_NAME_COOKIE, body.empresa_atual?.nome_fantasia ?? '', cookieOptions);
 
     if (body.empresa_atual?.cnpj) {
-      nextResponse.cookies.set(ACTIVE_EMPRESA_CNPJ_COOKIE, body.empresa_atual.cnpj, {
-        httpOnly: true,
-        sameSite: 'lax',
-        path: '/',
-      });
+      nextResponse.cookies.set(ACTIVE_EMPRESA_CNPJ_COOKIE, body.empresa_atual.cnpj, cookieOptions);
     } else {
       nextResponse.cookies.delete(ACTIVE_EMPRESA_CNPJ_COOKIE);
     }
 
     if (body.empresa_atual?.logo_url) {
-      nextResponse.cookies.set(ACTIVE_EMPRESA_LOGO_COOKIE, body.empresa_atual.logo_url, {
-        httpOnly: true,
-        sameSite: 'lax',
-        path: '/',
-      });
+      nextResponse.cookies.set(ACTIVE_EMPRESA_LOGO_COOKIE, body.empresa_atual.logo_url, cookieOptions);
     } else {
       nextResponse.cookies.delete(ACTIVE_EMPRESA_LOGO_COOKIE);
     }
   } else {
     nextResponse.cookies.delete(EMPRESA_ID_COOKIE);
-    nextResponse.cookies.set(DASHBOARD_SCOPE_COOKIE, 'geral', {
-      httpOnly: true,
-      sameSite: 'lax',
-      path: '/',
-    });
-    nextResponse.cookies.set(ACTIVE_EMPRESA_NAME_COOKIE, 'Painel geral', {
-      httpOnly: true,
-      sameSite: 'lax',
-      path: '/',
-    });
+    nextResponse.cookies.set(DASHBOARD_SCOPE_COOKIE, 'geral', cookieOptions);
+    nextResponse.cookies.set(ACTIVE_EMPRESA_NAME_COOKIE, 'Painel geral', cookieOptions);
     nextResponse.cookies.delete(ACTIVE_EMPRESA_CNPJ_COOKIE);
     nextResponse.cookies.delete(ACTIVE_EMPRESA_LOGO_COOKIE);
   }
