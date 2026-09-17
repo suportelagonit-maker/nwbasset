@@ -39,3 +39,6 @@ docker/data/
 
 # Artefato de build incremental do TypeScript
 *.tsbuildinfo
+
+# Artefatos do build do frontend na VPS (docker/frontend/build-vps.sh)
+.build/
