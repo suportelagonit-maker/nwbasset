@@ -25,3 +25,13 @@ services:
       context: ./.build/frontend
       dockerfile: Dockerfile
       network: host
+    # Node 24 em execucao usa as mesmas chamadas novas de escrita.
+    security_opt:
+      - seccomp=unconfined
+
+  # 3. O PostgreSQL 18 (musl) tambem morre com "postmaster.pid: Operation not
+  #    permitted" sob o seccomp padrao neste kernel. O nc-tech, nesta mesma VPS,
+  #    resolve do mesmo jeito.
+  postgres:
+    security_opt:
+      - seccomp=unconfined
