@@ -3,7 +3,7 @@ import type { NextRequest } from 'next/server';
 
 import { AUTH_TOKEN_COOKIE, DASHBOARD_SCOPE_COOKIE, EMPRESA_ID_COOKIE } from './lib/auth-session';
 
-const protectedPrefixes = ['/dashboard', '/users', '/permissoes', '/perfil', '/selecionar-empresa'];
+const protectedPrefixes = ['/dashboard', '/users', '/permissoes', '/perfil', '/selecionar-empresa', '/ajuda'];
 
 export function proxy(request: NextRequest) {
   const token = request.cookies.get(AUTH_TOKEN_COOKIE)?.value;
@@ -36,5 +36,5 @@ export function proxy(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ['/dashboard/:path*', '/users/:path*', '/permissoes/:path*', '/perfil/:path*', '/selecionar-empresa', '/login'],
+  matcher: ['/dashboard/:path*', '/users/:path*', '/permissoes/:path*', '/perfil/:path*', '/selecionar-empresa', '/ajuda', '/login'],
 };

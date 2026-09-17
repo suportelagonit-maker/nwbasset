@@ -201,6 +201,18 @@ export default function MobileBottomNav({
                       <span className="[&>svg]:h-5 [&>svg]:w-5">{renderAdminIcon('user')}</span>
                       Perfil
                     </Link>
+                    <Link
+                      href="/ajuda"
+                      prefetch={false}
+                      className="flex items-center gap-3 border-t border-[var(--line)] px-4 py-3 text-sm font-medium text-[var(--ink)]"
+                    >
+                      <svg aria-hidden="true" className="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
+                        <circle cx="12" cy="12" r="9" />
+                        <path d="M9.5 9.5a2.5 2.5 0 1 1 3.5 2.3c-.7.4-1 1-1 1.7v.5" />
+                        <circle cx="12" cy="17" r=".6" fill="currentColor" stroke="none" />
+                      </svg>
+                      Central de Ajuda
+                    </Link>
                     <form action="/api/auth/logout" method="post">
                       <button
                         type="submit"

@@ -68,6 +68,19 @@ export default function UserMenu({ initial, userName, userEmail }: UserMenuProps
             <span>Perfil</span>
           </Link>
 
+          <Link
+            href="/ajuda"
+            onClick={() => setOpen(false)}
+            className="flex items-center gap-3 rounded-xl px-3 py-3 text-sm font-medium text-[var(--ink)] transition hover:bg-[rgba(17,24,39,0.04)]"
+          >
+            <svg aria-hidden="true" className="h-[18px] w-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
+              <circle cx="12" cy="12" r="9" />
+              <path d="M9.5 9.5a2.5 2.5 0 1 1 3.5 2.3c-.7.4-1 1-1 1.7v.5" />
+              <circle cx="12" cy="17" r=".6" fill="currentColor" stroke="none" />
+            </svg>
+            <span>Central de Ajuda</span>
+          </Link>
+
           <form action="/api/auth/logout" method="post">
             <button
               type="submit"

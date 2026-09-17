@@ -1,5 +1,7 @@
 'use client';
 
+import Link from 'next/link';
+
 import ActiveEmpresaHeader from '@/components/ActiveEmpresaHeader';
 import EmpresaContextHeader from '@/components/EmpresaContextHeader';
 import UserMenu from '@/components/UserMenu';
@@ -28,6 +30,24 @@ type AdminTopbarProps = {
   empresaAtualId?: number | null;
   dashboardScope?: 'empresa' | 'geral';
 };
+
+function HelpButton() {
+  return (
+    <Link
+      href="/ajuda"
+      prefetch={false}
+      aria-label="Central de Ajuda"
+      title="Central de Ajuda"
+      className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-[var(--line)] bg-white text-[var(--ink)] transition hover:border-[var(--accent)] hover:text-[var(--accent-deep)] sm:h-11 sm:w-11"
+    >
+      <svg aria-hidden="true" className="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+        <circle cx="12" cy="12" r="9" />
+        <path d="M9.5 9.5a2.5 2.5 0 1 1 3.5 2.3c-.7.4-1 1-1 1.7v.5" />
+        <circle cx="12" cy="17" r=".6" fill="currentColor" stroke="none" />
+      </svg>
+    </Link>
+  );
+}
 
 function MobileMenuButton({ onClick }: { onClick?: () => void }) {
   return (
@@ -83,6 +103,7 @@ export default function AdminTopbar({
             empresaCnpj={empresaCnpj}
             empresaLogoUrl={empresaLogoUrl}
           />
+          <HelpButton />
           <UserMenu initial={userInitial} userName={userName} userEmail={userEmail} />
         </div>
       </header>
@@ -124,6 +145,7 @@ export default function AdminTopbar({
           <p className="truncate text-[12px] font-semibold leading-4 text-[var(--ink)]">{userName ?? 'Usuário autenticado'}</p>
           <p className="mt-0.5 truncate text-[10px] text-[var(--muted)]">{userEmail ?? 'Conta ativa'}</p>
         </div>
+        <HelpButton />
         <UserMenu initial={userInitial} userName={userName} userEmail={userEmail} />
       </div>
     </header>
