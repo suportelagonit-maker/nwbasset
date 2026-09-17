@@ -119,6 +119,7 @@ Servidor `vps-3973099.weblagoinhario.me` (162.241.100.219). Credenciais em
 | TLS | `acme.sh` com renovação no cron; certificados em `/etc/ssl/<sistema>/{fullchain,key}.pem` |
 | Backups | Scripts próprios por sistema em `/opt/<sistema>/scripts`, saída em `/var/backups/<sistema>`, retenção 14/90 dias, métrica para node_exporter. **Não há cópia externa (offsite)** |
 | PostgreSQL do host | Existe um Postgres em `127.0.0.1:5432` (cPanel) — não usar; o NWB Asset sobe o seu próprio container |
+| **Domínio** | **`nwbasset.igrejanovoscomecos.com.br` já aponta para `162.241.100.219`** (registro A verificado em 16/09/2026; o host responde HTTP 200 pelo Apache do cPanel). Falta apenas o vhost e o certificado |
 
 ### Arranjo escolhido: caminho único (`/api` no mesmo domínio)
 
@@ -144,8 +145,8 @@ cd /opt/nwbasset
 cp .env.example .env
 #   APP_ENV=production  APP_DEBUG=false
 #   APP_KEY=<copiar do ambiente atual, não gerar novo>
-#   APP_URL=https://patrimonio.SEU-DOMINIO
-#   NEXT_PUBLIC_API_BASE_URL=https://patrimonio.SEU-DOMINIO/api/v1
+#   APP_URL=https://nwbasset.igrejanovoscomecos.com.br
+#   NEXT_PUBLIC_API_BASE_URL=https://nwbasset.igrejanovoscomecos.com.br/api/v1
 #   API_BASE_URL_INTERNAL=http://backend/api/v1
 #   BIND_HOST=127.0.0.1  BACKEND_PORT=6201  FRONTEND_PORT=6200  DB_PORT_HOST=6202
 #   DB_PASSWORD=<senha forte exclusiva>
@@ -160,8 +161,8 @@ docker compose -f docker-compose.yml exec backend php artisan migrate --force
 docker compose -f docker-compose.yml exec backend php artisan db:seed --force   # só se for começar limpo
 
 # 5. Certificado (padrão da VPS)
-~/.acme.sh/acme.sh --issue -d patrimonio.SEU-DOMINIO -w /home/<conta>/public_html   # ou --standalone com httpd parado
-mkdir -p /etc/ssl/nwbasset && ~/.acme.sh/acme.sh --install-cert -d patrimonio.SEU-DOMINIO \
+~/.acme.sh/acme.sh --issue -d nwbasset.igrejanovoscomecos.com.br -w /home/<conta>/public_html   # ou --standalone com httpd parado
+mkdir -p /etc/ssl/nwbasset && ~/.acme.sh/acme.sh --install-cert -d nwbasset.igrejanovoscomecos.com.br \
   --fullchain-file /etc/ssl/nwbasset/fullchain.pem --key-file /etc/ssl/nwbasset/key.pem \
   --reloadcmd "/scripts/restartsrv_httpd"
 ```
@@ -173,13 +174,13 @@ Acrescentar em `/etc/apache2/conf.d/includes/post_virtualhost_global.conf` (faze
 
 ```apache
 <VirtualHost 162.241.100.219:80 127.0.0.1:80>
-    ServerName patrimonio.SEU-DOMINIO
+    ServerName nwbasset.igrejanovoscomecos.com.br
     ProxyPass /.well-known/acme-challenge/ !
-    Redirect permanent / https://patrimonio.SEU-DOMINIO/
+    Redirect permanent / https://nwbasset.igrejanovoscomecos.com.br/
 </VirtualHost>
 
 <VirtualHost 162.241.100.219:443 127.0.0.1:443>
-    ServerName patrimonio.SEU-DOMINIO
+    ServerName nwbasset.igrejanovoscomecos.com.br
     SSLEngine on
     SSLCertificateFile    /etc/ssl/nwbasset/fullchain.pem
     SSLCertificateKeyFile /etc/ssl/nwbasset/key.pem
@@ -236,7 +237,7 @@ abaixo na ordem em que travam o go-live.
 
 ### Bloqueia o go-live (decidir/providenciar)
 
-1. **Domínio** — qual subdomínio (`patrimonio.<dominio>`)? Sem isso não há DNS, certificado nem CAPTCHA.
+1. ~~Domínio~~ — **resolvido**: `nwbasset.igrejanovoscomecos.com.br` → `162.241.100.219`. Próximo passo é o certificado (`acme.sh`) e o vhost.
 2. **Cloudflare Turnstile** — cadastrar o domínio e gerar chaves de produção; hoje o `.env.local` usa a chave de teste `1x000…`.
 3. **`.env` de produção** — `APP_DEBUG=false`, senha nova do banco, `APP_KEY` copiada.
 4. **Senha do administrador** — o seeder cria `admin@nwbasset.local / NwbAsset@123`; trocar no primeiro acesso (ou criar o usuário real e desativar este).
