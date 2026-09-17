@@ -928,8 +928,14 @@ export default function GenericModuleManagement({
       if (!raw) {
         return null;
       }
-      const parsed = JSON.parse(raw) as Partial<AssetDraftPayload> | null;
+      const normalized = raw.trim();
+      if (!normalized || (!normalized.startsWith("{") && !normalized.startsWith("["))) {
+        window.localStorage.removeItem(assetDraftStorageKey);
+        return null;
+      }
+      const parsed = JSON.parse(normalized) as Partial<AssetDraftPayload> | null;
       if (!parsed || parsed.version !== 1 || !parsed.form) {
+        window.localStorage.removeItem(assetDraftStorageKey);
         return null;
       }
       return {
@@ -939,6 +945,7 @@ export default function GenericModuleManagement({
         savedAt: String(parsed.savedAt ?? ""),
       };
     } catch {
+      window.localStorage.removeItem(assetDraftStorageKey);
       return null;
     }
   }
@@ -980,6 +987,9 @@ export default function GenericModuleManagement({
       confirmLabel: "Fechar sem salvar",
       tone: "danger",
       action: () => {
+        if (modalMode === "create" && hasCreateData) {
+          persistAssetDraft(form, activeStepIndex);
+        }
         resetModal();
       },
     });
@@ -1975,8 +1985,8 @@ export default function GenericModuleManagement({
       />
       <section
         className={[
-          "panel-surface rounded-[28px]",
-          isCompactHeader ? "p-4 md:p-5" : "p-5 md:p-6",
+          "panel-surface rounded-[22px] md:rounded-[28px]",
+          isCompactHeader ? "p-3.5 md:p-5" : "p-4 md:p-6",
         ].join(" ")}
       >
         
@@ -1996,8 +2006,8 @@ export default function GenericModuleManagement({
               className={[
                 "font-semibold tracking-[-0.045em] text-[var(--ink)]",
                 isCompactHeader
-                  ? "mt-1 text-[1.36rem]"
-                  : "mt-1.5 text-[1.6rem]",
+                  ? "mt-1 text-[1.2rem] md:text-[1.36rem]"
+                  : "mt-1.5 text-[1.35rem] md:text-[1.6rem]",
               ].join(" ")}
             >
               {config.summary}

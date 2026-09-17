@@ -585,7 +585,7 @@ export default function EmpresaManagement({ initialEmpresas }: { initialEmpresas
           setMessage(null);
         }}
       />
-      <section className="panel-surface rounded-[28px] p-6">
+      <section className="panel-surface rounded-[22px] p-4 md:rounded-[28px] md:p-6">
         <div className="flex flex-col gap-5 lg:flex-row lg:items-start lg:justify-between">
           <div>
             <p className="text-[12px] font-semibold uppercase tracking-[0.16em] text-[var(--muted)]">Empresas cadastradas</p>

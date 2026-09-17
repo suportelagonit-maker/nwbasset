@@ -40,7 +40,7 @@ const exportacoes = [
 
 export default function ExportacoesModuleManagement(_: { empresaId: number | null }) {
   return (
-    <section className="panel-surface rounded-[28px] p-5 md:p-6">
+    <section className="panel-surface rounded-[22px] p-4 md:rounded-[28px] md:p-6">
       <div>
         <p className="text-[12px] font-semibold uppercase tracking-[0.16em] text-[var(--muted)]">Exportações</p>
         <h2 className="mt-1.5 text-[1.65rem] font-semibold tracking-[-0.045em] text-[var(--ink)]">Central de exportação patrimonial</h2>

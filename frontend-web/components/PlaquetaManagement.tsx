@@ -840,11 +840,11 @@ export default function PlaquetaManagement({ empresaId, empresaNome, empresaLogo
       />
 
       <section className="space-y-5">
-        <div className="panel-surface rounded-[28px] p-6">
+        <div className="panel-surface rounded-[22px] p-4 md:rounded-[28px] md:p-6">
           <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
             <div>
               <p className="text-[12px] font-semibold uppercase tracking-[0.18em] text-[var(--muted)]">Plaquetas</p>
-              <h2 className="mt-3 text-[2rem] font-semibold tracking-[-0.05em] text-[var(--ink)]">
+              <h2 className="mt-3 text-[1.5rem] font-semibold tracking-[-0.05em] text-[var(--ink)] md:text-[2rem]">
                 Controle de etiquetas patrimoniais
               </h2>
               <p className="mt-3 max-w-3xl text-sm leading-7 text-[var(--muted)]">
@@ -881,7 +881,7 @@ export default function PlaquetaManagement({ empresaId, empresaNome, empresaLogo
           </div>
         </div>
 
-        <section className="panel-surface rounded-[28px] p-6">
+        <section className="panel-surface rounded-[22px] p-4 md:rounded-[28px] md:p-6">
           <div className="flex items-center justify-between gap-4">
             <div>
               <p className="text-[12px] font-semibold uppercase tracking-[0.18em] text-[var(--muted)]">Modelo da etiqueta patrimonial</p>
@@ -904,7 +904,7 @@ export default function PlaquetaManagement({ empresaId, empresaNome, empresaLogo
           </div>
         </section>
 
-        <section className="panel-surface rounded-[28px] p-6">
+        <section className="panel-surface rounded-[22px] p-4 md:rounded-[28px] md:p-6">
           <div className="flex items-center justify-between gap-4">
             <div>
               <p className="text-[12px] font-semibold uppercase tracking-[0.18em] text-[var(--muted)]">Plaquetas cadastradas</p>

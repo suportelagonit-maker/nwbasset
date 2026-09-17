@@ -16,7 +16,7 @@ export default async function LoginPage() {
   }
 
   return (
-    <main className="auth-art-page flex min-h-screen items-center justify-center overflow-hidden px-4 py-10">
+    <main className="auth-art-page flex min-h-screen items-center justify-center overflow-hidden px-4 py-6 sm:py-10">
       <div className="auth-art-mesh" aria-hidden="true" />
       <div className="auth-art-orb auth-art-orb--one" aria-hidden="true" />
       <div className="auth-art-orb auth-art-orb--two" aria-hidden="true" />
@@ -36,7 +36,7 @@ export default async function LoginPage() {
           <span className="inline-flex rounded-full border border-[rgba(246,164,0,0.22)] bg-white/78 px-3 py-1 text-xs font-semibold uppercase tracking-[0.22em] text-[var(--accent-deep)]">
             ERP Patrimonial SaaS
           </span>
-          <h1 className="mt-5 font-[family-name:var(--font-heading)] text-4xl font-semibold tracking-tight md:text-6xl">
+          <h1 className="mt-5 font-[family-name:var(--font-heading)] text-3xl font-semibold tracking-tight sm:text-4xl md:text-6xl">
             Controle patrimonial com autenticação por empresa e permissão por papel.
           </h1>
           <p className="mt-4 max-w-2xl text-base leading-7 text-[var(--muted)]">

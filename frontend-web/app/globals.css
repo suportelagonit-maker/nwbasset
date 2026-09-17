@@ -554,3 +554,113 @@ a {
     padding: 12px;
   }
 }
+
+/* ------------------------------------------------------------------ */
+/* Responsividade mobile                                               */
+/* ------------------------------------------------------------------ */
+
+/* O sheet do menu inferior encosta na barra fixa, respeitando a safe-area. */
+.mobile-sheet {
+  bottom: calc(64px + env(safe-area-inset-bottom));
+}
+
+/* Blocos de código/JSON nunca podem alargar a página. */
+pre {
+  max-width: 100%;
+  overflow-x: auto;
+}
+
+/* Tabelas com rolagem horizontal: rolagem suave no toque e sem "esmagar"
+   as colunas em telas estreitas. */
+.overflow-x-auto {
+  -webkit-overflow-scrolling: touch;
+}
+
+@media (max-width: 767px) {
+  .overflow-x-auto > table {
+    min-width: 640px;
+  }
+
+  /* Campos com fonte menor que 16px fazem o iOS dar zoom ao focar. */
+  .admin-input,
+  .admin-select,
+  .admin-textarea {
+    font-size: 16px;
+  }
+
+  .admin-input,
+  .admin-select {
+    height: 42px;
+  }
+
+  /* Modais ocupam a tela inteira no celular, sem cantos arredondados de
+     desktop e com o conteúdo rolando dentro do próprio modal. */
+  .admin-modal-overlay,
+  .modal-overlay {
+    padding: 0;
+    align-items: flex-end;
+  }
+
+  .admin-modal-shell,
+  .modal-card {
+    max-width: 100% !important;
+    max-height: 100dvh;
+    margin: 0;
+    border-radius: 22px 22px 0 0 !important;
+    padding-bottom: calc(10px + env(safe-area-inset-bottom));
+  }
+
+  .admin-modal-content,
+  .modal-body {
+    max-height: calc(100dvh - 150px);
+  }
+
+  .admin-dialog-shell {
+    width: min(100vw - 24px, 420px);
+  }
+
+  .admin-modal-footer,
+  .modal-footer {
+    flex-wrap: wrap;
+  }
+
+  .admin-btn-primary,
+  .admin-btn-secondary {
+    height: 42px;
+  }
+}
+
+/* ------------------------------------------------------------------ */
+/* Impressão (relatório BI e demais telas)                              */
+/* ------------------------------------------------------------------ */
+
+@media print {
+  body {
+    background: #ffffff;
+  }
+
+  .admin-frame-grid {
+    display: block;
+  }
+
+  .admin-sidebar-column,
+  .admin-topbar-surface,
+  .mobile-bottom-nav,
+  .mobile-sheet {
+    display: none !important;
+  }
+
+  .admin-main {
+    padding: 0 !important;
+  }
+
+  .bi-report .panel-surface,
+  .bi-report article {
+    box-shadow: none;
+    break-inside: avoid;
+  }
+
+  .bi-report .overflow-x-auto > table {
+    min-width: 0;
+  }
+}

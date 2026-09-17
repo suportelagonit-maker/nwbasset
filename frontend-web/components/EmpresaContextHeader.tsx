@@ -87,15 +87,15 @@ export default function EmpresaContextHeader({
   }
 
   return (
-    <div className="flex min-w-0 items-center justify-center gap-3">
-      <span className="whitespace-nowrap text-[11px] font-semibold uppercase tracking-[0.18em] text-[var(--muted)]">
+    <div className="flex min-w-0 flex-wrap items-center justify-center gap-2 sm:flex-nowrap sm:gap-3">
+      <span className="w-full whitespace-nowrap text-[11px] font-semibold uppercase tracking-[0.18em] text-[var(--muted)] sm:w-auto">
         Selecione uma Empresa
       </span>
       <select
         value={empresaId}
         onChange={(event) => void handleEmpresaChange(event.target.value)}
         disabled={isPending || isNavigating}
-        className="h-10 min-w-[280px] rounded-full border border-[var(--line)] bg-white px-4 text-sm text-[var(--ink)] shadow-none outline-none transition focus:border-[rgba(246,164,0,0.45)]"
+        className="h-10 w-full min-w-0 rounded-full border sm:w-auto sm:min-w-[280px] border-[var(--line)] bg-white px-4 text-sm text-[var(--ink)] shadow-none outline-none transition focus:border-[rgba(246,164,0,0.45)]"
       >
         {isSuperAdmin ? <option value="__geral__">Painel geral</option> : null}
         {empresas.map((empresa) => (

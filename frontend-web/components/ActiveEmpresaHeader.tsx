@@ -44,19 +44,19 @@ export default function ActiveEmpresaHeader({
   }
 
   return (
-    <div className="flex min-w-0 max-w-[320px] items-center justify-end gap-3 text-right">
+    <div className="flex min-w-0 max-w-[210px] items-center justify-end gap-2 text-right sm:max-w-[320px] sm:gap-3">
       {currentLogoSrc ? (
-        <div className="flex h-14 w-20 shrink-0 items-center justify-center overflow-hidden px-1">
+        <div className="flex h-10 w-14 shrink-0 items-center justify-center overflow-hidden px-1 sm:h-14 sm:w-20">
           <img
             src={currentLogoSrc}
             alt={`Logo de ${empresaNome}`}
-            className="h-auto max-h-[40px] w-auto max-w-full object-contain"
+            className="h-auto max-h-[32px] w-auto max-w-full object-contain sm:max-h-[40px]"
             loading="eager"
           />
         </div>
       ) : null}
       <div className="min-w-0">
-        <p className="truncate text-[13px] font-semibold leading-4 text-[var(--ink)]">{empresaNome}</p>
+        <p className="truncate text-[12px] font-semibold leading-4 text-[var(--ink)] sm:text-[13px]">{empresaNome}</p>
         {empresaCnpj ? <p className="mt-0.5 truncate text-[10px] text-[var(--muted)]">{formatCnpj(empresaCnpj)}</p> : null}
       </div>
     </div>

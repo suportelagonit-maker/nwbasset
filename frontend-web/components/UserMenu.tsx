@@ -42,13 +42,13 @@ export default function UserMenu({ initial, userName, userEmail }: UserMenuProps
         onClick={() => setOpen((current) => !current)}
         aria-haspopup="menu"
         aria-expanded={open}
-        className="flex h-11 w-11 items-center justify-center rounded-full bg-[#111827] text-sm font-semibold text-white outline-none transition hover:opacity-90"
+        className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[#111827] sm:h-11 sm:w-11 text-sm font-semibold text-white outline-none transition hover:opacity-90"
       >
         {initial}
       </button>
 
       {open ? (
-        <div className="absolute right-0 top-[calc(100%+10px)] z-50 w-64 rounded-2xl border border-[rgba(17,24,39,0.08)] bg-white p-2 shadow-[0_18px_38px_rgba(17,24,39,0.12)]">
+        <div className="absolute right-0 top-[calc(100%+10px)] z-50 w-64 max-w-[calc(100vw-24px)] rounded-2xl border border-[rgba(17,24,39,0.08)] bg-white p-2 shadow-[0_18px_38px_rgba(17,24,39,0.12)]">
           <div className="rounded-xl px-3 py-3">
             <p className="truncate text-sm font-semibold text-[var(--ink)]">{userName ?? 'Usuário autenticado'}</p>
             <p className="mt-1 truncate text-xs text-[var(--muted)]">{userEmail ?? 'Conta ativa'}</p>

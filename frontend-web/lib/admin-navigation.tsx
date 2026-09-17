@@ -442,3 +442,75 @@ export function renderAdminIcon(icon: string): ReactNode {
   }
 }
 
+
+export type AdminNavGroupKey =
+  | 'corporativo'
+  | 'ativos'
+  | 'inventario'
+  | 'depreciacao'
+  | 'movimentacoes'
+  | 'relatorios'
+  | 'administracao';
+
+export type AdminNavGroup = {
+  key: AdminNavGroupKey;
+  label: string;
+  icon: string;
+  itemKeys: string[];
+};
+
+/**
+ * Agrupamento dos itens de navegação. É a mesma estrutura usada pela sidebar
+ * (desktop) e pela barra inferior (mobile), para que os dois menus nunca
+ * divirjam.
+ */
+export const adminNavGroups: AdminNavGroup[] = [
+  {
+    key: 'corporativo',
+    label: 'Corporativo',
+    icon: 'building',
+    itemKeys: ['empresas', 'filiais', 'unidades-administrativas', 'departamentos', 'locais'],
+  },
+  { key: 'ativos', label: 'Ativos', icon: 'cube', itemKeys: ['bens', 'tipos-bens', 'tipos-produtos', 'plaquetas'] },
+  { key: 'inventario', label: 'Inventário', icon: 'clipboard', itemKeys: ['inventarios', 'conciliacoes', 'divergencias'] },
+  { key: 'depreciacao', label: 'Depreciação', icon: 'trend', itemKeys: ['depreciacoes'] },
+  {
+    key: 'movimentacoes',
+    label: 'Movimentações',
+    icon: 'swap',
+    itemKeys: ['responsaveis', 'transferencias-bens', 'baixas-bens', 'historico-localizacao-bens'],
+  },
+  { key: 'relatorios', label: 'Relatórios', icon: 'report', itemKeys: ['relatorios', 'exportacoes'] },
+  { key: 'administracao', label: 'Administração', icon: 'users', itemKeys: ['usuarios', 'permissoes', 'auditorias'] },
+];
+
+export function getAdminNavGroup(key: AdminNavGroupKey): AdminNavGroup {
+  const group = adminNavGroups.find((candidate) => candidate.key === key);
+
+  if (!group) {
+    throw new Error(`Grupo de navegação desconhecido: ${key}`);
+  }
+
+  return group;
+}
+
+/** Itens visíveis para a sessão atual (o menu Empresas só aparece no contexto master). */
+export function resolveAdminNavItems(showEmpresasMenu: boolean): AdminNavItem[] {
+  return adminNavigation
+    .flatMap((section) => section.items)
+    .filter((item) => item.key !== 'empresas' || showEmpresasMenu);
+}
+
+export function resolveAdminNavGroupItems(group: AdminNavGroup, items: AdminNavItem[]): AdminNavItem[] {
+  return group.itemKeys
+    .map((key) => items.find((item) => item.key === key))
+    .filter((item): item is AdminNavItem => Boolean(item));
+}
+
+export function isAdminNavItemActive(pathname: string, href: string): boolean {
+  if (href === '/dashboard/patrimonio') {
+    return pathname === '/dashboard/patrimonio';
+  }
+
+  return pathname.startsWith(href);
+}

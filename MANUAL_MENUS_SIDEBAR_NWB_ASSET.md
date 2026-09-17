@@ -20,6 +20,15 @@ Este documento descreve cada menu lateral do NWB Asset:
 6. Emitir resultado em **Relatórios** e **Exportações**.
 7. Validar rastreabilidade em **Auditorias** e histórico.
 
+## Navegação no celular (barra inferior)
+Em telas menores que 768px o sidebar dá lugar a uma **barra fixa na parte de baixo**, no padrão de aplicativo (PWA):
+- **Ativos**, **Inventário** e **Movimentações** abrem um painel com os módulos do grupo (os mesmos do sidebar).
+- **Painel** (botão central em destaque) leva ao Painel de Controle.
+- **Menu** abre a navegação completa: troca de empresa (quando permitido), todos os grupos de módulos, Perfil e Sair.
+- O botão ☰ no topo abre o mesmo menu completo.
+
+Os grupos e itens são definidos uma única vez em `frontend-web/lib/admin-navigation.tsx` (`adminNavGroups`); sidebar e barra inferior leem dali.
+
 ---
 
 ## Menus do Sidebar (descrição completa)

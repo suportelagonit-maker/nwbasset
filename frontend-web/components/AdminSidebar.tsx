@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
 
-import { adminNavigation, renderAdminIcon } from '@/lib/admin-navigation';
+import { getAdminNavGroup, isAdminNavItemActive, renderAdminIcon, resolveAdminNavItems } from '@/lib/admin-navigation';
 
 type AdminSidebarProps = {
   collapsed?: boolean;
@@ -13,13 +13,7 @@ type AdminSidebarProps = {
   showEmpresasMenu?: boolean;
 };
 
-function isActive(pathname: string, href: string) {
-  if (href === '/dashboard/patrimonio') {
-    return pathname === '/dashboard/patrimonio';
-  }
-
-  return pathname.startsWith(href);
-}
+const isActive = isAdminNavItemActive;
 
 export default function AdminSidebar({
   collapsed = false,
@@ -43,34 +37,22 @@ export default function AdminSidebar({
   const administracaoRef = useRef<HTMLDivElement | null>(null);
   const movimentacoesRef = useRef<HTMLDivElement | null>(null);
 
-  const corporateOrder = useMemo(
-    () => ['empresas', 'filiais', 'unidades-administrativas', 'departamentos', 'locais'],
-    [],
-  );
+  const corporateOrder = useMemo(() => getAdminNavGroup('corporativo').itemKeys, []);
   const corporateKeys = useMemo(() => new Set(corporateOrder), [corporateOrder]);
-  const assetsOrder = useMemo(() => ['bens', 'tipos-bens', 'tipos-produtos', 'plaquetas'], []);
+  const assetsOrder = useMemo(() => getAdminNavGroup('ativos').itemKeys, []);
   const assetsKeys = useMemo(() => new Set(assetsOrder), [assetsOrder]);
-  const inventoryOrder = useMemo(() => ['inventarios', 'conciliacoes', 'divergencias'], []);
+  const inventoryOrder = useMemo(() => getAdminNavGroup('inventario').itemKeys, []);
   const inventoryKeys = useMemo(() => new Set(inventoryOrder), [inventoryOrder]);
-  const depreciationOrder = useMemo(() => ['depreciacoes'], []);
+  const depreciationOrder = useMemo(() => getAdminNavGroup('depreciacao').itemKeys, []);
   const depreciationKeys = useMemo(() => new Set(depreciationOrder), [depreciationOrder]);
-  const movementsOrder = useMemo(
-    () => ['responsaveis', 'transferencias-bens', 'baixas-bens', 'historico-localizacao-bens'],
-    [],
-  );
+  const movementsOrder = useMemo(() => getAdminNavGroup('movimentacoes').itemKeys, []);
   const movementsKeys = useMemo(() => new Set(movementsOrder), [movementsOrder]);
-  const reportsOrder = useMemo(() => ['relatorios', 'exportacoes'], []);
+  const reportsOrder = useMemo(() => getAdminNavGroup('relatorios').itemKeys, []);
   const reportsKeys = useMemo(() => new Set(reportsOrder), [reportsOrder]);
-  const administrationOrder = useMemo(() => ['usuarios', 'permissoes', 'auditorias'], []);
+  const administrationOrder = useMemo(() => getAdminNavGroup('administracao').itemKeys, []);
   const administrationKeys = useMemo(() => new Set(administrationOrder), [administrationOrder]);
 
-  const navigationItems = useMemo(
-    () =>
-      adminNavigation
-        .flatMap((section) => section.items)
-        .filter((item) => item.key !== 'empresas' || showEmpresasMenu),
-    [showEmpresasMenu],
-  );
+  const navigationItems = useMemo(() => resolveAdminNavItems(showEmpresasMenu), [showEmpresasMenu]);
 
   const corporateItems = useMemo(() => {
     const resolved = corporateOrder

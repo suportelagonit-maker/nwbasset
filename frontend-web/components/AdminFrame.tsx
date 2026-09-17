@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 
 import AdminSidebar from '@/components/AdminSidebar';
 import AdminTopbar from '@/components/AdminTopbar';
+import MobileBottomNav from '@/components/MobileBottomNav';
 
 type EmpresaOption = {
   id: number;
@@ -50,6 +51,7 @@ export default function AdminFrame({
   showEmpresasMenu = false,
 }: AdminFrameProps) {
   const [collapsed, setCollapsed] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   useEffect(() => {
     try {
@@ -71,14 +73,14 @@ export default function AdminFrame({
   }
 
   return (
-    <div className="min-h-screen bg-[var(--workspace-bg)]">
+    <div className="min-h-screen overflow-x-clip bg-[var(--workspace-bg)]">
       <div
         className={[
-          'grid min-h-screen w-full transition-[grid-template-columns] duration-200 ease-out',
+          'admin-frame-grid grid min-h-screen w-full max-w-full transition-[grid-template-columns] duration-200 ease-out',
           collapsed ? 'md:grid-cols-[92px_minmax(0,1fr)]' : 'md:grid-cols-[320px_minmax(0,1fr)]',
         ].join(' ')}
       >
-        <div className="hidden h-full bg-white md:block">
+        <div className="admin-sidebar-column hidden h-full bg-white md:block">
           <AdminSidebar collapsed={collapsed} onToggle={toggleSidebar} showEmpresasMenu={showEmpresasMenu} />
         </div>
 
@@ -90,7 +92,7 @@ export default function AdminFrame({
             userInitial={userInitial}
             userName={userName}
             userEmail={userEmail}
-            onToggleSidebar={toggleSidebar}
+            onOpenMobileMenu={() => setMobileMenuOpen(true)}
             empresaNome={empresaNome}
             empresaCnpj={empresaCnpj}
             empresaLogoUrl={empresaLogoUrl}
@@ -99,11 +101,25 @@ export default function AdminFrame({
             empresaAtualId={empresaAtualId}
             dashboardScope={dashboardScope}
           />
-          <main className="min-w-0 p-6">{children}</main>
+          {/* No mobile o padding inferior reserva espaço para a barra de navegação fixa. */}
+          <main className="admin-main min-w-0 p-3 pb-[calc(96px+env(safe-area-inset-bottom))] sm:p-4 md:p-6 md:pb-6">
+            {children}
+          </main>
         </div>
       </div>
+
+      <MobileBottomNav
+        showEmpresasMenu={showEmpresasMenu}
+        menuOpen={mobileMenuOpen}
+        onMenuOpenChange={setMobileMenuOpen}
+        userInitial={userInitial}
+        userName={userName}
+        userEmail={userEmail}
+        isSuperAdmin={isSuperAdmin}
+        empresas={empresas}
+        empresaAtualId={empresaAtualId}
+        dashboardScope={dashboardScope}
+      />
     </div>
   );
 }
-
-

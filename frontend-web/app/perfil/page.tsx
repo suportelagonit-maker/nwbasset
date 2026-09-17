@@ -14,7 +14,7 @@ export default async function PerfilPage() {
   return (
     <AdminShell title="Perfil do usuário" subtitle="Dados da conta autenticada e identidade visual da empresa ativa.">
       <section className="grid gap-5 xl:grid-cols-[320px_minmax(0,1fr)]">
-        <article className="panel-surface rounded-[28px] p-6">
+        <article className="panel-surface rounded-[22px] p-4 md:rounded-[28px] md:p-6">
           <div className="flex flex-col items-center text-center">
             <div className="flex h-20 w-20 items-center justify-center rounded-full bg-[#111827] text-2xl font-semibold text-white">
               {(session.userName ?? session.userEmail ?? 'W').trim().charAt(0).toUpperCase()}
@@ -25,7 +25,7 @@ export default async function PerfilPage() {
         </article>
 
         <div className="grid gap-5">
-          <article className="panel-surface rounded-[28px] p-6">
+          <article className="panel-surface rounded-[22px] p-4 md:rounded-[28px] md:p-6">
             <h3 className="text-lg font-semibold text-[var(--ink)]">Informações da sessão</h3>
 
             <div className="mt-5 grid gap-4 md:grid-cols-2">
