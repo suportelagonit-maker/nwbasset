@@ -27,7 +27,7 @@ class AuthService
 
     public function login(LoginData $data): array
     {
-        if (! config('nwbid.login_senha')) {
+        if (! $this->nwbIdService->loginSenhaPermitido()) {
             throw new AccessDeniedHttpException('A entrada no NWB Asset e feita pelo NWB ID. Use o botao "Entrar com NWB ID".');
         }
 
@@ -81,7 +81,7 @@ class AuthService
      * Entra quem tem o sistema liberado na claim "sistemas" (NWB Acessos) OU
      * quem administra o sistema no Acessos. A conta local e encontrada pelo
      * "sub" ou, na primeira entrada, pelo e-mail; administradores sem conta
-     * ganham uma (ADMIN_EMPRESA da empresa configurada). Os demais sem conta
+     * ganham uma (SUPER_ADMIN da empresa configurada). Os demais sem conta
      * precisam que um administrador os cadastre em Administracao > Usuarios.
      */
     public function loginComNwbId(string $accessToken, string $deviceName = 'nwbasset-nwbid'): array
@@ -148,7 +148,8 @@ class AuthService
 
     /**
      * Cria a conta de quem administra o NWB Asset no NWB Acessos e ainda nao
-     * tem cadastro aqui. Sem senha utilizavel: a entrada e so pelo NWB ID.
+     * tem cadastro aqui, como Super admin (quem administra o sistema no Acessos
+     * e o dono dele). Sem senha utilizavel: a entrada e so pelo NWB ID.
      */
     private function provisionarAdministrador(NwbIdentidade $identidade): ?Usuario
     {
@@ -172,12 +173,12 @@ class AuthService
                 'nwb_sub' => $identidade->sub,
                 'auth_origem' => 'NWB',
                 'password' => Str::random(48),
-                'role' => RoleEnum::ADMIN_EMPRESA->value,
+                'role' => RoleEnum::SUPER_ADMIN->value,
                 'ativo' => true,
             ]);
 
             $usuario->empresas()->attach($empresa->id, [
-                'perfil' => RoleEnum::ADMIN_EMPRESA->value,
+                'perfil' => RoleEnum::SUPER_ADMIN->value,
                 'created_at' => now(),
             ]);
 

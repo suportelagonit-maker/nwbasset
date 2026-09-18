@@ -26,6 +26,12 @@ class NwbIdService
         return config('nwbid.issuer') !== '';
     }
 
+    /** Senha so e aceita quando ligada explicitamente ou quando o NWB ID nao esta configurado. */
+    public function loginSenhaPermitido(): bool
+    {
+        return (bool) config('nwbid.login_senha') || ! $this->configurado();
+    }
+
     public function issuer(): string
     {
         $issuer = (string) config('nwbid.issuer');
@@ -45,7 +51,7 @@ class NwbIdService
             'issuer' => (string) config('nwbid.issuer'),
             'cliente' => (string) config('nwbid.cliente'),
             'sistema' => (string) config('nwbid.sistema'),
-            'login_senha' => (bool) config('nwbid.login_senha'),
+            'login_senha' => $this->loginSenhaPermitido(),
         ];
     }
 

@@ -46,16 +46,17 @@ export const AJUDA_SECOES: AjudaSecao[] = [
       {
         id: 'entrar',
         titulo: 'Como entrar no sistema',
-        objetivo: 'Acessar o NWB Asset com o seu e-mail e senha. O sistema identifica automaticamente a empresa vinculada ao seu acesso.',
+        objetivo: 'Acessar o NWB Asset com a sua conta NWB ID — o acesso é único, pelo crachá da equipe; não há senha própria do sistema.',
         imagem: '/ajuda/login.jpg',
         open: { href: '/login', label: 'Abrir a tela de login' },
         passos: [
           { onde: 'Tela de login › Entrar com NWB ID', acao: 'Clique em Entrar com NWB ID e use a sua conta NWB ID (o mesmo e-mail e senha dos outros sistemas da NWB). Quem pode abrir o NWB Asset é definido no NWB Acessos.', porque: 'Uma conta só para todos os sistemas: sair do NWB Asset também encerra a sessão no NWB ID.' },
-          { onde: 'Tela de login › e-mail e senha', acao: 'Quando o login por senha estiver habilitado, informe o e-mail cadastrado e a senha e clique em Entrar.', porque: 'Cada usuário tem um perfil (Super admin, Admin da empresa, Gestor patrimonial, Auditor ou Operador de inventário) que define o que ele pode ver e fazer.' },
+          { onde: 'Perfil e permissões', acao: 'Depois de entrar, o que você pode fazer é definido pelo seu perfil no NWB Asset (Super admin, Admin da empresa, Gestor patrimonial, Auditor ou Operador de inventário), cadastrado em Administração › Usuários.', porque: 'O NWB ID diz quem você é, o NWB Acessos diz se você pode abrir o NWB Asset, e o próprio sistema diz o que você pode fazer aqui dentro.' },
           { onde: 'Após entrar', acao: 'Se o seu usuário tiver acesso a mais de uma empresa, escolha a empresa na tela seguinte. Caso contrário, o Painel de Controle abre direto.', porque: 'Todos os módulos trabalham no contexto da empresa ativa, mostrada no canto superior direito.' },
         ],
         dicas: [
-          'Errou a senha 5 vezes em um minuto? Aguarde um minuto antes de tentar de novo — é uma proteção contra tentativas automáticas.',
+          'Esqueceu a senha? Use "Esqueceu a senha?" na tela do NWB ID — a senha é a mesma dos outros sistemas da NWB.',
+          'Viu "Seu acesso ao NWB Asset ainda não foi liberado"? Peça a um administrador do NWB Asset para liberar você no NWB Acessos.',
           'Para sair, clique no seu avatar (círculo com a inicial do nome) no canto superior direito e escolha Sair.',
         ],
         palavras: ['login', 'senha', 'acesso', 'entrar', 'sair', 'logout', 'nwb id', 'nwbid', 'keycloak', 'acessos', 'crachá'],

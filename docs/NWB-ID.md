@@ -19,7 +19,7 @@ Implementado em 17/09/2026, no mesmo modelo do NCEdu e do NC TECH.
    - lê `sub`, nome (`nome_exibicao` › `name` › `given_name + family_name` › `preferred_username`), `email`, `sistemas`, `campus`, `nwb_cadastro_id`;
    - **entra quem tem `nwb-asset` na claim `sistemas` OU quem administra o `nwb-asset` no NWB Acessos** (consulta `GET /servico/administradores` com a conta de serviço `nwb-asset-api`, cache 60 s; Acessos fora do ar = não administra, nunca abre mais);
    - localiza a conta local por `usuarios.nwb_sub` ou, na primeira entrada, pelo e-mail (e grava o `nwb_sub`);
-   - administrador sem conta ganha uma (`ADMIN_EMPRESA` da empresa `NWBID_EMPRESA_ADMIN_ID`, senha aleatória inutilizável); os demais sem conta recebem "peça ao administrador";
+   - administrador sem conta ganha uma (`SUPER_ADMIN` da empresa `NWBID_EMPRESA_ADMIN_ID`, senha aleatória inutilizável); os demais sem conta recebem "peça ao administrador";
    - emite o token Sanctum de sempre. Termo de uso, cookies e o restante do sistema não sabem por onde a pessoa entrou.
 4. **Sair** limpa os cookies e volta a `/login?saiu=1`; a tela encerra também a sessão no Keycloak (`end_session` com `id_token_hint` e `post_logout_redirect_uri=<origem>/login`).
 
@@ -36,10 +36,10 @@ NWBID_EMPRESA_ADMIN_ID=1                   # empresa dos administradores provisi
 NWBID_ACESSOS_API_URL=https://acessos.igrejanovoscomecos.com.br
 NWBID_ACESSOS_CLIENT_ID=nwb-asset-api      # conta de serviço (confidencial)
 NWBID_ACESSOS_CLIENT_SECRET=<segredo>
-AUTH_LOGIN_SENHA=false                     # true mantém e-mail/senha como alternativa
+AUTH_LOGIN_SENHA=false                     # padrão; true reabre e-mail/senha como alternativa
 ```
 
-Com `NWBID_ISSUER` vazio o botão não aparece e o login por senha continua como antes.
+Com `NWBID_ISSUER` vazio (desenvolvimento) o botão não aparece e o login por senha continua aceito, para o ambiente nunca ficar sem porta de entrada. Com o NWB ID configurado, **o acesso é único pelo NWB ID** — `AUTH_LOGIN_SENHA=true` seria preciso para reabrir a senha.
 
 ## Executado em 17/09/2026
 
@@ -47,10 +47,9 @@ Com `NWBID_ISSUER` vazio o botão não aparece e o login por senha continua como
 |---|---|
 | Keycloak (`nwb-id-keycloak`, realm `nwb-equipe`) | clientes **`nwb-asset`** (público, PKCE S256, redirect/post-logout para produção e `localhost:5001`, escopo `nwb-perfil`) e **`nwb-asset-api`** (confidencial, service account, escopo `nwb-perfil`). Segredo guardado em `/root/nwb-asset/nwb-asset-api.env` (600) na VPS 6 |
 | NWB Acessos | sistema `nwb-asset` no catálogo (`api/src/infra/semear.ts` + `npm run semear`, backup `.bak-20260917-220811`); administração herdada por Gutto e Jhonata Jackson; `nwb-asset-api:nwb-asset` no mapa `SERVICOS` (`/root/nwb-acessos/api.env`, backup idem); container recriado, `/saude` ok |
-| VPS Premium | `NWBID_*` no `.env` (backup `.env.bak-*-antes-nwbid`), `NWBID_EMPRESA_ADMIN_ID=1`, `AUTH_LOGIN_SENHA=true` até a validação do primeiro acesso real; `docker-compose.vps.yml` com `dns: 9.9.9.9` (o host marca as respostas DNS de 8.8.8.8/1.1.1.1 como NOTRACK e os containers não resolviam nomes) |
+| VPS Premium | `NWBID_*` no `.env` (backup `.env.bak-*-antes-nwbid`), `NWBID_EMPRESA_ADMIN_ID=1`, `AUTH_LOGIN_SENHA=false` (acesso único pelo NWB ID, decisão de 17/09/2026); `docker-compose.vps.yml` com `dns: 9.9.9.9` (o host marca as respostas DNS de 8.8.8.8/1.1.1.1 como NOTRACK e os containers não resolviam nomes) |
 | Verificado | backend alcança JWKS do realm e `GET /servico/administradores` (2 administradores); o botão **Entrar com NWB ID** em produção chega à tela de login do Keycloak com PKCE |
 
-**Para desligar o login por senha** depois do primeiro acesso validado: `AUTH_LOGIN_SENHA=false` no `.env` da VPS Premium e `docker compose -f docker-compose.yml -f docker-compose.vps.yml up -d backend`.
 
 ## Como foi feito (referência para o próximo sistema)
 
@@ -116,7 +115,7 @@ Sem rebuild do frontend: ele lê a configuração do backend.
 
 - Um usuário já cadastrado em **Administração › Usuários** com o mesmo e-mail do NWB ID é vinculado na primeira entrada (`nwb_sub` gravado; `auth_origem=NWB`).
 - Quem é liberado no Acessos mas não tem cadastro local recebe a mensagem para pedir ao administrador — o perfil e as permissões continuam sendo definidos aqui.
-- Administradores do sistema no Acessos entram mesmo sem cadastro: a conta é criada como `ADMIN_EMPRESA` da empresa configurada (auditoria registra a origem).
+- Administradores do sistema no Acessos entram mesmo sem cadastro: a conta é criada como `SUPER_ADMIN` da empresa configurada (auditoria registra a origem).
 - Próximo passo natural (como no NC TECH): tela **Dar acesso** dentro do NWB Asset, buscando no cadastro do NWB System e concedendo o acesso pelo Acessos em nome de quem clicou.
 
 ## Testes

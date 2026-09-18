@@ -27,8 +27,12 @@ return [
     /** Clientes cujo token o backend aceita (azp/aud). */
     'clientes_aceitos' => array_values(array_filter(array_map('trim', explode(',', (string) env('NWBID_CLIENTES_ACEITOS', env('NWBID_CLIENTE', 'nwb-asset')))))),
 
-    /** Login por e-mail e senha continua disponivel? Desligar quando o NWB ID estiver configurado. */
-    'login_senha' => filter_var(env('AUTH_LOGIN_SENHA', true), FILTER_VALIDATE_BOOL),
+    /**
+     * Login por e-mail e senha. Padrao DESLIGADO: a entrada e unica, pelo NWB ID.
+     * Sem NWBID_ISSUER configurado (desenvolvimento) a senha continua aceita,
+     * para o ambiente nunca ficar sem porta de entrada.
+     */
+    'login_senha' => filter_var(env('AUTH_LOGIN_SENHA', false), FILTER_VALIDATE_BOOL),
 
     /** Empresa (id) em que administradores do sistema no Acessos sao criados na primeira entrada. */
     'empresa_admin_id' => env('NWBID_EMPRESA_ADMIN_ID') !== null ? (int) env('NWBID_EMPRESA_ADMIN_ID') : null,

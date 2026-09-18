@@ -131,7 +131,7 @@ class NwbIdLoginTest extends TestCase
             'access_token' => $this->token(['sub' => 'sub-admin', 'email' => 'admin@empresa.local', 'name' => 'Ana Administradora', 'sistemas' => []]),
         ]);
 
-        $response->assertOk()->assertJsonPath('usuario.role', RoleEnum::ADMIN_EMPRESA->value);
+        $response->assertOk()->assertJsonPath('usuario.role', RoleEnum::SUPER_ADMIN->value);
 
         $criado = Usuario::query()->where('nwb_sub', 'sub-admin')->firstOrFail();
         $this->assertSame('Ana Administradora', $criado->nome);
@@ -139,7 +139,7 @@ class NwbIdLoginTest extends TestCase
         $this->assertTrue($criado->empresas()->where('empresas.id', $empresa->id)->exists());
     }
 
-    public function test_login_por_senha_pode_ser_desligado(): void
+    public function test_login_por_senha_e_desligado_por_padrao_com_nwbid_configurado(): void
     {
         $empresa = $this->criarEmpresa();
         $this->criarUsuario($empresa, 'maria@empresa.local');
@@ -153,6 +153,16 @@ class NwbIdLoginTest extends TestCase
             ->assertJsonPath('data.login_senha', false)
             ->assertJsonPath('data.habilitado', true)
             ->assertJsonPath('data.cliente', 'nwb-asset');
+    }
+
+    public function test_sem_nwbid_configurado_a_senha_continua_aceita(): void
+    {
+        $empresa = $this->criarEmpresa();
+        $this->criarUsuario($empresa, 'maria@empresa.local');
+        config(['nwbid.login_senha' => false, 'nwbid.issuer' => '']);
+
+        $this->postJson('/api/v1/auth/login', ['email' => 'maria@empresa.local', 'password' => 'secret123'])->assertOk();
+        $this->getJson('/api/v1/auth/nwbid/config')->assertJsonPath('data.login_senha', true)->assertJsonPath('data.habilitado', false);
     }
 
     private function token(array $claims): string
