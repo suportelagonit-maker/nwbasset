@@ -50,14 +50,15 @@ export const AJUDA_SECOES: AjudaSecao[] = [
         imagem: '/ajuda/login.jpg',
         open: { href: '/login', label: 'Abrir a tela de login' },
         passos: [
-          { onde: 'Tela de login', acao: 'Informe o e-mail cadastrado e a senha e clique em Entrar.', porque: 'Cada usuário tem um perfil (Super admin, Admin da empresa, Gestor patrimonial, Auditor ou Operador de inventário) que define o que ele pode ver e fazer.' },
+          { onde: 'Tela de login › Entrar com NWB ID', acao: 'Clique em Entrar com NWB ID e use a sua conta NWB ID (o mesmo e-mail e senha dos outros sistemas da NWB). Quem pode abrir o NWB Asset é definido no NWB Acessos.', porque: 'Uma conta só para todos os sistemas: sair do NWB Asset também encerra a sessão no NWB ID.' },
+          { onde: 'Tela de login › e-mail e senha', acao: 'Quando o login por senha estiver habilitado, informe o e-mail cadastrado e a senha e clique em Entrar.', porque: 'Cada usuário tem um perfil (Super admin, Admin da empresa, Gestor patrimonial, Auditor ou Operador de inventário) que define o que ele pode ver e fazer.' },
           { onde: 'Após entrar', acao: 'Se o seu usuário tiver acesso a mais de uma empresa, escolha a empresa na tela seguinte. Caso contrário, o Painel de Controle abre direto.', porque: 'Todos os módulos trabalham no contexto da empresa ativa, mostrada no canto superior direito.' },
         ],
         dicas: [
           'Errou a senha 5 vezes em um minuto? Aguarde um minuto antes de tentar de novo — é uma proteção contra tentativas automáticas.',
           'Para sair, clique no seu avatar (círculo com a inicial do nome) no canto superior direito e escolha Sair.',
         ],
-        palavras: ['login', 'senha', 'acesso', 'entrar', 'sair', 'logout'],
+        palavras: ['login', 'senha', 'acesso', 'entrar', 'sair', 'logout', 'nwb id', 'nwbid', 'keycloak', 'acessos', 'crachá'],
       },
       {
         id: 'termo-lgpd',

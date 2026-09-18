@@ -2,10 +2,27 @@ import Image from 'next/image';
 import { redirect } from 'next/navigation';
 
 import LoginForm from '@/components/LoginForm';
+import NwbIdLogin from '@/components/NwbIdLogin';
+import { API_BASE_URL } from '@/lib/api-base';
+import type { NwbIdConfig } from '@/lib/nwbid';
 import { getAuthSession } from '@/lib/auth-session';
+
+const CONFIG_PADRAO: NwbIdConfig = { habilitado: false, issuer: '', cliente: 'nwb-asset', sistema: 'nwb-asset', login_senha: true };
+
+/** Configuração do NWB ID lida do backend em tempo de execução (sem rebuild ao mudar o .env). */
+async function carregarConfigNwbId(): Promise<NwbIdConfig> {
+  try {
+    const response = await fetch(`${API_BASE_URL}/auth/nwbid/config`, { headers: { Accept: 'application/json' }, cache: 'no-store' });
+    const payload = (await response.json().catch(() => null)) as { data?: Partial<NwbIdConfig> } | null;
+    return response.ok && payload?.data ? { ...CONFIG_PADRAO, ...payload.data } : CONFIG_PADRAO;
+  } catch {
+    return CONFIG_PADRAO;
+  }
+}
 
 export default async function LoginPage() {
   const session = await getAuthSession();
+  const nwbid = await carregarConfigNwbId();
 
   if (session.token) {
     if (session.empresaId || session.dashboardScope === 'geral') {
@@ -45,8 +62,16 @@ export default async function LoginPage() {
           </p>
         </section>
 
-        <div className="flex justify-center lg:justify-end">
-          <LoginForm />
+        <div className="flex w-full flex-col items-center gap-4 lg:items-end">
+          <NwbIdLogin config={nwbid} />
+          {nwbid.login_senha ? (
+            <>
+              {nwbid.habilitado ? (
+                <p className="w-full max-w-md text-center text-[11px] font-semibold uppercase tracking-[0.2em] text-[var(--muted)]">ou com e-mail e senha</p>
+              ) : null}
+              <LoginForm />
+            </>
+          ) : null}
         </div>
       </div>
     </main>

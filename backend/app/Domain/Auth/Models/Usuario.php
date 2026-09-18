@@ -26,6 +26,8 @@ class Usuario extends Authenticatable
         'empresa_id',
         'nome',
         'email',
+        'nwb_sub',
+        'auth_origem',
         'password',
         'role',
         'ativo',

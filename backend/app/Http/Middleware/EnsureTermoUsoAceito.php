@@ -17,6 +17,8 @@ class EnsureTermoUsoAceito
 {
     private const ROTAS_LIVRES = [
         'api/v1/auth/login',
+        'api/v1/auth/nwbid',
+        'api/v1/auth/nwbid/config',
         'api/v1/auth/me',
         'api/v1/auth/logout',
         'api/v1/termo-uso',

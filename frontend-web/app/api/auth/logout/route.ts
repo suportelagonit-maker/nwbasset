@@ -31,7 +31,7 @@ export async function POST(request: Request) {
     }).catch(() => null);
   }
 
-  const response = NextResponse.redirect(new URL('/login', request.url));
+  const response = NextResponse.redirect(new URL('/login?saiu=1', request.url));
   response.cookies.delete(AUTH_TOKEN_COOKIE);
   response.cookies.delete(EMPRESA_ID_COOKIE);
   response.cookies.delete(USER_NAME_COOKIE);
@@ -46,7 +46,7 @@ export async function POST(request: Request) {
 }
 
 export async function GET(request: Request) {
-  const response = NextResponse.redirect(new URL('/login', request.url));
+  const response = NextResponse.redirect(new URL('/login?saiu=1', request.url));
   response.cookies.delete(AUTH_TOKEN_COOKIE);
   response.cookies.delete(EMPRESA_ID_COOKIE);
   response.cookies.delete(USER_NAME_COOKIE);
