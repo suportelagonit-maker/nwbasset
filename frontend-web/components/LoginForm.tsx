@@ -41,10 +41,7 @@ export default function LoginForm() {
   const [error, setError] = useState<string | null>(null);
   const [captchaToken, setCaptchaToken] = useState('');
   const [captchaError, setCaptchaError] = useState<string | null>(null);
-  const [form, setForm] = useState<LoginPayload>({
-    email: 'admin@nwbasset.local',
-    password: 'NwbAsset@123',
-  });
+  const [form, setForm] = useState<LoginPayload>({ email: '', password: '' });
   const captchaContainerRef = useRef<HTMLDivElement | null>(null);
   const captchaWidgetIdRef = useRef<string | null>(null);
   const friendlyError = error ? toFriendlyError(error) : null;

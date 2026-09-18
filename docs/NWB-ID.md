@@ -41,7 +41,18 @@ AUTH_LOGIN_SENHA=false                     # true mantém e-mail/senha como alte
 
 Com `NWBID_ISSUER` vazio o botão não aparece e o login por senha continua como antes.
 
-## O que precisa ser feito no NWB ID e no NWB Acessos (VPS 6)
+## Executado em 17/09/2026
+
+| Onde | O que |
+|---|---|
+| Keycloak (`nwb-id-keycloak`, realm `nwb-equipe`) | clientes **`nwb-asset`** (público, PKCE S256, redirect/post-logout para produção e `localhost:5001`, escopo `nwb-perfil`) e **`nwb-asset-api`** (confidencial, service account, escopo `nwb-perfil`). Segredo guardado em `/root/nwb-asset/nwb-asset-api.env` (600) na VPS 6 |
+| NWB Acessos | sistema `nwb-asset` no catálogo (`api/src/infra/semear.ts` + `npm run semear`, backup `.bak-20260917-220811`); administração herdada por Gutto e Jhonata Jackson; `nwb-asset-api:nwb-asset` no mapa `SERVICOS` (`/root/nwb-acessos/api.env`, backup idem); container recriado, `/saude` ok |
+| VPS Premium | `NWBID_*` no `.env` (backup `.env.bak-*-antes-nwbid`), `NWBID_EMPRESA_ADMIN_ID=1`, `AUTH_LOGIN_SENHA=true` até a validação do primeiro acesso real; `docker-compose.vps.yml` com `dns: 9.9.9.9` (o host marca as respostas DNS de 8.8.8.8/1.1.1.1 como NOTRACK e os containers não resolviam nomes) |
+| Verificado | backend alcança JWKS do realm e `GET /servico/administradores` (2 administradores); o botão **Entrar com NWB ID** em produção chega à tela de login do Keycloak com PKCE |
+
+**Para desligar o login por senha** depois do primeiro acesso validado: `AUTH_LOGIN_SENHA=false` no `.env` da VPS Premium e `docker compose -f docker-compose.yml -f docker-compose.vps.yml up -d backend`.
+
+## Como foi feito (referência para o próximo sistema)
 
 Feito por quem tem acesso ao Keycloak (admin do realm `nwb-equipe`) e ao código do Acessos. Referência: cadastro do `nc-tech` em 11/09/2026 (`/opt/nc-tech/docs/RUNBOOK_DEPLOY_NC_TECH.md`).
 
