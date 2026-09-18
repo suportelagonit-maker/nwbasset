@@ -19,12 +19,24 @@ services:
   backend:
     build:
       network: host
+    # 5. Saida para a internet em execucao: o TCP sai normalmente pela bridge,
+    #    mas o DNS nao — o firewall do host marca as respostas de 8.8.8.8 e
+    #    1.1.1.1 (porta 53) como NOTRACK, e sao esses os resolvedores que o
+    #    Docker usa; sem conntrack a resposta nunca volta ao container. Com
+    #    outro resolvedor (Quad9) a resolucao funciona e o backend alcanca o
+    #    NWB ID (chaves publicas) e o NWB Acessos.
+    dns:
+      - 9.9.9.9
+      - 208.67.222.222
 
   frontend:
     build:
       context: ./.build/frontend
       dockerfile: Dockerfile
       network: host
+    dns:
+      - 9.9.9.9
+      - 208.67.222.222
     # Node 24 em execucao usa as mesmas chamadas novas de escrita.
     security_opt:
       - seccomp=unconfined
