@@ -1,6 +1,6 @@
 'use client';
 
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useSearchParams } from 'next/navigation';
 import { Suspense, useCallback, useEffect, useState } from 'react';
 
 import {
@@ -23,7 +23,6 @@ type Estado = 'pronto' | 'indo' | 'voltando' | 'erro';
  * cookies locais, e o resto do sistema não sabe por onde a pessoa entrou.
  */
 function NwbIdLoginContent({ config }: { config: NwbIdConfig }) {
-  const router = useRouter();
   const parametros = useSearchParams();
   const [estado, setEstado] = useState<Estado>('pronto');
   const [erro, setErro] = useState('');
@@ -111,16 +110,20 @@ function NwbIdLoginContent({ config }: { config: NwbIdConfig }) {
           throw new Error(corpo?.message ?? 'Não foi possível entrar.');
         }
 
-        // Limpa o ?code= da barra e segue para o painel (o proxy leva ao termo, se pendente).
-        window.history.replaceState(null, '', '/login');
-        router.replace(corpo?.empresa_id ? `/dashboard/patrimonio?empresa_id=${corpo.empresa_id}` : '/dashboard/patrimonio');
-        router.refresh();
+        /* Navegação COMPLETA do navegador, não router.replace: os cookies de
+           sessão acabaram de ser definidos nesta resposta, e só um pedido novo
+           ao servidor faz o proxy enxergá-los e renderizar o painel (ou o
+           termo, se pendente). Com a navegação do App Router a tela ficava
+           parada em "Confirmando sua entrada…" mesmo com a sessão criada. */
+        window.location.replace(
+          corpo?.empresa_id ? `/dashboard/patrimonio?empresa_id=${corpo.empresa_id}` : '/dashboard/patrimonio',
+        );
       } catch (falha) {
         setErro(falha instanceof Error ? falha.message : 'Falha na entrada.');
         setEstado('erro');
       }
     })();
-  }, [parametros, router, config]);
+  }, [parametros, config]);
 
   if (!config.habilitado) {
     return null;
