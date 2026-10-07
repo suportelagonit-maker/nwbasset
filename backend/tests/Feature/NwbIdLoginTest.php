@@ -36,7 +36,9 @@ class NwbIdLoginTest extends TestCase
             'nwbid.clientes_aceitos' => ['nwb-asset'],
             'nwbid.sistema' => 'nwb-asset',
             'nwbid.login_senha' => true,
-            'nwbid.empresa_admin_id' => null,
+            'nwbid.empresa_padrao_id' => null,
+            'nwbid.perfil_padrao' => 'AUDITOR',
+            'nwbid.perfil_admin' => 'SUPER_ADMIN',
             'nwbid.acessos.url' => '',
             'nwbid.acessos.client_id' => '',
             'nwbid.acessos.client_secret' => '',
@@ -101,21 +103,65 @@ class NwbIdLoginTest extends TestCase
         ])->assertStatus(401);
     }
 
-    public function test_liberado_sem_cadastro_local_recebe_orientacao(): void
+    public function test_liberado_no_acessos_sem_cadastro_tem_a_conta_criada_a_partir_do_nwbid(): void
+    {
+        $empresa = $this->criarEmpresa();
+        config(['nwbid.empresa_padrao_id' => $empresa->id]);
+
+        $response = $this->postJson('/api/v1/auth/nwbid', [
+            'access_token' => $this->token([
+                'sub' => 'sub-novo',
+                'email' => 'novo@empresa.local',
+                'name' => 'Pessoa Liberada',
+                'sistemas' => ['nwb-asset'],
+            ]),
+        ]);
+
+        $response->assertOk()
+            ->assertJsonPath('usuario.email', 'novo@empresa.local')
+            ->assertJsonPath('usuario.nome', 'Pessoa Liberada')
+            ->assertJsonPath('usuario.role', RoleEnum::AUDITOR->value)
+            ->assertJsonPath('empresa_atual.id', $empresa->id);
+
+        $criado = Usuario::query()->where('nwb_sub', 'sub-novo')->firstOrFail();
+        $this->assertSame('NWB', $criado->auth_origem);
+        $this->assertTrue($criado->ativo);
+        $this->assertTrue($criado->empresas()->where('empresas.id', $empresa->id)->exists());
+    }
+
+    public function test_sem_empresa_padrao_a_pessoa_e_orientada_a_procurar_o_administrador(): void
     {
         $this->criarEmpresa();
+        config(['nwbid.empresa_padrao_id' => null]);
 
         $this->postJson('/api/v1/auth/nwbid', [
             'access_token' => $this->token(['sub' => 'sub-novo', 'email' => 'novo@empresa.local', 'sistemas' => ['nwb-asset']]),
         ])->assertStatus(403)
-            ->assertJsonFragment(['message' => 'Voce pode abrir o NWB Asset, mas ainda nao tem cadastro aqui. Peca ao administrador para criar seu acesso.']);
+            ->assertJsonFragment(['message' => 'Nao foi possivel criar seu acesso automaticamente: o NWB Asset esta sem empresa padrao configurada. Procure o administrador do sistema.']);
+    }
+
+    public function test_nome_da_pessoa_acompanha_o_nwbid(): void
+    {
+        $empresa = $this->criarEmpresa();
+        $usuario = $this->criarUsuario($empresa, 'maria@empresa.local');
+
+        $this->postJson('/api/v1/auth/nwbid', [
+            'access_token' => $this->token([
+                'sub' => 'sub-maria',
+                'email' => 'maria@empresa.local',
+                'name' => 'Maria Gestora de Oliveira',
+                'sistemas' => ['nwb-asset'],
+            ]),
+        ])->assertOk();
+
+        $this->assertSame('Maria Gestora de Oliveira', $usuario->refresh()->nome);
     }
 
     public function test_administrador_no_acessos_e_provisionado_na_primeira_entrada(): void
     {
         $empresa = $this->criarEmpresa();
         config([
-            'nwbid.empresa_admin_id' => $empresa->id,
+            'nwbid.empresa_padrao_id' => $empresa->id,
             'nwbid.acessos.url' => 'https://acessos.teste.local',
             'nwbid.acessos.client_id' => 'nwb-asset-api',
             'nwbid.acessos.client_secret' => 'segredo',
@@ -163,6 +209,16 @@ class NwbIdLoginTest extends TestCase
 
         $this->postJson('/api/v1/auth/login', ['email' => 'maria@empresa.local', 'password' => 'secret123'])->assertOk();
         $this->getJson('/api/v1/auth/nwbid/config')->assertJsonPath('data.login_senha', true)->assertJsonPath('data.habilitado', false);
+    }
+
+    public function test_perfil_padrao_da_conta_nova_e_configuravel(): void
+    {
+        $empresa = $this->criarEmpresa();
+        config(['nwbid.empresa_padrao_id' => $empresa->id, 'nwbid.perfil_padrao' => RoleEnum::OPERADOR_INVENTARIO->value]);
+
+        $this->postJson('/api/v1/auth/nwbid', [
+            'access_token' => $this->token(['sub' => 'sub-op', 'email' => 'operador@empresa.local', 'sistemas' => ['nwb-asset']]),
+        ])->assertOk()->assertJsonPath('usuario.role', RoleEnum::OPERADOR_INVENTARIO->value);
     }
 
     private function token(array $claims): string

@@ -34,8 +34,23 @@ return [
      */
     'login_senha' => filter_var(env('AUTH_LOGIN_SENHA', false), FILTER_VALIDATE_BOOL),
 
-    /** Empresa (id) em que administradores do sistema no Acessos sao criados na primeira entrada. */
-    'empresa_admin_id' => env('NWBID_EMPRESA_ADMIN_ID') !== null ? (int) env('NWBID_EMPRESA_ADMIN_ID') : null,
+    /**
+     * Empresa (id) em que nascem as contas vindas do NWB ID. Sem ela nenhuma
+     * conta pode ser criada automaticamente, e a pessoa e orientada a procurar
+     * o administrador. NWBID_EMPRESA_ADMIN_ID continua valendo como apelido.
+     */
+    'empresa_padrao_id' => ($empresa = env('NWBID_EMPRESA_PADRAO_ID', env('NWBID_EMPRESA_ADMIN_ID'))) !== null && $empresa !== ''
+        ? (int) $empresa
+        : null,
+
+    /**
+     * Perfil da conta criada na primeira entrada. Quem o NWB Acessos apenas
+     * liberou entra com o perfil padrao (leitura); quem ADMINISTRA o sistema
+     * la entra como dono. Em qualquer caso o administrador ajusta depois em
+     * Administracao > Usuarios — o papel e decisao do NWB Asset.
+     */
+    'perfil_padrao' => env('NWBID_PERFIL_PADRAO', 'AUDITOR'),
+    'perfil_admin' => env('NWBID_PERFIL_ADMIN', 'SUPER_ADMIN'),
 
     'acessos' => [
         'url' => rtrim((string) env('NWBID_ACESSOS_API_URL', ''), '/'),

@@ -51,6 +51,7 @@ export const AJUDA_SECOES: AjudaSecao[] = [
         open: { href: '/login', label: 'Abrir a tela de login' },
         passos: [
           { onde: 'Tela de login › Entrar com NWB ID', acao: 'Clique em Entrar com NWB ID e use a sua conta NWB ID (o mesmo e-mail e senha dos outros sistemas da NWB). Quem pode abrir o NWB Asset é definido no NWB Acessos.', porque: 'Uma conta só para todos os sistemas: sair do NWB Asset também encerra a sessão no NWB ID.' },
+          { onde: 'Primeiro acesso', acao: 'Não é preciso cadastro prévio: ao entrar pela primeira vez, a sua conta no NWB Asset é criada automaticamente com os dados do NWB ID (nome e e-mail).', porque: 'A identidade vem do NWB ID; o administrador do NWB Asset ajusta depois o seu perfil de acesso.' },
           { onde: 'Perfil e permissões', acao: 'Depois de entrar, o que você pode fazer é definido pelo seu perfil no NWB Asset (Super admin, Admin da empresa, Gestor patrimonial, Auditor ou Operador de inventário), cadastrado em Administração › Usuários.', porque: 'O NWB ID diz quem você é, o NWB Acessos diz se você pode abrir o NWB Asset, e o próprio sistema diz o que você pode fazer aqui dentro.' },
           { onde: 'Após entrar', acao: 'Se o seu usuário tiver acesso a mais de uma empresa, escolha a empresa na tela seguinte. Caso contrário, o Painel de Controle abre direto.', porque: 'Todos os módulos trabalham no contexto da empresa ativa, mostrada no canto superior direito.' },
         ],
@@ -514,8 +515,10 @@ export const AJUDA_SECOES: AjudaSecao[] = [
         open: { href: '/users', label: 'Abrir Usuários' },
         requer: 'Perfil Super admin ou Admin da empresa.',
         passos: [
-          { onde: 'Menu Administração › Usuários', acao: 'Clique em Novo usuário.' },
-          { onde: 'Formulário', acao: 'Informe nome, e-mail e senha (mínimo 8 caracteres) e escolha o Perfil: Super admin, Admin da empresa, Gestor patrimonial, Auditor ou Operador de inventário.', porque: 'O perfil traz um conjunto padrão de permissões; você pode ajustar marcando ou desmarcando as caixas (bens, inventários, relatórios, usuários...).' },
+          { onde: 'Antes de tudo: NWB Acessos', acao: 'Libere a pessoa para o NWB Asset no NWB Acessos. Sem isso ela não entra, mesmo cadastrada aqui.', porque: 'O NWB Acessos é a portaria: diz quem pode abrir cada sistema.' },
+          { onde: 'Cadastro automático', acao: 'Quem foi liberado no NWB Acessos entra sem cadastro prévio: a conta nasce na primeira entrada, com perfil de leitura (Auditor). Depois basta ajustar o perfil na lista de usuários.', porque: 'A identidade vem do NWB ID; aqui se define apenas o que a pessoa pode fazer.' },
+          { onde: 'Menu Administração › Usuários', acao: 'Para já deixar a pessoa com o perfil certo antes do primeiro acesso, clique em Novo usuário.' },
+          { onde: 'Formulário', acao: 'Informe nome e o mesmo e-mail que a pessoa usa no NWB ID e escolha o Perfil: Super admin, Admin da empresa, Gestor patrimonial, Auditor ou Operador de inventário. A senha não é usada para entrar (o acesso é pelo NWB ID).', porque: 'O perfil traz um conjunto padrão de permissões; você pode ajustar marcando ou desmarcando as caixas (bens, inventários, relatórios, usuários...).' },
           { onde: 'Salvar', acao: 'Confirme. O usuário fica vinculado à empresa ativa e já pode entrar.' },
         ],
         dicas: ['Em Administração › Permissões você vê a matriz completa de permissões padrão de cada perfil.'],

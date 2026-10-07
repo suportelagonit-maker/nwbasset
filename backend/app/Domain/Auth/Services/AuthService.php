@@ -79,10 +79,12 @@ class AuthService
      * igual a do login por senha.
      *
      * Entra quem tem o sistema liberado na claim "sistemas" (NWB Acessos) OU
-     * quem administra o sistema no Acessos. A conta local e encontrada pelo
-     * "sub" ou, na primeira entrada, pelo e-mail; administradores sem conta
-     * ganham uma (SUPER_ADMIN da empresa configurada). Os demais sem conta
-     * precisam que um administrador os cadastre em Administracao > Usuarios.
+     * quem administra o sistema no Acessos. A IDENTIDADE VEM DO NWB ID: a
+     * conta local e encontrada pelo "sub" (ou pelo e-mail, na primeira
+     * entrada) e, quando nao existe, NASCE AQUI com os dados do NWB ID — sem
+     * cadastro manual. O perfil e que continua sendo decisao do NWB Asset:
+     * quem administra o sistema no Acessos entra como dono, os demais com o
+     * perfil padrao, ajustavel em Administracao > Usuarios.
      */
     public function loginComNwbId(string $accessToken, string $deviceName = 'nwbasset-nwbid'): array
     {
@@ -106,12 +108,12 @@ class AuthService
                 ->first();
         }
 
-        if (! $usuario && $administra) {
-            $usuario = $this->provisionarAdministrador($identidade);
+        if (! $usuario) {
+            $usuario = $this->provisionarDoNwbId($identidade, $administra);
         }
 
         if (! $usuario) {
-            throw new AccessDeniedHttpException('Voce pode abrir o NWB Asset, mas ainda nao tem cadastro aqui. Peca ao administrador para criar seu acesso.');
+            throw new AccessDeniedHttpException('Nao foi possivel criar seu acesso automaticamente: o NWB Asset esta sem empresa padrao configurada. Procure o administrador do sistema.');
         }
 
         if (! $usuario->ativo) {
@@ -123,6 +125,8 @@ class AuthService
         $usuario->forceFill([
             'nwb_sub' => $identidade->sub,
             'auth_origem' => 'NWB',
+            // O NWB ID e a fonte do nome da pessoa: se mudou la, muda aqui.
+            'nome' => $identidade->nome !== '' ? mb_substr($identidade->nome, 0, 255) : $usuario->nome,
             'empresa_id' => $empresaAtual?->id ?? $usuario->empresa_id,
             'ultimo_login_em' => now(),
         ])->save();
@@ -147,13 +151,15 @@ class AuthService
     }
 
     /**
-     * Cria a conta de quem administra o NWB Asset no NWB Acessos e ainda nao
-     * tem cadastro aqui, como Super admin (quem administra o sistema no Acessos
-     * e o dono dele). Sem senha utilizavel: a entrada e so pelo NWB ID.
+     * Cria a conta de quem o NWB Acessos liberou e ainda nao tem cadastro
+     * aqui, com os dados do NWB ID. Sem senha utilizavel: a entrada e so pelo
+     * NWB ID. Devolve null quando nao ha empresa padrao configurada ou o token
+     * veio sem e-mail — ai a pessoa recebe a orientacao de procurar o
+     * administrador.
      */
-    private function provisionarAdministrador(NwbIdentidade $identidade): ?Usuario
+    private function provisionarDoNwbId(NwbIdentidade $identidade, bool $administra): ?Usuario
     {
-        $empresaId = config('nwbid.empresa_admin_id');
+        $empresaId = config('nwbid.empresa_padrao_id');
 
         if (! $empresaId || $identidade->email === '') {
             return null;
@@ -165,7 +171,9 @@ class AuthService
             return null;
         }
 
-        return DB::transaction(function () use ($identidade, $empresa): Usuario {
+        $perfil = $this->perfilDeProvisionamento($administra);
+
+        return DB::transaction(function () use ($identidade, $empresa, $perfil, $administra): Usuario {
             $usuario = Usuario::query()->create([
                 'empresa_id' => $empresa->id,
                 'nome' => mb_substr($identidade->nome, 0, 255),
@@ -173,26 +181,39 @@ class AuthService
                 'nwb_sub' => $identidade->sub,
                 'auth_origem' => 'NWB',
                 'password' => Str::random(48),
-                'role' => RoleEnum::SUPER_ADMIN->value,
+                'role' => $perfil,
                 'ativo' => true,
             ]);
 
             $usuario->empresas()->attach($empresa->id, [
-                'perfil' => RoleEnum::SUPER_ADMIN->value,
+                'perfil' => $perfil,
                 'created_at' => now(),
             ]);
+
+            $origem = $administra ? 'NWB_ACESSOS_ADMINISTRADOR' : 'NWB_ACESSOS_CONCESSAO';
 
             $this->auditLogger->log(
                 usuario: $usuario,
                 evento: AuditoriaEventoEnum::CRIACAO->value,
                 entidade: $usuario,
                 empresaId: $empresa->id,
-                dadosNovos: ['email' => $usuario->email, 'role' => $usuario->role, 'origem' => 'NWB_ACESSOS_ADMINISTRADOR'],
-                descricao: 'Administrador do nwb-asset no NWB Acessos, primeira entrada pelo NWB ID.',
+                dadosNovos: ['email' => $usuario->email, 'role' => $perfil, 'origem' => $origem, 'nwb_sub' => $identidade->sub],
+                descricao: $administra
+                    ? 'Administrador do nwb-asset no NWB Acessos, conta criada na primeira entrada pelo NWB ID.'
+                    : 'Liberado no NWB Acessos, conta criada na primeira entrada pelo NWB ID.',
             );
 
             return $usuario->load(['empresa', 'empresas']);
         });
+    }
+
+    /** Perfil da conta recem-criada, com o configurado validado contra os papeis existentes. */
+    private function perfilDeProvisionamento(bool $administra): string
+    {
+        $configurado = (string) config($administra ? 'nwbid.perfil_admin' : 'nwbid.perfil_padrao');
+        $padrao = $administra ? RoleEnum::SUPER_ADMIN : RoleEnum::AUDITOR;
+
+        return RoleEnum::tryFrom($configurado)?->value ?? $padrao->value;
     }
 
     public function logout(Usuario $usuario): void

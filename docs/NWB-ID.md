@@ -19,7 +19,8 @@ Implementado em 17/09/2026, no mesmo modelo do NCEdu e do NC TECH.
    - lê `sub`, nome (`nome_exibicao` › `name` › `given_name + family_name` › `preferred_username`), `email`, `sistemas`, `campus`, `nwb_cadastro_id`;
    - **entra quem tem `nwb-asset` na claim `sistemas` OU quem administra o `nwb-asset` no NWB Acessos** (consulta `GET /servico/administradores` com a conta de serviço `nwb-asset-api`, cache 60 s; Acessos fora do ar = não administra, nunca abre mais);
    - localiza a conta local por `usuarios.nwb_sub` ou, na primeira entrada, pelo e-mail (e grava o `nwb_sub`);
-   - administrador sem conta ganha uma (`SUPER_ADMIN` da empresa `NWBID_EMPRESA_ADMIN_ID`, senha aleatória inutilizável); os demais sem conta recebem "peça ao administrador";
+   - **sem conta local, cria a conta com os dados do NWB ID** (nome, e-mail, `sub`), na empresa `NWBID_EMPRESA_PADRAO_ID`, sem senha utilizável: quem só foi liberado no Acessos nasce com `NWBID_PERFIL_PADRAO` (padrão `AUDITOR`, leitura) e quem **administra** o sistema no Acessos nasce com `NWBID_PERFIL_ADMIN` (padrão `SUPER_ADMIN`). O perfil é ajustável depois em Administração › Usuários — a identidade vem do NWB ID, o papel é decisão do NWB Asset;
+   - o nome da pessoa é sincronizado do NWB ID a cada entrada;
    - emite o token Sanctum de sempre. Termo de uso, cookies e o restante do sistema não sabem por onde a pessoa entrou.
 4. **Sair** limpa os cookies e volta a `/login?saiu=1`; a tela encerra também a sessão no Keycloak (`end_session` com `id_token_hint` e `post_logout_redirect_uri=<origem>/login`).
 
@@ -32,7 +33,9 @@ NWBID_ISSUER=https://nwbid.igrejanovoscomecos.com.br/realms/nwb-equipe
 NWBID_CLIENTE=nwb-asset                    # cliente público do login
 NWBID_CLIENTES_ACEITOS=nwb-asset           # azp/aud aceitos no token
 NWBID_SISTEMA=nwb-asset                    # código no catálogo do Acessos
-NWBID_EMPRESA_ADMIN_ID=1                   # empresa dos administradores provisionados
+NWBID_EMPRESA_PADRAO_ID=1                  # empresa onde nascem as contas vindas do NWB ID
+NWBID_PERFIL_PADRAO=AUDITOR                # perfil de quem o Acessos liberou
+NWBID_PERFIL_ADMIN=SUPER_ADMIN             # perfil de quem administra o sistema no Acessos
 NWBID_ACESSOS_API_URL=https://acessos.igrejanovoscomecos.com.br
 NWBID_ACESSOS_CLIENT_ID=nwb-asset-api      # conta de serviço (confidencial)
 NWBID_ACESSOS_CLIENT_SECRET=<segredo>
@@ -113,9 +116,13 @@ Sem rebuild do frontend: ele lê a configuração do backend.
 
 ## Contas locais × contas do NWB ID
 
-- Um usuário já cadastrado em **Administração › Usuários** com o mesmo e-mail do NWB ID é vinculado na primeira entrada (`nwb_sub` gravado; `auth_origem=NWB`).
-- Quem é liberado no Acessos mas não tem cadastro local recebe a mensagem para pedir ao administrador — o perfil e as permissões continuam sendo definidos aqui.
-- Administradores do sistema no Acessos entram mesmo sem cadastro: a conta é criada como `SUPER_ADMIN` da empresa configurada (auditoria registra a origem).
+**Não existe cadastro manual obrigatório: a conta vem do NWB ID.** (Mudança de 07/10/2026 — antes só administradores eram provisionados.)
+
+- Quem o NWB Acessos liberou entra na primeira tentativa e **a conta nasce automaticamente** com os dados do NWB ID, na empresa padrão, com perfil `AUDITOR` (leitura). O administrador ajusta o perfil em Administração › Usuários.
+- Quem **administra** o NWB Asset no Acessos nasce como `SUPER_ADMIN`.
+- Um usuário já cadastrado em **Administração › Usuários** com o mesmo e-mail do NWB ID é vinculado na primeira entrada (`nwb_sub` gravado, `auth_origem=NWB`) e **mantém o perfil que já tinha** — cadastrar antes continua sendo a forma de a pessoa entrar já com o papel certo.
+- Tirar o acesso é no **NWB Acessos** (revogar a concessão) e/ou desativando o usuário aqui.
+- Toda criação automática fica na auditoria com a origem (`NWB_ACESSOS_CONCESSAO` ou `NWB_ACESSOS_ADMINISTRADOR`).
 - Próximo passo natural (como no NC TECH): tela **Dar acesso** dentro do NWB Asset, buscando no cadastro do NWB System e concedendo o acesso pelo Acessos em nome de quem clicou.
 
 ## Testes
