@@ -116,5 +116,7 @@ IP interno), isso fazia o rate limit do login — que é por IP — virar um bal
 - **Nenhuma tela mostra os aparelhos inscritos** um a um — a tela do perfil
   só diz quantos são, e desliga o atual.
 - **A trilha de auditoria não tem consulta na interface** (ver seção 5).
-- Na primeira entrada depois deste deploy, todo mundo recebe um aviso de
-  "aparelho novo": a memória de aparelhos nasce vazia.
+- A memória de aparelhos nasce vazia, então a primeira entrada de cada
+  pessoa depois do deploy conta como aparelho novo. Na prática ninguém é
+  incomodado por isso: o aviso só sai para quem já tiver ligado os avisos
+  antes, e ligar exige estar dentro do sistema.
