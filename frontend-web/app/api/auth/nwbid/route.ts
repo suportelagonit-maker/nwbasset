@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 
 import { API_BASE_URL } from '@/lib/api-base';
+import { cabecalhosDeOrigem } from '@/lib/cabecalhos-origem';
 import { sessionCookieOptions } from '@/lib/auth-session';
 import { respostaDeSessao, type LoginBackendBody } from '@/lib/login-session';
 
@@ -17,7 +18,6 @@ export async function POST(request: Request) {
     return NextResponse.json({ message: 'Token do NWB ID ausente.' }, { status: 422 });
   }
 
-  const forwardedFor = request.headers.get('x-forwarded-for') ?? '';
   let response: Response;
 
   try {
@@ -26,7 +26,7 @@ export async function POST(request: Request) {
       headers: {
         'Content-Type': 'application/json',
         Accept: 'application/json',
-        ...(forwardedFor ? { 'X-Forwarded-For': forwardedFor } : {}),
+        ...cabecalhosDeOrigem(request),
       },
       body: JSON.stringify({ access_token: payload.access_token, device_name: 'nwbasset-nwbid' }),
       cache: 'no-store',

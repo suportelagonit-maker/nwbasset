@@ -9,6 +9,7 @@ use App\Domain\Auth\DTOs\NwbIdentidade;
 use App\Domain\Auth\Enums\RoleEnum;
 use App\Domain\Auth\Models\RolePermissao;
 use App\Domain\Auth\Models\Usuario;
+use App\Domain\Notifications\Services\AvisoAcessoService;
 use App\Domain\Organization\Models\Empresa;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
@@ -66,6 +67,8 @@ class AuthService
             descricao: 'Login realizado com sucesso.',
         );
 
+        $this->avisarAcesso($usuario, $empresaAtual?->id ?? $usuario->empresa_id, false);
+
         return [
             'token' => $token,
             'usuario' => $usuario->fresh(['empresa', 'empresas']),
@@ -108,8 +111,11 @@ class AuthService
                 ->first();
         }
 
+        $contaRecemCriada = false;
+
         if (! $usuario) {
             $usuario = $this->provisionarDoNwbId($identidade, $administra);
+            $contaRecemCriada = $usuario !== null;
         }
 
         if (! $usuario) {
@@ -141,6 +147,8 @@ class AuthService
             dadosNovos: ['email' => $usuario->email, 'empresa_id' => $empresaAtual?->id, 'origem' => 'NWB_ID', 'nwb_sub' => $identidade->sub],
             descricao: 'Login realizado pelo NWB ID.',
         );
+
+        $this->avisarAcesso($usuario, $empresaAtual?->id ?? $usuario->empresa_id, $contaRecemCriada);
 
         return [
             'token' => $token,
@@ -214,6 +222,36 @@ class AuthService
         $padrao = $administra ? RoleEnum::SUPER_ADMIN : RoleEnum::AUDITOR;
 
         return RoleEnum::tryFrom($configurado)?->value ?? $padrao->value;
+    }
+
+    /**
+     * Avisos de acesso (push), depois que a resposta ja foi enviada.
+     *
+     * defer() garante que a entrada nao espere pelo servico de push do
+     * navegador — e, se algo falhar la, ninguem fica sem conseguir entrar.
+     */
+    private function avisarAcesso(Usuario $usuario, ?int $empresaId, bool $contaRecemCriada): void
+    {
+        $requisicao = request();
+        $ip = $requisicao?->ip();
+        $userAgent = $requisicao?->userAgent();
+        $usuarioId = $usuario->id;
+
+        defer(function () use ($usuarioId, $ip, $userAgent, $contaRecemCriada, $empresaId): void {
+            $usuario = Usuario::query()->find($usuarioId);
+
+            if ($usuario === null) {
+                return;
+            }
+
+            app(AvisoAcessoService::class)->registrarLogin(
+                $usuario,
+                $ip,
+                $userAgent,
+                $contaRecemCriada,
+                $empresaId,
+            );
+        });
     }
 
     public function logout(Usuario $usuario): void

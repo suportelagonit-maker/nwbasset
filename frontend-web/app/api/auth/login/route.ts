@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 
 import { API_BASE_URL } from '@/lib/api-base';
+import { cabecalhosDeOrigem } from '@/lib/cabecalhos-origem';
 import { sessionCookieOptions } from '@/lib/auth-session';
 import { respostaDeSessao, type LoginBackendBody } from '@/lib/login-session';
 
@@ -16,6 +17,7 @@ export async function POST(request: Request) {
       headers: {
         'Content-Type': 'application/json',
         Accept: 'application/json',
+        ...cabecalhosDeOrigem(request),
       },
       body: JSON.stringify(payload),
       cache: 'no-store',

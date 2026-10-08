@@ -6,6 +6,8 @@
 #                        ja quebrava "php artisan db:show")
 #   gd                -> imagens de bens, logo da empresa e etiquetas (dompdf)
 #   zip               -> openspout, exportacao de planilhas
+#   bcmath, gmp       -> minishlink/web-push: assinatura VAPID (ECDSA P-256)
+#                        e criptografia do payload dos avisos push
 #   mbstring, opcache -> base
 FROM php:8.3-apache AS base
 
@@ -16,6 +18,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
         libpng-dev \
         libjpeg62-turbo-dev \
         libfreetype6-dev \
+        libgmp-dev \
         unzip \
         git \
     && docker-php-ext-configure gd --with-freetype --with-jpeg \
@@ -25,6 +28,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
         intl \
         zip \
         gd \
+        bcmath \
+        gmp \
         opcache \
     && a2enmod rewrite \
     && rm -rf /var/lib/apt/lists/*

@@ -4,6 +4,7 @@ import { TERMO_PENDENTE_COOKIE, getAuthSession, sessionCookieOptions } from '@/l
 
 
 import { API_BASE_URL } from '@/lib/api-base';
+import { cabecalhosDeOrigem } from '@/lib/cabecalhos-origem';
 async function proxyRequest(request: NextRequest, path: string[]) {
   const session = await getAuthSession();
 
@@ -28,6 +29,7 @@ async function proxyRequest(request: NextRequest, path: string[]) {
     method: request.method,
     headers: {
       Accept: 'application/json',
+      ...cabecalhosDeOrigem(request),
       Authorization: `Bearer ${session.token}`,
       ...(session.empresaId ? { 'X-Empresa-Id': String(session.empresaId) } : {}),
       ...(body && !contentType.includes('multipart/form-data')

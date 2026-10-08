@@ -10,7 +10,7 @@
  *    sem rede, mostramos a pagina /offline.html (HTML puro, sem depender
  *    dos scripts do Next, que tambem nao carregariam).
  */
-const VERSAO = 'nwbasset-v2';
+const VERSAO = 'nwbasset-v3';
 const CACHE_ESTATICO = `${VERSAO}-estatico`;
 const PAGINA_OFFLINE = '/offline.html';
 
@@ -88,4 +88,84 @@ self.addEventListener('fetch', (event) => {
       }),
     );
   }
+});
+
+
+/*
+ * Avisos de acesso (Web Push).
+ *
+ * O servidor manda o aviso, o servico de push do navegador acorda este
+ * worker e ele mostra a notificacao. O payload traz so o que aparece na
+ * tela: nada e guardado aqui, e nenhum dado do patrimonio trafega.
+ */
+const AVISO_PADRAO = {
+  title: 'NWB Asset',
+  body: 'Você tem um aviso novo.',
+  url: '/perfil',
+  tag: 'generico',
+};
+
+function lerAviso(evento) {
+  if (!evento.data) {
+    return AVISO_PADRAO;
+  }
+
+  try {
+    const bruto = evento.data.json();
+
+    if (typeof bruto !== 'object' || bruto === null) {
+      return AVISO_PADRAO;
+    }
+
+    return {
+      title: typeof bruto.title === 'string' ? bruto.title : AVISO_PADRAO.title,
+      body: typeof bruto.body === 'string' ? bruto.body : AVISO_PADRAO.body,
+      // So caminho interno: um payload adulterado nao abre outro site.
+      url: typeof bruto.url === 'string' && bruto.url.startsWith('/') ? bruto.url : AVISO_PADRAO.url,
+      tag: typeof bruto.tag === 'string' ? bruto.tag : AVISO_PADRAO.tag,
+    };
+  } catch {
+    return AVISO_PADRAO;
+  }
+}
+
+self.addEventListener('push', (event) => {
+  const aviso = lerAviso(event);
+
+  event.waitUntil(
+    self.registration.showNotification(aviso.title, {
+      body: aviso.body,
+      // Mesmo assunto substitui o anterior em vez de empilhar.
+      tag: aviso.tag,
+      icon: '/icon-192.png',
+      badge: '/icon-192.png',
+      lang: 'pt-BR',
+      data: { url: aviso.url },
+    }),
+  );
+});
+
+self.addEventListener('notificationclick', (event) => {
+  event.notification.close();
+  const dados = event.notification.data;
+  const destino = dados && typeof dados.url === 'string' ? dados.url : '/perfil';
+
+  event.waitUntil(
+    (async () => {
+      const abas = await self.clients.matchAll({ type: 'window', includeUncontrolled: true });
+
+      // App ja aberto? Leva aquela aba para a tela, em vez de abrir outra.
+      for (const aba of abas) {
+        if ('focus' in aba) {
+          await aba.focus();
+          if ('navigate' in aba) {
+            await aba.navigate(new URL(destino, self.location.origin).toString()).catch(() => null);
+          }
+          return;
+        }
+      }
+
+      await self.clients.openWindow(destino);
+    })(),
+  );
 });

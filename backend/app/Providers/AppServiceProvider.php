@@ -9,6 +9,8 @@ use App\Domain\Administration\Policies\PermissaoPolicy;
 use App\Domain\Audit\Models\AuditoriaEvento;
 use App\Domain\Audit\Policies\AuditoriaEventoPolicy;
 use App\Domain\MultiCompany\Services\EmpresaContext;
+use App\Domain\Notifications\Contracts\EnviadorPush;
+use App\Domain\Notifications\Services\WebPushEnviador;
 use App\Domain\Organization\Models\Empresa;
 use App\Domain\Organization\Models\Filial;
 use App\Domain\Organization\Policies\EmpresaPolicy;
@@ -29,6 +31,10 @@ class AppServiceProvider extends ServiceProvider
     public function register(): void
     {
         $this->app->singleton(EmpresaContext::class, static fn (): EmpresaContext => new EmpresaContext());
+
+        // Entrega dos avisos push. E um contrato para os testes poderem
+        // trocar por um remetente que nao sai para a internet.
+        $this->app->singleton(EnviadorPush::class, WebPushEnviador::class);
     }
 
     /**

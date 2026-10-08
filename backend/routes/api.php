@@ -33,6 +33,7 @@ use App\Domain\Organization\Controllers\ResponsavelController;
 use App\Domain\Organization\Controllers\UnidadeAdministrativaController;
 use App\Domain\Reports\Controllers\ExportacaoRelatoriosController;
 use App\Domain\Reports\Controllers\RelatorioPatrimonialController;
+use App\Domain\Notifications\Controllers\PushController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/v1/status', function () {
@@ -51,6 +52,12 @@ Route::prefix('v1')->group(function (): void {
     Route::middleware('auth:sanctum')->group(function (): void {
         Route::get('auth/me', [AuthController::class, 'me']);
         Route::post('auth/logout', [AuthController::class, 'logout']);
+        // Avisos push do proprio usuario (nao dependem de empresa ativa).
+        Route::get('push', [PushController::class, 'show']);
+        Route::post('push/assinaturas', [PushController::class, 'assinar']);
+        Route::delete('push/assinaturas', [PushController::class, 'desassinar']);
+        Route::put('push/preferencias', [PushController::class, 'preferencias']);
+        Route::post('push/teste', [PushController::class, 'teste'])->middleware('throttle:6,1');
         Route::get('termo-uso', [TermoUsoController::class, 'show']);
         Route::post('termo-uso/aceite', [TermoUsoController::class, 'aceitar']);
         Route::apiResource('empresas', EmpresaController::class)

@@ -132,6 +132,25 @@ export const AJUDA_SECOES: AjudaSecao[] = [
         ],
         palavras: ['mobile', 'celular', 'pwa', 'app', 'instalar', 'barra inferior', 'offline', 'sem conexão'],
       },
+      {
+        id: 'avisos-acesso',
+        titulo: 'Como receber avisos de acesso no celular',
+        objetivo: 'Ser avisado no aparelho quando sua conta for usada em um lugar novo — e, se você administra o sistema, quando alguém entra ou é criado aqui.',
+        open: { href: '/perfil', label: 'Abrir o meu perfil' },
+        passos: [
+          { onde: 'Perfil › Avisos de acesso', acao: 'Toque em Ligar avisos neste aparelho e, quando o navegador perguntar, escolha Permitir.', porque: 'A permissão é por aparelho e por navegador: ligar no celular não liga no computador, e vice-versa.' },
+          { onde: 'O que você quer receber', acao: 'Marque ou desmarque os assuntos. "Entrada na sua conta" é sobre você; os marcados como Administradores só aparecem para quem administra o sistema.' },
+          { onde: 'Enviar aviso de teste', acao: 'Use o botão para confirmar que o aviso chega neste aparelho.', porque: 'Testar na hora evita descobrir semanas depois que a permissão estava bloqueada.' },
+          { onde: 'Desligar', acao: 'Toque em Desligar neste aparelho. Os outros aparelhos continuam recebendo.' },
+        ],
+        dicas: [
+          'Você só é avisado quando o acesso vem de um aparelho ou navegador que ainda não tinha entrado na sua conta — entrar todo dia do mesmo celular não gera aviso.',
+          'No iPhone os avisos só funcionam com o NWB Asset instalado na tela de início (Compartilhar › Adicionar à Tela de Início).',
+          'Recebeu um aviso de entrada que não foi você? Avise o administrador do sistema: o acesso é pelo NWB ID, e é lá que a conta é bloqueada.',
+          'Se a tela disser que os avisos não foram habilitados no servidor, fale com o administrador — faltam as chaves de envio.',
+        ],
+        palavras: ['aviso', 'avisos', 'notificação', 'notificacao', 'push', 'alerta', 'acesso', 'login', 'entrada', 'segurança'],
+      },
     ],
   },
   {

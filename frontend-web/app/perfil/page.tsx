@@ -2,6 +2,7 @@ import { redirect } from 'next/navigation';
 
 import ActiveEmpresaLogoPanel from '@/components/ActiveEmpresaLogoPanel';
 import AdminShell from '@/components/AdminShell';
+import AvisosPush from '@/components/AvisosPush';
 import TermoPerfilCard from '@/components/TermoPerfilCard';
 import { getAuthSession } from '@/lib/auth-session';
 
@@ -53,6 +54,8 @@ export default async function PerfilPage() {
               </div>
             </div>
           </article>
+
+          <AvisosPush />
 
           <TermoPerfilCard />
 

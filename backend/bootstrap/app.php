@@ -13,6 +13,11 @@ return Application::configure(basePath: dirname(__DIR__))
         commands: __DIR__.'/../routes/console.php',
         health: '/up',
     )
+    ->withCommands([
+        // Comandos moram junto do dominio a que pertencem; a descoberta
+        // automatica do Laravel so olha app/Console/Commands.
+        \App\Domain\Notifications\Console\GerarChavesVapidCommand::class,
+    ])
     ->withMiddleware(function (Middleware $middleware): void {
         // Em produção o container só é alcançado pelo proxy reverso (Apache do
         // cPanel, publicado em 127.0.0.1). Confiar nele é o que permite ao
