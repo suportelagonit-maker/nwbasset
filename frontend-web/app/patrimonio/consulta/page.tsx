@@ -2,6 +2,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 
 
+import ConsultaPorEtiqueta from '@/components/ConsultaPorEtiqueta';
 import { API_BASE_URL } from '@/lib/api-base';
 type LookupPayload = {
   data: {
@@ -65,10 +66,12 @@ async function getLookup(codigo: string): Promise<LookupPayload | null> {
 export default async function PatrimonioConsultaPage({
   searchParams,
 }: {
-  searchParams: Promise<{ codigo?: string }>;
+  searchParams: Promise<{ codigo?: string; ler?: string }>;
 }) {
   const params = await searchParams;
   const codigo = params.codigo ?? '';
+  // ?ler=1 vem do atalho "Ler etiqueta" do aplicativo instalado.
+  const abrirLeitor = params.ler === '1' || (!codigo && params.ler !== '0');
   const payload = await getLookup(codigo);
 
   return (
@@ -85,11 +88,19 @@ export default async function PatrimonioConsultaPage({
           </span>
         </div>
 
+        <div className="mb-5">
+          <ConsultaPorEtiqueta abrirLeitor={abrirLeitor} codigoAtual={codigo} />
+        </div>
+
         {!payload ? (
           <section className="rounded-[26px] border border-[var(--line)] bg-white p-8">
-            <h1 className="text-3xl font-semibold tracking-tight text-[var(--ink)]">Plaqueta não encontrada</h1>
+            <h1 className="text-2xl font-semibold tracking-tight text-[var(--ink)] md:text-3xl">
+              {codigo ? 'Plaqueta não encontrada' : 'Consulte um bem pela etiqueta'}
+            </h1>
             <p className="mt-3 text-sm leading-7 text-[var(--muted)]">
-              Não foi possível localizar um patrimônio para o código informado.
+              {codigo
+                ? 'Não foi possível localizar um patrimônio para o código informado. Confira o número impresso na plaqueta e tente de novo.'
+                : 'Leia o código de barras ou o QR Code da plaqueta com a câmera, ou digite o número para ver a ficha do bem.'}
             </p>
           </section>
         ) : (

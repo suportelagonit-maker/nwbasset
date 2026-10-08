@@ -47,6 +47,21 @@ class PlaquetaPatrimonialController extends Controller
             $query->whereNull('bem_patrimonial_id');
         }
 
+        // Busca pelo conteudo lido na etiqueta (codigo de barras ou QR Code).
+        if ($request->filled('codigo')) {
+            $codigo = $this->plaquetaPatrimonialService->normalizarCodigo(
+                $request->string('codigo')->toString()
+            );
+
+            $query->where(function ($consulta) use ($codigo) {
+                $consulta->where('codigo_plaqueta', $codigo)
+                    ->orWhere('numero_plaqueta', $codigo)
+                    ->orWhere('codigo_barras_conteudo', $codigo)
+                    ->orWhere('qr_code_conteudo', $codigo)
+                    ->orWhere('link_consulta', $codigo);
+            });
+        }
+
         return PlaquetaPatrimonialResource::collection($query->paginate($request->integer('per_page', 15)));
     }
 

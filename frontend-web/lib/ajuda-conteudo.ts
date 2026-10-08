@@ -127,9 +127,10 @@ export const AJUDA_SECOES: AjudaSecao[] = [
         passos: [
           { onde: 'Barra inferior', acao: 'Toque em Ativos, Inventário ou Movimentações para abrir os módulos do grupo; o botão central Painel volta ao Painel de Controle.' },
           { onde: 'Menu', acao: 'Toque em Menu (ou no botão ☰ do topo) para ver todos os módulos, trocar de empresa, abrir o Perfil ou Sair.' },
-          { onde: 'Instalar como app', acao: 'No Chrome (Android) use "Adicionar à tela inicial"; no Safari (iPhone) use Compartilhar › "Adicionar à Tela de Início".', porque: 'O sistema abre em tela cheia, como um aplicativo, sem a barra do navegador.' },
+          { onde: 'Menu › Instalar aplicativo', acao: 'Toque em Menu e, no fim da lista, em Instalar aplicativo. No Android o próprio navegador pergunta se quer instalar; no iPhone o sistema mostra o caminho: Compartilhar › "Adicionar à Tela de Início".', porque: 'Instalado, o NWB Asset abre em tela cheia, com ícone próprio, e a câmera do aparelho fica a um toque nas telas de campo.' },
+          { onde: 'Sem internet', acao: 'Se o aparelho ficar sem rede, aparece o aviso "Sem conexão com a internet". Volte para uma área com sinal e toque em Tentar novamente.', porque: 'As consultas e os registros do patrimônio são feitos no servidor; o aplicativo não guarda dados do sistema no aparelho.' },
         ],
-        palavras: ['mobile', 'celular', 'pwa', 'app', 'instalar', 'barra inferior'],
+        palavras: ['mobile', 'celular', 'pwa', 'app', 'instalar', 'barra inferior', 'offline', 'sem conexão'],
       },
     ],
   },
@@ -283,6 +284,24 @@ export const AJUDA_SECOES: AjudaSecao[] = [
         ],
         dicas: ['Ao ler o código de barras ou QR pelo celular, abre-se a consulta pública do bem — útil no inventário em campo.'],
         palavras: ['etiqueta', 'plaqueta', 'qr code', 'código de barras', 'importar', 'planilha', 'vincular'],
+      },
+      {
+        id: 'ler-etiqueta-camera',
+        titulo: 'Como ler a etiqueta com a câmera do celular',
+        objetivo: 'Usar a câmera do aparelho para preencher a plaqueta e localizar o bem, sem digitar o código.',
+        open: { href: '/patrimonio/consulta?ler=1', label: 'Abrir a leitura por câmera' },
+        passos: [
+          { onde: 'Cadastro de bem › etapa Identificação', acao: 'No campo Numero da Plaqueta, toque em Ler etiqueta com a câmera e aponte para o código de barras ou o QR Code da plaqueta. Confira o número lido e toque em Usar este código.', porque: 'A plaqueta é escolhida na lista de etiquetas disponíveis, sem risco de digitar um número errado.' },
+          { onde: 'Transferências, baixas, responsabilidade e divergências', acao: 'No campo Bem patrimonial, toque em Ler etiqueta com a câmera e leia a plaqueta colada no bem; o sistema descobre a qual bem ela pertence e preenche o campo.', porque: 'Em campo é mais rápido ler a etiqueta do que procurar o tombo na lista.' },
+          { onde: 'Consulta pública da etiqueta', acao: 'Na página de consulta, toque em Ler etiqueta com a câmera para abrir a ficha do bem direto pela plaqueta — não é preciso estar logado.', porque: 'Serve para conferências rápidas no corredor, com qualquer celular.' },
+          { onde: 'Fotos do bem (etapa Anexos)', acao: 'No celular, o botão Tirar foto abre a câmera traseira direto; o botão Adicionar continua levando à galeria e aos arquivos.' },
+        ],
+        dicas: [
+          'Na primeira vez o navegador pede permissão para usar a câmera: toque em Permitir. Se tiver negado antes, libere a câmera para o site nas configurações do navegador.',
+          'Etiqueta desbotada ou com pouca luz? Aproxime o celular, mantenha o código dentro da moldura e segure firme por um instante — o leitor tenta de novo sozinho.',
+          'Se aparecer "nenhuma opção corresponde ao código", a etiqueta lida não está na lista daquele campo (por exemplo, uma plaqueta já vinculada a outro bem).',
+        ],
+        palavras: ['câmera', 'camera', 'ler', 'leitura', 'código de barras', 'qr code', 'scanner', 'etiqueta', 'plaqueta', 'foto'],
       },
       {
         id: 'etiqueta-imprimir',

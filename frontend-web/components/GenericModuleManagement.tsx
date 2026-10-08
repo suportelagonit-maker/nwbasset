@@ -2,6 +2,7 @@
 import type { ChangeEvent, ReactNode } from "react";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { handleUnauthorizedClientResponse } from "@/lib/client-auth";
+import LeitorCodigo from "@/components/LeitorCodigo";
 import { getCrudModuleConfig } from "@/lib/module-crud-config";
 import PatrimonioEtiquetaCard from "./PatrimonioEtiquetaCard";
 import SystemConfirmDialog from "./SystemConfirmDialog";
@@ -204,6 +205,51 @@ function getDefaultValue(field: ModuleFieldConfig, empresaId: number | null) {
   }
   return "";
 }
+/**
+ * Numeros que um codigo lido pode representar: o proprio conteudo, so os
+ * digitos e os seis ultimos digitos (o numero visivel da plaqueta costuma ser
+ * o final do codigo impresso).
+ */
+function candidatosDaEtiqueta(codigo: string) {
+  const bruto = codigo.trim();
+  const digitos = bruto.replace(/D/g, "");
+  const lista = [bruto, digitos, digitos.length > 6 ? digitos.slice(-6) : ""];
+  return Array.from(new Set(lista.filter((item) => item.length > 0)));
+}
+
+/** Opcao do select que corresponde a etiqueta lida, quando existe. */
+function opcaoDaEtiqueta(
+  opcoes: { value: string; label: string }[],
+  codigo: string,
+) {
+  const candidatos = candidatosDaEtiqueta(codigo);
+  const normalizar = (valor: string) => valor.toUpperCase().replace(/[^A-Z0-9]/g, "");
+  const semZeros = (valor: string) => valor.replace(/^0+/, "") || valor;
+
+  for (const candidato of candidatos) {
+    const alvo = normalizar(candidato);
+    if (alvo.length < 3) {
+      continue;
+    }
+    const encontrada = opcoes.find((opcao) => {
+      const valor = normalizar(opcao.value);
+      /* O rotulo dos bens e "numero do tombo - descricao". */
+      const identificador = normalizar(opcao.label.split(" - ")[0] ?? "");
+      return (
+        valor === alvo ||
+        identificador === alvo ||
+        semZeros(valor) === semZeros(alvo) ||
+        semZeros(identificador) === semZeros(alvo)
+      );
+    });
+    if (encontrada) {
+      return encontrada;
+    }
+  }
+
+  return null;
+}
+
 function onlyDigits(value: string) {
   return value.replace(/\D/g, "");
 }
@@ -658,6 +704,11 @@ export default function GenericModuleManagement({
   headerVariant = "full",
 }: GenericModuleManagementProps) {
   const config = getCrudModuleConfig(slug);
+  /* Leitura da etiqueta pela camera, nos selects que identificam bem ou plaqueta. */
+  const [leitor, setLeitor] = useState<{
+    campo: ModuleFieldConfig;
+    opcoes: { value: string; label: string }[];
+  } | null>(null);
   const [records, setRecords] = useState<Record<string, unknown>[]>([]);
   const [lookups, setLookups] = useState<
     Record<string, Record<string, unknown>[]>
@@ -1037,6 +1088,56 @@ export default function GenericModuleManagement({
 
   async function refreshAll() {
     await Promise.all([loadRecords(), loadLookups()]);
+  }
+  /**
+   * Nos selects de bem patrimonial o rotulo traz o numero do tombo, nao o
+   * codigo da etiqueta: a plaqueta lida e consultada na API para descobrir
+   * a qual bem ela pertence.
+   */
+  async function selecionarBemPelaEtiqueta(
+    campo: ModuleFieldConfig,
+    opcoes: { value: string; label: string }[],
+    codigo: string,
+  ) {
+    try {
+      const response = await fetch(
+        `/api/admin/plaquetas?per_page=1&codigo=${encodeURIComponent(codigo)}`,
+        { headers: { Accept: "application/json" }, cache: "no-store" },
+      );
+      const payload = (await response.json().catch(() => null)) as {
+        data?: Record<string, unknown>[];
+        message?: string;
+      } | null;
+      if (handleUnauthorizedClientResponse(response.status, payload?.message)) {
+        return;
+      }
+      if (!response.ok) {
+        throw new Error(payload?.message ?? `Falha ao consultar a etiqueta: ${response.status}`);
+      }
+      const plaqueta = payload?.data?.[0] ?? null;
+      const bemId = plaqueta ? plaqueta.bem_patrimonial_id : null;
+      const opcao =
+        bemId === null || bemId === undefined
+          ? null
+          : (opcoes.find((item) => item.value === String(bemId)) ?? null);
+      if (!opcao) {
+        setErrorTitle("Etiqueta sem bem nesta lista");
+        setError(
+          `A etiqueta ${codigo} nao corresponde a nenhuma opcao de "${campo.label}" disponivel aqui.`,
+        );
+        return;
+      }
+      updateField(campo, opcao.value);
+      setMessageTitle("Etiqueta lida");
+      setMessage(`${campo.label}: ${opcao.label}.`);
+    } catch (fetchError) {
+      setErrorTitle("Falha na leitura");
+      setError(
+        fetchError instanceof Error
+          ? fetchError.message
+          : "Nao foi possivel consultar a etiqueta lida.",
+      );
+    }
   }
   async function loadRecords() {
     setLoading(true);
@@ -1983,6 +2084,35 @@ export default function GenericModuleManagement({
           setMessageTitle(null);
         }}
       />
+      <LeitorCodigo
+        aberto={leitor !== null}
+        onFechar={() => setLeitor(null)}
+        titulo={leitor?.campo.label ? `Ler etiqueta: ${leitor.campo.label}` : "Ler etiqueta"}
+        descricao="Aponte a câmera para o código de barras ou o QR Code da plaqueta."
+        validar={(codigo) =>
+          leitor &&
+          leitor.campo.lookupKey !== "bens" &&
+          !opcaoDaEtiqueta(leitor.opcoes, codigo)
+            ? `Nenhuma opção de "${leitor.campo.label}" corresponde ao código ${codigo}.`
+            : null
+        }
+        onLer={(codigo) => {
+          if (!leitor) {
+            return;
+          }
+          const opcao = opcaoDaEtiqueta(leitor.opcoes, codigo);
+          if (opcao) {
+            updateField(leitor.campo, opcao.value);
+            setMessageTitle("Etiqueta lida");
+            setMessage(`${leitor.campo.label}: ${opcao.label}.`);
+            return;
+          }
+          if (leitor.campo.lookupKey === "bens") {
+            void selecionarBemPelaEtiqueta(leitor.campo, leitor.opcoes, codigo);
+          }
+        }}
+      />
+
       <section
         className={[
           "panel-surface rounded-[22px] md:rounded-[28px]",
@@ -2387,6 +2517,30 @@ export default function GenericModuleManagement({
                                   uploadingImages || totalImageCount >= 5
                                 }
                               />
+                              {/* No celular, "capture" abre a camera traseira direto; o botao
+                                  acima continua levando a galeria e aos arquivos. */}
+                              <input
+                                id={`${imageInputId}-camera`}
+                                type="file"
+                                accept="image/*"
+                                capture="environment"
+                                className="hidden"
+                                onChange={handleImageUpload}
+                                disabled={
+                                  uploadingImages || totalImageCount >= 5
+                                }
+                              />
+                              <label
+                                htmlFor={`${imageInputId}-camera`}
+                                title="Tirar foto com a camera"
+                                className={`inline-flex h-9 cursor-pointer items-center justify-center gap-1.5 rounded-full px-3 text-xs font-semibold transition md:hidden ${uploadingImages || totalImageCount >= 5 ? "bg-[#dbe3f1] text-[var(--muted)]" : "border border-[var(--line)] bg-white text-[var(--ink)] hover:border-[var(--accent)] hover:text-[var(--accent)]"}`}
+                              >
+                                <svg aria-hidden="true" className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
+                                  <path d="M4 8.5h3l1.5-2h7L17 8.5h3a1 1 0 0 1 1 1v8a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1v-8a1 1 0 0 1 1-1Z" />
+                                  <circle cx="12" cy="13.5" r="3.2" />
+                                </svg>
+                                Tirar foto
+                              </label>
                               <label
                                 htmlFor={imageInputId}
                                 className={`inline-flex h-9 cursor-pointer items-center justify-center rounded-full px-3 text-xs font-semibold transition ${uploadingImages || totalImageCount >= 5 ? "bg-[#dbe3f1] text-[var(--muted)]" : "border border-[var(--line)] bg-white text-[var(--ink)] hover:border-[var(--accent)] hover:text-[var(--accent)]"}`}
@@ -3130,6 +3284,28 @@ export default function GenericModuleManagement({
                                     </option>
                                   ))}
                                 </select>
+                                {(field.lookupKey === "plaquetas_disponiveis" ||
+                                  field.lookupKey === "bens") &&
+                                !disabled ? (
+                                  <button
+                                    type="button"
+                                    onClick={() => setLeitor({ campo: field, opcoes: options })}
+                                    className="mt-2 inline-flex h-9 w-fit items-center gap-1.5 rounded-full border border-[var(--line)] bg-white px-3.5 text-[12px] font-semibold text-[var(--ink)] transition hover:border-[var(--accent)] hover:text-[var(--accent-deep)]"
+                                  >
+                                    <svg
+                                      aria-hidden="true"
+                                      className="h-4 w-4"
+                                      viewBox="0 0 24 24"
+                                      fill="none"
+                                      stroke="currentColor"
+                                      strokeWidth="1.8"
+                                    >
+                                      <path d="M3 8V6a2 2 0 0 1 2-2h2M17 4h2a2 2 0 0 1 2 2v2M21 16v2a2 2 0 0 1-2 2h-2M7 20H5a2 2 0 0 1-2-2v-2" />
+                                      <path d="M7 9v6M10 9v6M13 9v6M17 9v6" />
+                                    </svg>
+                                    Ler etiqueta com a câmera
+                                  </button>
+                                ) : null}
                               </label>
                             );
                           }

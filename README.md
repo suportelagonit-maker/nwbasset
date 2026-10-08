@@ -104,3 +104,5 @@ o domínio de onde a aplicação é servida precisa estar registrado lá, senão
 - `MANUAL_MENUS_SIDEBAR_NWB_ASSET.md` — manual dos menus
 - `_oldRun/DOCUMENTACAO_ESQUEMA_NWBASSET.md` — documentação do esquema de dados
 - `docs/DEPLOY-VPS.md` — plano de publicação em produção
+- `docs/NWB-ID.md` — autenticação pelo NWB ID / NWB Acessos
+- `docs/PWA-MOBILE.md` — aplicativo instalável, leitura de etiqueta pela câmera e uso sem rede

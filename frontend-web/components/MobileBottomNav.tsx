@@ -5,6 +5,7 @@ import { usePathname } from 'next/navigation';
 import { useEffect, useMemo, useState } from 'react';
 
 import EmpresaContextHeader from '@/components/EmpresaContextHeader';
+import InstalarApp from '@/components/InstalarApp';
 import {
   adminNavGroups,
   isAdminNavItemActive,
@@ -201,6 +202,7 @@ export default function MobileBottomNav({
                       <span className="[&>svg]:h-5 [&>svg]:w-5">{renderAdminIcon('user')}</span>
                       Perfil
                     </Link>
+                    <InstalarApp className="border-t border-[var(--line)]" />
                     <Link
                       href="/ajuda"
                       prefetch={false}

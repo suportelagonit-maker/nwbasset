@@ -282,13 +282,17 @@ class PlaquetaPatrimonialService
         }
     }
 
-    public function localizarPorCodigo(string $codigo): ?PlaquetaPatrimonial
+    /**
+     * Limpa o conteudo lido da etiqueta: tira espacos e, quando a leitura e o
+     * link de consulta do QR Code, fica so com o codigo.
+     */
+    public function normalizarCodigo(string $codigo): string
     {
         $codigoNormalizado = trim($codigo);
         $codigoNormalizado = preg_replace('/\s+/', '', $codigoNormalizado) ?? $codigoNormalizado;
 
         if ($codigoNormalizado === '') {
-            return null;
+            return '';
         }
 
         if (filter_var($codigoNormalizado, FILTER_VALIDATE_URL)) {
@@ -296,6 +300,17 @@ class PlaquetaPatrimonialService
             $query = [];
             parse_str($parsedUrl['query'] ?? '', $query);
             $codigoNormalizado = (string) ($query['codigo'] ?? basename((string) ($parsedUrl['path'] ?? '')));
+        }
+
+        return $codigoNormalizado;
+    }
+
+    public function localizarPorCodigo(string $codigo): ?PlaquetaPatrimonial
+    {
+        $codigoNormalizado = $this->normalizarCodigo($codigo);
+
+        if ($codigoNormalizado === '') {
+            return null;
         }
 
         return PlaquetaPatrimonial::query()

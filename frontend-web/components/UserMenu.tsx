@@ -1,6 +1,8 @@
 'use client';
 
 import Link from 'next/link';
+
+import InstalarApp from '@/components/InstalarApp';
 import { useEffect, useRef, useState } from 'react';
 
 type UserMenuProps = {
@@ -67,6 +69,8 @@ export default function UserMenu({ initial, userName, userEmail }: UserMenuProps
             </svg>
             <span>Perfil</span>
           </Link>
+
+          <InstalarApp />
 
           <Link
             href="/ajuda"
