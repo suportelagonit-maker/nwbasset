@@ -7,6 +7,7 @@ use App\Domain\Organization\Models\Empresa;
 use App\Domain\Organization\Models\Filial;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 
@@ -18,6 +19,7 @@ class Inventario extends Model
         'empresa_id',
         'filial_id',
         'nome',
+        'tipo',
         'data_inicio',
         'data_fim',
         'status',
@@ -39,6 +41,26 @@ class Inventario extends Model
     public function filial(): BelongsTo
     {
         return $this->belongsTo(Filial::class, 'filial_id');
+    }
+
+    /**
+     * Locais que este inventario cobre.
+     *
+     * Vazio significa inventario completo: a filial inteira.
+     */
+    public function locais(): BelongsToMany
+    {
+        return $this->belongsToMany(
+            \App\Domain\Organization\Models\Local::class,
+            'inventario_locais',
+            'inventario_id',
+            'local_id',
+        )->withTimestamps();
+    }
+
+    public function ehRotativo(): bool
+    {
+        return $this->locais()->exists();
     }
 
     public function itens(): HasMany

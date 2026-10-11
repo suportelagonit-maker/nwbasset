@@ -5,6 +5,7 @@ namespace App\Domain\Inventory\Services;
 use App\Domain\Audit\Services\LogOperacaoPatrimonialService;
 use App\Domain\AssetRegistry\Models\BemPatrimonial;
 use App\Domain\Inventory\Enums\InventarioStatusEnum;
+use App\Domain\Inventory\Enums\InventarioTipoEnum;
 use App\Domain\Inventory\Enums\TipoDivergenciaInventarioEnum;
 use App\Domain\Inventory\Models\ConciliacaoPatrimonial;
 use App\Domain\Inventory\Models\DivergenciaInventario;
@@ -19,10 +20,20 @@ class InventarioService
     public function criarInventario(array $data): Inventario
     {
         return DB::transaction(function () use ($data): Inventario {
+            $locais = array_values(array_filter((array) ($data['locais'] ?? [])));
+            unset($data['locais']);
+
             $inventario = Inventario::query()->create([
                 ...$data,
+                'tipo' => $locais !== []
+                    ? InventarioTipoEnum::ROTATIVO->value
+                    : ($data['tipo'] ?? InventarioTipoEnum::COMPLETO->value),
                 'status' => $data['status'] ?? InventarioStatusEnum::ABERTO->value,
             ]);
+
+            if ($locais !== []) {
+                $inventario->locais()->sync($locais);
+            }
 
             $this->carregarBensDaEmpresa($inventario);
             app(LogOperacaoPatrimonialService::class)->registrar(
@@ -32,6 +43,44 @@ class InventarioService
                 [],
                 $inventario->toArray(),
             );
+
+            return $inventario->fresh();
+        });
+    }
+
+    /**
+     * Define quais locais este inventario cobre e remonta a lista.
+     *
+     * So vale enquanto ninguem contou nada: mudar o escopo depois apagaria
+     * contagem ja feita, e contagem apagada e trabalho de campo perdido.
+     *
+     * @param  array<int, int>  $locais
+     */
+    public function definirEscopo(Inventario $inventario, array $locais): Inventario
+    {
+        return DB::transaction(function () use ($inventario, $locais): Inventario {
+            $jaContou = InventarioItem::query()
+                ->where('inventario_id', $inventario->id)
+                ->where('localizado', true)
+                ->exists();
+
+            if ($jaContou) {
+                throw ValidationException::withMessages([
+                    'locais' => 'A contagem já começou. Para mudar o escopo, crie um novo inventário.',
+                ]);
+            }
+
+            $locais = array_values(array_unique(array_filter($locais)));
+            $inventario->locais()->sync($locais);
+            $inventario->update([
+                'tipo' => $locais !== []
+                    ? InventarioTipoEnum::ROTATIVO->value
+                    : InventarioTipoEnum::COMPLETO->value,
+            ]);
+
+            // A lista e refeita do zero: o escopo novo manda.
+            InventarioItem::query()->where('inventario_id', $inventario->id)->delete();
+            $this->carregarBensDaEmpresa($inventario->fresh());
 
             return $inventario->fresh();
         });
@@ -103,12 +152,18 @@ class InventarioService
      *
      * Bem ja baixado tambem fica de fora — ele nao existe mais para ser
      * encontrado.
+     *
+     * No inventario rotativo so entram os bens dos locais escolhidos: e o
+     * que permite contar por partes sem que o resto vire divergencia.
      */
     protected function carregarBensDaEmpresa(Inventario $inventario): void
     {
+        $locaisDoEscopo = $inventario->locais()->pluck('locais.id')->all();
+
         BemPatrimonial::query()
             ->where('empresa_id', $inventario->empresa_id)
             ->when($inventario->filial_id, fn ($consulta) => $consulta->where('filial_id', $inventario->filial_id))
+            ->when($locaisDoEscopo !== [], fn ($consulta) => $consulta->whereIn('local_id', $locaisDoEscopo))
             ->where(fn ($consulta) => $consulta->whereNull('status_bem')->orWhere('status_bem', '!=', 'baixado'))
             ->orderBy('numero_tombo')
             ->get()
@@ -196,6 +251,24 @@ class InventarioService
                             'Encontrado em local diferente do cadastro (cadastrado em %s, encontrado em %s).',
                             $bem->local?->nome ?? 'local nao informado',
                             $item->localEncontrado?->nome ?? 'local nao informado',
+                        ),
+                    ]);
+                }
+
+                if (
+                    $item->localizado
+                    && $item->responsavel_encontrado_id
+                    && $bem->responsavel_id
+                    && (int) $item->responsavel_encontrado_id !== (int) $bem->responsavel_id
+                ) {
+                    DivergenciaInventario::query()->create([
+                        'inventario_id' => $inventario->id,
+                        'bem_patrimonial_id' => $bem->id,
+                        'tipo_divergencia' => TipoDivergenciaInventarioEnum::RESPONSAVEL_DIFERENTE->value,
+                        'descricao' => sprintf(
+                            'Encontrado com responsavel diferente do cadastro (cadastrado com %s, encontrado com %s).',
+                            $bem->responsavel?->nome ?? 'responsavel nao informado',
+                            $item->responsavelEncontrado?->nome ?? 'responsavel nao informado',
                         ),
                     ]);
                 }

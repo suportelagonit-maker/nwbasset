@@ -13,6 +13,11 @@ class StoreInventarioRequest extends BaseInventoryRequest
             'empresa_id' => $this->empresaRule(),
             'filial_id' => $this->filialRule($this->input('empresa_id')),
             'nome' => ['required', 'string', 'max:180'],
+            // Locais escolhidos = inventario rotativo: so eles entram na
+            // contagem. Vazio = a filial inteira, como antes.
+            'locais' => ['nullable', 'array'],
+            'locais.*' => ['integer', 'exists:locais,id'],
+            'tipo' => ['nullable', 'in:COMPLETO,ROTATIVO'],
             'data_inicio' => ['required', 'date'],
             'data_fim' => ['nullable', 'date', 'after_or_equal:data_inicio'],
             'status' => ['nullable', 'string', Rule::in(InventarioStatusEnum::values())],

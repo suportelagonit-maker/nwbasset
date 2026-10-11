@@ -353,6 +353,9 @@ export const AJUDA_SECOES: AjudaSecao[] = [
           { onde: 'Onde você está contando', acao: 'Escolha o local antes de começar a ler as etiquetas daquela sala.', porque: 'É assim que o sistema descobre o bem que está fora do lugar — o achado mais comum de um inventário.' },
           { onde: 'Ler etiqueta', acao: 'Toque e aponte a câmera. Pode ler uma etiqueta atrás da outra, sem fechar a câmera. Cada leitura responde na hora: contado, já contado, em local diferente ou não identificado.' },
           { onde: 'Digitar o número', acao: 'Etiqueta rasgada ou ilegível? Digite o número da plaqueta (ou o tombo) no campo abaixo do botão.' },
+          { onde: 'Contar só alguns locais', acao: 'Antes da primeira leitura, abra essa seção e marque os locais desta rodada — é o inventário rotativo. O que ficar de fora não entra na contagem nem vira divergência.', porque: 'Em empresa com muitos bens, contar tudo de uma vez não acontece: conta-se por partes até fechar o ciclo.' },
+          { onde: 'Responsável conferido', acao: 'Informe com quem o bem foi encontrado. Se for pessoa diferente da cadastrada, o sistema aponta a divergência.' },
+          { onde: 'Ler por aproximação (NFC)', acao: 'Em celular Android com NFC, toque no botão e encoste o aparelho na etiqueta — não precisa enquadrar o código.', porque: 'Etiqueta NFC é lida mesmo suja ou em local sem luz. O botão só aparece onde o aparelho suporta.' },
           { onde: 'Finalizar contagem e conciliar', acao: 'Ao terminar, finalize. O sistema gera a conciliação: total no sistema, total encontrado e as divergências.', porque: 'Os bens não lidos entram como Não encontrado, e os lidos fora do lugar entram como Local diferente.' },
         ],
         dicas: [

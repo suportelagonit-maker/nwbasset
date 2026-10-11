@@ -50,7 +50,15 @@ class InventarioController extends Controller
     public function update(UpdateInventarioRequest $request, Inventario $inventario): InventarioResource
     {
         $this->empresaContext()->garantirModelDaEmpresa($inventario);
-        $inventario->update($request->validated());
+        $dados = $request->validated();
+        $locais = $dados['locais'] ?? null;
+        unset($dados['locais']);
+
+        $inventario->update($dados);
+
+        if (is_array($locais)) {
+            $this->inventarioService->definirEscopo($inventario, $locais);
+        }
 
         return new InventarioResource($inventario->fresh());
     }

@@ -91,13 +91,55 @@ divergências:
 Endpoints: `GET /api/v1/inventarios/{inventario}/contagem`,
 `POST .../leituras`, `POST .../finalizar`.
 
-## 7. Limites conhecidos
+## 7. Inventário rotativo
 
-- **Inventário rotativo** (contagens parciais e recorrentes por local) não
-  existe: cada inventário é uma contagem completa da filial.
-- **Responsável encontrado** tem coluna no banco, mas a tela ainda não
-  pergunta — só o local é conferido.
-- A lista de pendentes na tela mostra os primeiros 500 itens; acima disso
-  falta paginação.
-- **RFID** não é lido: a leitura é por câmera (código de barras e QR) ou
-  digitação.
+Contar a filial inteira de uma vez só funciona em empresa pequena. A
+prática do mercado é o rotativo: percorrer alguns locais por mês até fechar
+o ciclo.
+
+Na tela de contagem, enquanto **nada foi contado ainda**, há a seção
+"Contar só alguns locais". Escolhidos os locais, a lista é refeita e só os
+bens daqueles locais entram — o resto não vira divergência.
+
+Trocar o escopo **depois da primeira leitura é recusado**: refazer a lista
+apagaria contagem já feita, e contagem apagada é trabalho de campo perdido.
+Nesse caso o caminho é criar outro inventário.
+
+Inventário sem local escolhido continua completo (`tipo = COMPLETO`), que
+é o comportamento de antes.
+
+## 8. Conferência de responsável
+
+Além de "onde você está contando", a tela pergunta o **responsável
+conferido**. Quando informado e diferente do cadastro, a leitura responde
+"Contado, mas com responsável diferente do cadastro" e a conciliação gera a
+divergência `RESPONSAVEL_DIFERENTE`.
+
+Quando local **e** responsável divergem, o aviso na tela mostra o local — é
+o sinal mais forte para quem está em campo —, mas a conciliação aponta as
+duas divergências.
+
+## 9. Leitura por aproximação (NFC)
+
+Botão "Ler por aproximação", em `frontend-web/lib/leitura-nfc.ts`. Usa a
+Web NFC, hoje disponível só no **Chrome para Android**: o aparelho encosta
+na etiqueta NFC/NTAG e lê, sem precisar enquadrar o código de barras. Em
+navegador sem suporte o botão simplesmente não aparece.
+
+Lê o texto ou a URL gravada na etiqueta e, se ela estiver vazia, o número
+de série — que serve se tiver sido cadastrado como código da plaqueta.
+
+**O que isto não é:** leitura de **RFID UHF**, aquela de portal e de
+pistola que lê dezenas de etiquetas a metros de distância. UHF depende de
+hardware dedicado e de um protocolo que o navegador não alcança; seria
+integração à parte, com o coletor do fabricante.
+
+## 10. Limites conhecidos
+
+- **RFID UHF** continua fora (ver seção 9).
+- A lista de pendentes é paginada de 50 em 50, com "ver mais"; não há busca
+  por tombo dentro dela.
+- O escopo rotativo é por **local**; não dá para montar um ciclo por
+  departamento ou por responsável.
+- A leitura por NFC foi implementada, mas **não foi testada em aparelho
+  Android real** — só o caminho de ausência de suporte foi verificado.

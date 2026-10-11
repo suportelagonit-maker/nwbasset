@@ -46,4 +46,9 @@ class InventarioItem extends Model
     {
         return $this->belongsTo(\App\Domain\Organization\Models\Local::class, 'local_encontrado_id');
     }
+
+    public function responsavelEncontrado(): BelongsTo
+    {
+        return $this->belongsTo(\App\Domain\Organization\Models\Responsavel::class, 'responsavel_encontrado_id');
+    }
 }

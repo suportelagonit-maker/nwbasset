@@ -4,6 +4,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 
 import LeitorCodigo from '@/components/LeitorCodigo';
 import { handleUnauthorizedClientResponse } from '@/lib/client-auth';
+import { ouvirNfc, suportaNfc } from '@/lib/leitura-nfc';
 import {
   enfileirar,
   listarPendentes,
@@ -40,6 +41,10 @@ type ItemPendente = {
 
 type LocalOpcao = { id: number; nome: string };
 
+type ResponsavelOpcao = { id: number; nome: string };
+
+type Paginacao = { pagina: number; por_pagina: number; total: number; ultima_pagina: number };
+
 type RetornoLeitura = {
   origem_id: string | null;
   codigo: string;
@@ -53,6 +58,7 @@ const CORES: Record<string, string> = {
   CONTADO: 'bg-[rgba(74,222,128,0.16)] text-[#15803d]',
   JA_CONTADO: 'bg-[rgba(246,164,0,0.16)] text-[var(--accent-deep)]',
   LOCAL_DIFERENTE: 'bg-[rgba(246,164,0,0.16)] text-[var(--accent-deep)]',
+  RESPONSAVEL_DIFERENTE: 'bg-[rgba(246,164,0,0.16)] text-[var(--accent-deep)]',
   FORA_DO_INVENTARIO: 'bg-[rgba(225,29,72,0.12)] text-[var(--rose)]',
   NAO_IDENTIFICADO: 'bg-[rgba(225,29,72,0.12)] text-[var(--rose)]',
 };
@@ -63,6 +69,13 @@ export default function ContagemInventario({ inventarioId }: { inventarioId: num
   const [pendentes, setPendentes] = useState<ItemPendente[]>([]);
   const [locais, setLocais] = useState<LocalOpcao[]>([]);
   const [localAtual, setLocalAtual] = useState<string>('');
+  const [responsaveis, setResponsaveis] = useState<ResponsavelOpcao[]>([]);
+  const [responsavelAtual, setResponsavelAtual] = useState<string>('');
+  const [paginacao, setPaginacao] = useState<Paginacao | null>(null);
+  const [paginaPendentes, setPaginaPendentes] = useState(1);
+  const [escopo, setEscopo] = useState<string[]>([]);
+  const [tipo, setTipo] = useState('COMPLETO');
+  const [nfcLigado, setNfcLigado] = useState(false);
   const [leitorAberto, setLeitorAberto] = useState(false);
   const [historico, setHistorico] = useState<RetornoLeitura[]>([]);
   const [naFila, setNaFila] = useState(0);
@@ -73,6 +86,9 @@ export default function ContagemInventario({ inventarioId }: { inventarioId: num
 
   const localAtualRef = useRef(localAtual);
   localAtualRef.current = localAtual;
+  const responsavelAtualRef = useRef(responsavelAtual);
+  responsavelAtualRef.current = responsavelAtual;
+  const pararNfcRef = useRef<(() => void) | null>(null);
   const enviandoRef = useRef(false);
 
   const atualizarContadorDaFila = useCallback(async () => {
@@ -84,7 +100,7 @@ export default function ContagemInventario({ inventarioId }: { inventarioId: num
 
   const carregar = useCallback(async () => {
     try {
-      const resposta = await fetch(`/api/admin/inventarios/${inventarioId}/contagem`, {
+      const resposta = await fetch(`/api/admin/inventarios/${inventarioId}/contagem?pagina=${paginaPendentes}&por_pagina=50`, {
         headers: { Accept: 'application/json' },
         cache: 'no-store',
       });
@@ -99,19 +115,24 @@ export default function ContagemInventario({ inventarioId }: { inventarioId: num
       }
 
       const dados = corpo.data as unknown as {
-        inventario: { nome: string };
+        inventario: { nome: string; tipo: string };
         resumo: Resumo;
         pendentes: ItemPendente[];
+        paginacao: Paginacao;
       };
 
       setNome(dados.inventario.nome);
+      setTipo(dados.inventario.tipo ?? 'COMPLETO');
       setResumo(dados.resumo);
-      setPendentes(dados.pendentes);
+      setPendentes((atual) =>
+        dados.paginacao.pagina > 1 ? [...atual, ...dados.pendentes] : dados.pendentes,
+      );
+      setPaginacao(dados.paginacao);
       setErro(null);
     } catch (falha) {
       setErro(falha instanceof Error ? falha.message : 'Não foi possível carregar a contagem.');
     }
-  }, [inventarioId]);
+  }, [inventarioId, paginaPendentes]);
 
   const enviarFila = useCallback(async () => {
     // A trava e um ref de proposito: com leituras em sequencia rapida, o
@@ -144,6 +165,7 @@ export default function ContagemInventario({ inventarioId }: { inventarioId: num
               codigo: item.codigo,
               origem_id: item.origem_id,
               local_id: item.local_id,
+              responsavel_id: item.responsavel_id ?? null,
               lido_em: item.lido_em,
             })),
           }),
@@ -181,6 +203,8 @@ export default function ContagemInventario({ inventarioId }: { inventarioId: num
     }
   }, [atualizarContadorDaFila, carregar, inventarioId]);
 
+  useEffect(() => () => pararNfcRef.current?.(), []);
+
   useEffect(() => {
     setOnline(navigator.onLine);
 
@@ -205,14 +229,19 @@ export default function ContagemInventario({ inventarioId }: { inventarioId: num
       await atualizarContadorDaFila();
       await enviarFila();
 
-      const resposta = await fetch('/api/admin/locais?per_page=300', {
-        headers: { Accept: 'application/json' },
-        cache: 'no-store',
-      }).catch(() => null);
+      const [respostaLocais, respostaResponsaveis] = await Promise.all([
+        fetch('/api/admin/locais?per_page=300', { headers: { Accept: 'application/json' }, cache: 'no-store' }).catch(() => null),
+        fetch('/api/admin/responsaveis?per_page=300', { headers: { Accept: 'application/json' }, cache: 'no-store' }).catch(() => null),
+      ]);
 
-      if (resposta?.ok) {
-        const corpo = (await resposta.json().catch(() => null)) as { data?: LocalOpcao[] } | null;
+      if (respostaLocais?.ok) {
+        const corpo = (await respostaLocais.json().catch(() => null)) as { data?: LocalOpcao[] } | null;
         setLocais(corpo?.data ?? []);
+      }
+
+      if (respostaResponsaveis?.ok) {
+        const corpo = (await respostaResponsaveis.json().catch(() => null)) as { data?: ResponsavelOpcao[] } | null;
+        setResponsaveis(corpo?.data ?? []);
       }
     })();
     // Só na montagem: as dependências são estáveis e recarregar aqui
@@ -232,6 +261,7 @@ export default function ContagemInventario({ inventarioId }: { inventarioId: num
       inventario_id: inventarioId,
       codigo: limpo,
       local_id: localAtualRef.current ? Number(localAtualRef.current) : null,
+      responsavel_id: responsavelAtualRef.current ? Number(responsavelAtualRef.current) : null,
       lido_em: new Date().toISOString(),
     };
 
@@ -247,6 +277,59 @@ export default function ContagemInventario({ inventarioId }: { inventarioId: num
       { origem_id: null, codigo: limpo, resultado: 'CONTADO', mensagem: 'Enviando…', exige_atencao: false, bem: null },
       ...atual,
     ]);
+  }
+
+  async function alternarNfc() {
+    if (nfcLigado) {
+      pararNfcRef.current?.();
+      pararNfcRef.current = null;
+      setNfcLigado(false);
+      return;
+    }
+
+    const parar = await ouvirNfc(
+      (codigo) => void registrar(codigo),
+      (mensagem) => {
+        setErro(mensagem);
+        setNfcLigado(false);
+      },
+    );
+
+    pararNfcRef.current = parar;
+    setNfcLigado(true);
+  }
+
+  /** Define quais locais esta contagem cobre (inventário rotativo). */
+  async function salvarEscopo() {
+    setEnviando(true);
+
+    try {
+      const resposta = await fetch(`/api/admin/inventarios/${inventarioId}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+        body: JSON.stringify({ locais: escopo.map(Number) }),
+      });
+      const corpo = (await resposta.json().catch(() => null)) as
+        | { message?: string; errors?: Record<string, string[]> }
+        | null;
+
+      if (handleUnauthorizedClientResponse(resposta.status, corpo?.message)) {
+        return;
+      }
+
+      if (!resposta.ok) {
+        const primeiro = corpo?.errors ? Object.values(corpo.errors)[0]?.[0] : null;
+        throw new Error(primeiro ?? corpo?.message ?? 'Não foi possível definir o escopo.');
+      }
+
+      setPaginaPendentes(1);
+      await carregar();
+      setErro(null);
+    } catch (falha) {
+      setErro(falha instanceof Error ? falha.message : 'Não foi possível definir o escopo.');
+    } finally {
+      setEnviando(false);
+    }
   }
 
   async function finalizar() {
@@ -350,6 +433,25 @@ export default function ContagemInventario({ inventarioId }: { inventarioId: num
           </span>
         </label>
 
+        <label className="admin-field mt-3">
+          Responsável conferido
+          <select
+            value={responsavelAtual}
+            onChange={(evento) => setResponsavelAtual(evento.target.value)}
+            className="admin-input"
+          >
+            <option value="">Não conferir o responsável</option>
+            {responsaveis.map((pessoa) => (
+              <option key={pessoa.id} value={pessoa.id}>
+                {pessoa.nome}
+              </option>
+            ))}
+          </select>
+          <span className="mt-1 block text-[11px] leading-4 text-[var(--muted)]">
+            Preenchido, o sistema aponta o bem que está com pessoa diferente da cadastrada.
+          </span>
+        </label>
+
         {!finalizado ? (
           <button
             type="button"
@@ -392,7 +494,63 @@ export default function ContagemInventario({ inventarioId }: { inventarioId: num
           </form>
         ) : null}
 
+        {!finalizado && suportaNfc() ? (
+          <button
+            type="button"
+            onClick={() => void alternarNfc()}
+            className={`mt-3 inline-flex h-10 w-full items-center justify-center gap-2 rounded-full border px-4 text-[13px] font-semibold transition ${
+              nfcLigado
+                ? 'border-[var(--accent)] bg-[var(--accent-soft)] text-[var(--accent-deep)]'
+                : 'border-[var(--line)] bg-white text-[var(--ink)] hover:border-[var(--accent)]'
+            }`}
+          >
+            <svg aria-hidden="true" className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
+              <path d="M4 8a16 16 0 0 1 0 8M8 6a20 20 0 0 1 0 12M12 4.5a24 24 0 0 1 0 15M16 6a20 20 0 0 1 0 12M20 8a16 16 0 0 1 0 8" />
+            </svg>
+            {nfcLigado ? 'Lendo por aproximação — encoste no bem' : 'Ler por aproximação (NFC)'}
+          </button>
+        ) : null}
+
         {erro ? <p className="mt-3 text-[13px] font-medium text-[var(--rose)]">{erro}</p> : null}
+
+        {!finalizado && resumo && resumo.encontrados === 0 && locais.length > 0 ? (
+          <details className="mt-4 rounded-2xl border border-[var(--line)] bg-[#fafafa] px-4 py-3">
+            <summary className="cursor-pointer text-[13px] font-semibold text-[var(--ink)]">
+              Contar só alguns locais {tipo === 'ROTATIVO' ? '(rotativo ativo)' : '(inventário rotativo)'}
+            </summary>
+            <p className="mt-2 text-[12px] leading-5 text-[var(--muted)]">
+              Escolha os locais desta rodada. O que ficar de fora não entra na contagem nem vira divergência.
+              Só dá para mudar antes da primeira leitura.
+            </p>
+            <div className="mt-3 grid gap-1.5">
+              {locais.map((local) => (
+                <label key={local.id} className="inline-flex items-center gap-2 text-[13px] text-[var(--ink)]">
+                  <input
+                    type="checkbox"
+                    checked={escopo.includes(String(local.id))}
+                    onChange={(evento) =>
+                      setEscopo((atual) =>
+                        evento.target.checked
+                          ? [...atual, String(local.id)]
+                          : atual.filter((item) => item !== String(local.id)),
+                      )
+                    }
+                    className="h-4 w-4 rounded border border-[var(--line)]"
+                  />
+                  {local.nome}
+                </label>
+              ))}
+            </div>
+            <button
+              type="button"
+              onClick={() => void salvarEscopo()}
+              disabled={enviando}
+              className="mt-3 inline-flex h-9 items-center justify-center rounded-full border border-[var(--line)] bg-white px-4 text-[12px] font-semibold text-[var(--ink)] transition hover:border-[var(--accent)] disabled:opacity-60"
+            >
+              {escopo.length === 0 ? 'Contar a filial inteira' : `Contar só ${escopo.length} local(is)`}
+            </button>
+          </details>
+        ) : null}
       </section>
 
       {historico.length > 0 ? (
@@ -424,10 +582,10 @@ export default function ContagemInventario({ inventarioId }: { inventarioId: num
       {!finalizado && pendentes.length > 0 ? (
         <section className="panel-surface rounded-[22px] p-4 md:rounded-[28px] md:p-6">
           <p className="text-xs font-semibold uppercase tracking-[0.16em] text-[var(--muted)]">
-            Ainda não contados ({pendentes.length})
+            Ainda não contados ({paginacao?.total ?? pendentes.length})
           </p>
           <div className="mt-3 grid gap-2">
-            {pendentes.slice(0, 20).map((item) => (
+            {pendentes.map((item) => (
               <div key={item.id} className="rounded-2xl border border-[var(--line)] bg-[#fafafa] px-4 py-3">
                 <p className="text-sm font-semibold text-[var(--ink)]">{item.numero_tombo ?? 'Sem tombo'}</p>
                 <p className="mt-0.5 truncate text-[12px] text-[var(--muted)]">
@@ -437,8 +595,14 @@ export default function ContagemInventario({ inventarioId }: { inventarioId: num
               </div>
             ))}
           </div>
-          {pendentes.length > 20 ? (
-            <p className="mt-3 text-[12px] text-[var(--muted)]">e mais {pendentes.length - 20}…</p>
+          {paginacao && paginacao.pagina < paginacao.ultima_pagina ? (
+            <button
+              type="button"
+              onClick={() => setPaginaPendentes((atual) => atual + 1)}
+              className="mt-3 inline-flex h-9 w-full items-center justify-center rounded-full border border-[var(--line)] bg-white px-4 text-[12px] font-semibold text-[var(--ink)] transition hover:border-[var(--accent)]"
+            >
+              Ver mais {paginacao.total - pendentes.length} pendentes
+            </button>
           ) : null}
         </section>
       ) : null}

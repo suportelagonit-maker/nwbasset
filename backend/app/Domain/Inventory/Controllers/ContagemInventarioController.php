@@ -26,13 +26,18 @@ class ContagemInventarioController extends Controller
     {
         $this->garantirEmpresa($request, $inventario);
 
-        $pendentes = InventarioItem::query()
+        // Paginado: inventario grande tem milhares de pendentes, e o
+        // aparelho em campo nao aguenta receber tudo de uma vez.
+        $porPagina = min(200, max(20, (int) $request->integer('por_pagina', 50)));
+        $paginaDePendentes = InventarioItem::query()
             ->where('inventario_id', $inventario->id)
             ->where('localizado', false)
             ->with(['bemPatrimonial:id,numero_tombo,descricao,local_id', 'bemPatrimonial.local:id,nome'])
             ->orderBy('id')
-            ->limit(500)
-            ->get()
+            ->paginate($porPagina, ['*'], 'pagina');
+
+        $pendentes = $paginaDePendentes
+            ->getCollection()
             ->map(fn (InventarioItem $item): array => [
                 'id' => $item->id,
                 'bem_patrimonial_id' => $item->bem_patrimonial_id,
@@ -66,10 +71,18 @@ class ContagemInventarioController extends Controller
                     'id' => $inventario->id,
                     'nome' => $inventario->nome,
                     'status' => $inventario->status,
+                    'tipo' => $inventario->tipo,
                     'filial_id' => $inventario->filial_id,
+                    'locais' => $inventario->locais()->pluck('locais.nome')->all(),
                 ],
                 'resumo' => $this->contagemService->resumo($inventario),
                 'pendentes' => $pendentes,
+                'paginacao' => [
+                    'pagina' => $paginaDePendentes->currentPage(),
+                    'por_pagina' => $paginaDePendentes->perPage(),
+                    'total' => $paginaDePendentes->total(),
+                    'ultima_pagina' => $paginaDePendentes->lastPage(),
+                ],
                 'atencao' => $atencao,
             ],
         ]);
@@ -85,6 +98,7 @@ class ContagemInventarioController extends Controller
             'leituras.*.codigo' => ['required', 'string', 'max:255'],
             'leituras.*.origem_id' => ['nullable', 'string', 'max:64'],
             'leituras.*.local_id' => ['nullable', 'integer', 'exists:locais,id'],
+            'leituras.*.responsavel_id' => ['nullable', 'integer', 'exists:responsaveis,id'],
             'leituras.*.lido_em' => ['nullable', 'date'],
             'leituras.*.observacoes' => ['nullable', 'string', 'max:500'],
         ], [], [

@@ -19,6 +19,9 @@ enum ResultadoLeituraEnum: string
     /** Contado, mas estava em local diferente do cadastrado. */
     case LOCAL_DIFERENTE = 'LOCAL_DIFERENTE';
 
+    /** Contado, mas com responsável diferente do cadastrado. */
+    case RESPONSAVEL_DIFERENTE = 'RESPONSAVEL_DIFERENTE';
+
     /** A etiqueta é de um bem que não faz parte deste inventário. */
     case FORA_DO_INVENTARIO = 'FORA_DO_INVENTARIO';
 
@@ -31,6 +34,7 @@ enum ResultadoLeituraEnum: string
             self::CONTADO => 'Contado.',
             self::JA_CONTADO => 'Este bem já tinha sido contado.',
             self::LOCAL_DIFERENTE => 'Contado, mas está em local diferente do cadastro.',
+            self::RESPONSAVEL_DIFERENTE => 'Contado, mas com responsável diferente do cadastro.',
             self::FORA_DO_INVENTARIO => 'Esta etiqueta não faz parte deste inventário.',
             self::NAO_IDENTIFICADO => 'Nenhum bem encontrado para este código.',
         };

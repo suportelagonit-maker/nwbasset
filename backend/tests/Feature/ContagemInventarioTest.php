@@ -299,6 +299,133 @@ class ContagemInventarioTest extends TestCase
             ->assertNotFound();
     }
 
+    public function test_inventario_rotativo_conta_so_os_locais_escolhidos(): void
+    {
+        $this->bem('TOMBO-SALA', $this->sala);
+        $this->bem('TOMBO-ALMOX', $this->almoxarifado);
+
+        $rotativo = app(InventarioService::class)->criarInventario([
+            'empresa_id' => $this->empresa->id,
+            'filial_id' => $this->filial->id,
+            'nome' => 'Rotativo da Sala de TI',
+            'data_inicio' => '2026-01-01',
+            'locais' => [$this->sala->id],
+        ]);
+
+        $this->assertSame('ROTATIVO', $rotativo->tipo);
+        $this->assertSame(1, InventarioItem::query()->where('inventario_id', $rotativo->id)->count());
+
+        $resposta = $this->withHeader('X-Empresa-Id', (string) $this->empresa->id)
+            ->getJson("/api/v1/inventarios/{$rotativo->id}/contagem")
+            ->assertOk();
+
+        $this->assertSame('TOMBO-SALA', $resposta->json('data.pendentes.0.numero_tombo'));
+        $this->assertSame(['Sala de TI'], $resposta->json('data.inventario.locais'));
+    }
+
+    public function test_inventario_sem_locais_continua_completo(): void
+    {
+        $this->bem('TOMBO-SALA', $this->sala);
+        $this->bem('TOMBO-ALMOX', $this->almoxarifado);
+
+        $inventario = $this->inventario();
+
+        $this->assertSame('COMPLETO', $inventario->tipo);
+        $this->assertSame(2, InventarioItem::query()->where('inventario_id', $inventario->id)->count());
+    }
+
+    public function test_responsavel_diferente_e_apontado_na_leitura(): void
+    {
+        $cadastrado = $this->responsavel('Maria do Patrimonio', 'MAT-1', '11111111111');
+        $outro = $this->responsavel('Joao da Operacao', 'MAT-2', '22222222222');
+
+        $bem = $this->bem('TOMBO-1', $this->sala);
+        $bem->update(['responsavel_id' => $cadastrado->id]);
+        $this->plaqueta($bem, '000001');
+
+        $inventario = $this->inventario();
+
+        $resposta = $this->contar($inventario, [[
+            'codigo' => 'PAT-1-000001',
+            'local_id' => $this->sala->id,
+            'responsavel_id' => $outro->id,
+            'origem_id' => 'l1',
+        ]])->assertOk();
+
+        $this->assertSame(
+            ResultadoLeituraEnum::RESPONSAVEL_DIFERENTE->value,
+            $resposta->json('data.leituras.0.resultado'),
+        );
+        $this->assertSame(1, $resposta->json('data.resumo.responsavel_diferente'));
+        // Mesmo com outro responsavel, o bem foi encontrado.
+        $this->assertSame(1, $resposta->json('data.resumo.encontrados'));
+    }
+
+    public function test_conciliacao_aponta_local_e_responsavel_divergentes(): void
+    {
+        $cadastrado = $this->responsavel('Maria do Patrimonio', 'MAT-1', '11111111111');
+        $outro = $this->responsavel('Joao da Operacao', 'MAT-2', '22222222222');
+
+        $bem = $this->bem('TOMBO-1', $this->sala);
+        $bem->update(['responsavel_id' => $cadastrado->id]);
+        $this->plaqueta($bem, '000001');
+
+        $inventario = $this->inventario();
+
+        $this->contar($inventario, [[
+            'codigo' => 'PAT-1-000001',
+            'local_id' => $this->almoxarifado->id,
+            'responsavel_id' => $outro->id,
+            'origem_id' => 'l1',
+        ]])->assertOk();
+
+        $resposta = $this->withHeader('X-Empresa-Id', (string) $this->empresa->id)
+            ->postJson("/api/v1/inventarios/{$inventario->id}/finalizar")
+            ->assertOk();
+
+        // Uma divergencia de local e uma de responsavel, para o mesmo bem.
+        $this->assertSame(2, $resposta->json('data.divergencias'));
+    }
+
+    public function test_pendentes_vem_paginados(): void
+    {
+        foreach (range(1, 7) as $numero) {
+            $this->bem('TOMBO-'.$numero, $this->sala);
+        }
+
+        $inventario = $this->inventario();
+
+        $primeira = $this->withHeader('X-Empresa-Id', (string) $this->empresa->id)
+            ->getJson("/api/v1/inventarios/{$inventario->id}/contagem?por_pagina=20&pagina=1")
+            ->assertOk();
+
+        $this->assertSame(7, $primeira->json('data.paginacao.total'));
+        $this->assertCount(7, $primeira->json('data.pendentes'));
+
+        $segunda = $this->withHeader('X-Empresa-Id', (string) $this->empresa->id)
+            ->getJson("/api/v1/inventarios/{$inventario->id}/contagem?por_pagina=20&pagina=2")
+            ->assertOk();
+
+        $this->assertSame(2, $segunda->json('data.paginacao.pagina'));
+        $this->assertCount(0, $segunda->json('data.pendentes'));
+    }
+
+    private function responsavel(string $nome, string $matricula, string $cpf)
+    {
+        return \App\Domain\Organization\Models\Responsavel::query()->create([
+            'empresa_id' => $this->empresa->id,
+            'filial_id' => $this->filial->id,
+            'departamento_id' => $this->departamento->id,
+            'nome' => $nome,
+            'matricula' => $matricula,
+            'cpf' => $cpf,
+            'email' => strtolower(str_replace(' ', '.', $nome)).'@teste.local',
+            'telefone' => '11988888888',
+            'cargo' => 'Analista',
+            'status' => 'ativo',
+        ]);
+    }
+
     private function contar(Inventario $inventario, array $leituras)
     {
         return $this->withHeader('X-Empresa-Id', (string) $this->empresa->id)

@@ -40,7 +40,7 @@ class ContagemInventarioService
     }
 
     /**
-     * @param  array<int, array{codigo: string, origem_id?: string|null, local_id?: int|null, lido_em?: string|null, observacoes?: string|null}>  $leituras
+     * @param  array<int, array{codigo: string, origem_id?: string|null, local_id?: int|null, responsavel_id?: int|null, lido_em?: string|null, observacoes?: string|null}>  $leituras
      * @return array<string, mixed>
      */
     public function registrarLeituras(Inventario $inventario, array $leituras, ?Usuario $usuario = null): array
@@ -78,6 +78,7 @@ class ContagemInventarioService
         $codigo = trim((string) ($leitura['codigo'] ?? ''));
         $origemId = $leitura['origem_id'] ?? null;
         $localId = $leitura['local_id'] ?? null;
+        $responsavelId = $leitura['responsavel_id'] ?? null;
         $lidoEm = Carbon::parse($leitura['lido_em'] ?? now());
 
         // A mesma leitura chegando de novo (reenvio da fila) devolve o que
@@ -112,13 +113,23 @@ class ContagemInventarioService
                     && $bem->local_id !== null
                     && (int) $localId !== (int) $bem->local_id;
 
-                $resultado = $foraDoLugar
-                    ? ResultadoLeituraEnum::LOCAL_DIFERENTE
-                    : ResultadoLeituraEnum::CONTADO;
+                $outroResponsavel = $responsavelId !== null
+                    && $bem->responsavel_id !== null
+                    && (int) $responsavelId !== (int) $bem->responsavel_id;
+
+                // O local fala mais alto que o responsavel: se as duas
+                // coisas divergem, o operador precisa ver primeiro que o
+                // bem mudou de lugar. A conciliacao aponta as duas.
+                $resultado = match (true) {
+                    $foraDoLugar => ResultadoLeituraEnum::LOCAL_DIFERENTE,
+                    $outroResponsavel => ResultadoLeituraEnum::RESPONSAVEL_DIFERENTE,
+                    default => ResultadoLeituraEnum::CONTADO,
+                };
 
                 $item->forceFill([
                     'localizado' => true,
                     'local_encontrado_id' => $localId,
+                    'responsavel_encontrado_id' => $responsavelId,
                     'contado_em' => $lidoEm,
                     'contado_por' => $usuario?->id,
                     'codigo_lido' => mb_substr($codigo, 0, 120),
@@ -208,6 +219,15 @@ class ContagemInventarioService
             ))
             ->count();
 
+        $outroResponsavel = (clone $itens)
+            ->whereNotNull('responsavel_encontrado_id')
+            ->whereHas('bemPatrimonial', fn ($consulta) => $consulta->whereColumn(
+                'bens_patrimoniais.responsavel_id',
+                '!=',
+                'inventario_itens.responsavel_encontrado_id',
+            ))
+            ->count();
+
         $naoIdentificadas = InventarioLeitura::query()
             ->where('inventario_id', $inventario->id)
             ->where('resultado', ResultadoLeituraEnum::NAO_IDENTIFICADO->value)
@@ -221,6 +241,7 @@ class ContagemInventarioService
             'pendentes' => max(0, $total - $encontrados),
             'percentual' => $total > 0 ? round(($encontrados / $total) * 100, 1) : 0.0,
             'local_diferente' => $foraDoLugar,
+            'responsavel_diferente' => $outroResponsavel,
             'nao_identificadas' => $naoIdentificadas,
         ];
     }

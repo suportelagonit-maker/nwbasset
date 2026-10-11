@@ -20,6 +20,7 @@ export type LeituraPendente = {
   inventario_id: number;
   codigo: string;
   local_id: number | null;
+  responsavel_id?: number | null;
   lido_em: string;
 };
 

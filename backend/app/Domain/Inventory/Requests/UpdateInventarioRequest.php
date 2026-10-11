@@ -14,6 +14,11 @@ class UpdateInventarioRequest extends BaseInventoryRequest
 
         return [
             'nome' => ['sometimes', 'required', 'string', 'max:180'],
+            // Locais escolhidos = inventario rotativo: so eles entram na
+            // contagem. Vazio = a filial inteira, como antes.
+            'locais' => ['nullable', 'array'],
+            'locais.*' => ['integer', 'exists:locais,id'],
+            'tipo' => ['nullable', 'in:COMPLETO,ROTATIVO'],
             'data_inicio' => ['sometimes', 'required', 'date'],
             'data_fim' => ['nullable', 'date', 'after_or_equal:'.$dataInicio],
             'status' => ['nullable', 'string', Rule::in(InventarioStatusEnum::values())],
