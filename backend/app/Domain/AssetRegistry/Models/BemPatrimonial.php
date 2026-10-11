@@ -35,20 +35,25 @@ class BemPatrimonial extends Model
         'numero_serie',
         'descricao',
         'categoria',
+        'tipo_produto_id',
         'marca',
         'modelo',
         'data_aquisicao',
+        'data_inicio_uso',
         'valor_aquisicao',
         'valor_residual',
         'vida_util_anos',
         'status_bem',
         'estado_conservacao',
+        'conta_contabil',
+        'centro_custo',
     ];
 
     protected function casts(): array
     {
         return [
             'data_aquisicao' => 'date',
+            'data_inicio_uso' => 'date',
             'valor_aquisicao' => 'decimal:2',
             'valor_residual' => 'decimal:2',
             'vida_util_anos' => 'integer',

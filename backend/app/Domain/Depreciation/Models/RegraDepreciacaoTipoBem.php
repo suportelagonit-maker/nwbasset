@@ -13,6 +13,7 @@ class RegraDepreciacaoTipoBem extends Model
     protected $fillable = [
         'empresa_id',
         'tipo_bem_id',
+        'tipo_produto_id',
         'tipo_bem',
         'nome_regra',
         'base_regra',
@@ -22,6 +23,8 @@ class RegraDepreciacaoTipoBem extends Model
         'taxa_anual',
         'taxa_anual_percentual',
         'valor_residual_percentual',
+        'coeficiente_aceleracao',
+        'unidades_vida_util',
         'depreciavel',
         'requer_override_manual',
         'data_inicio_vigencia',
@@ -36,6 +39,9 @@ class RegraDepreciacaoTipoBem extends Model
     {
         return [
             'tipo_bem_id' => 'integer',
+            'tipo_produto_id' => 'integer',
+            'coeficiente_aceleracao' => 'decimal:2',
+            'unidades_vida_util' => 'integer',
             'vida_util_anos' => 'integer',
             'taxa_anual' => 'decimal:4',
             'taxa_anual_percentual' => 'decimal:4',

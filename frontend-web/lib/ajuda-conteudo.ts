@@ -464,6 +464,42 @@ export const AJUDA_SECOES: AjudaSecao[] = [
     icone: 'trend',
     topicos: [
       {
+        id: 'depreciacao-apurar',
+        titulo: 'Como apurar e fechar a depreciação do mês',
+        objetivo: 'Calcular a depreciação de todos os bens no mês e congelar o valor que foi para a contabilidade.',
+        open: { href: '/dashboard/modulos/depreciacoes', label: 'Abrir Depreciação' },
+        passos: [
+          { onde: 'Menu Depreciação › Apuração mensal', acao: 'Escolha a competência (mês/ano) e a base, e clique em Apurar até esta competência.', porque: 'O sistema preenche de uma vez todos os meses em aberto, do mês em que cada bem entrou em uso até o que você escolheu.' },
+          { onde: 'Base', acao: 'Fiscal segue a tabela da Receita (IN RFB 1.700/2017); Societária segue a vida útil real do bem (CPC 27). As duas convivem: cada uma tem o seu número por mês.' },
+          { onde: 'Fechar mês', acao: 'Depois de conferir, clique em Fechar mês.', porque: 'Mês fechado não é recalculado nunca mais — nem se alguém mudar uma taxa depois. É o que garante que o número entregue ao contador não muda sozinho.' },
+          { onde: 'Reabrir', acao: 'Na lista de competências fechadas, clique em Reabrir e descreva o motivo (fica registrado).', porque: 'Corrigir um mês já fechado é um ato que precisa de justificativa e rastro.' },
+          { onde: 'Carregar tabela da Receita', acao: 'No primeiro uso, clique neste botão para trazer as taxas oficiais por tipo de bem, nas duas bases.', porque: 'A empresa começa com as taxas certas em vez de uma regra única para tudo. Suas regras já ajustadas não são alteradas.' },
+        ],
+        dicas: [
+          'Meses abertos são sempre recalculados com a regra atual. Se o contador corrigir uma taxa, basta apurar de novo: o que estava fechado não muda.',
+          'As taxas da Receita são o máximo dedutível. Se a realidade do seu bem for outra, edite a regra — o sistema aceita, e é você quem comprova a adequação.',
+        ],
+        palavras: ['depreciação', 'depreciacao', 'apurar', 'apuração', 'fechamento', 'competência', 'mês', 'fiscal', 'societária', 'cpc 27', 'receita federal'],
+      },
+      {
+        id: 'depreciacao-memoria',
+        titulo: 'Como conferir a depreciação de um bem, mês a mês',
+        objetivo: 'Ver a memória de cálculo: qual regra foi aplicada, de onde ela veio e quanto cai em cada mês até zerar.',
+        open: { href: '/dashboard/modulos/bens', label: 'Abrir Bens Patrimoniais' },
+        passos: [
+          { onde: 'Lista de bens › coluna Depreciação', acao: 'Clique em Memória de cálculo na linha do bem.' },
+          { onde: 'Cabeçalho', acao: 'Confira a regra aplicada, o método, a taxa, a base depreciável (aquisição menos residual) e o mês de início.', porque: 'É aqui que se explica o número para um auditor, sem precisar abrir planilha.' },
+          { onde: 'Fiscal / Societária', acao: 'Alterne entre as duas bases para comparar.' },
+          { onde: 'Tabela', acao: 'Cada linha é um mês: depreciação do mês, acumulado e valor contábil que sobra.' },
+        ],
+        dicas: [
+          'A depreciação começa no mês em que o bem entrou em uso, não na data da nota. Preencha Início de uso no cadastro quando o bem demorou a ser instalado.',
+          'O campo Produto no cadastro do bem define a taxa quando ela difere da do tipo: caminhão deprecia em 4 anos; automóvel, em 5.',
+          'Bem baixado para de depreciar no mês da baixa — e terreno não deprecia.',
+        ],
+        palavras: ['memória de cálculo', 'memoria', 'conferir', 'cronograma', 'parcela', 'auditoria', 'valor contábil', 'acumulado'],
+      },
+      {
         id: 'depreciacao-regras',
         titulo: 'Como configurar as regras de depreciação',
         objetivo: 'Definir, por tipo de bem, o método, a taxa anual, a vida útil e o valor residual usados nos cálculos.',

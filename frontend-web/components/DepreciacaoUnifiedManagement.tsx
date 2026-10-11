@@ -6,6 +6,7 @@ import DepreciacaoRegraModal from '@/components/depreciacao/DepreciacaoRegraModa
 import DepreciacaoRulesTable from '@/components/depreciacao/DepreciacaoRulesTable';
 import FontesConsultaButton from '@/components/FontesConsultaButton';
 import type { MetodoDepreciacao, RegraDepreciacaoForm, RegraDepreciacaoTipoBem } from '@/components/depreciacao/types';
+import ApuracaoDepreciacao from '@/components/ApuracaoDepreciacao';
 import { handleUnauthorizedClientResponse } from '@/lib/client-auth';
 
 type DepreciacaoUnifiedManagementProps = {
@@ -380,6 +381,8 @@ export default function DepreciacaoUnifiedManagement({ empresaId }: DepreciacaoU
 
   return (
     <>
+      <ApuracaoDepreciacao empresaId={empresaId} />
+
       <section className="panel-surface rounded-[22px] p-4 md:rounded-[28px] md:p-6">
         <div className="flex flex-col gap-5 lg:flex-row lg:items-start lg:justify-between">
           <div>

@@ -8,6 +8,7 @@ use App\Domain\Depreciation\Models\DepreciacaoBem;
 use App\Domain\Depreciation\Models\MetodoDepreciacao;
 use App\Domain\Depreciation\Models\ParametroDepreciacao;
 use App\Domain\Depreciation\Models\RegraDepreciacaoTipoBem;
+use App\Domain\Depreciation\Support\ParcelaDepreciacao;
 use App\Domain\Depreciation\Models\TipoBemPatrimonial;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
@@ -64,73 +65,39 @@ class DepreciacaoService
 
     public function __construct(
         private readonly RegraDepreciacaoEfetivaResolverService $regraEfetivaResolverService,
+        private readonly CronogramaDepreciacaoService $cronogramaService,
+        private readonly RazaoDepreciacaoService $razaoService,
     ) {
     }
 
+    /**
+     * Calcula a depreciacao da empresa ate a competencia informada.
+     *
+     * Antes isto gravava uma fotografia anual por bem; agora delega para a
+     * razao mensal, que preenche mes a mes tudo que ainda falta. O retorno
+     * mantem as chaves antigas para nao quebrar quem ja consome.
+     *
+     * @return array<string, mixed>
+     */
     public function aplicarDepreciacaoAutomaticaPorEmpresa(
         int $empresaId,
         ?int $metodoDepreciacaoId = null,
-        ?string $dataCalculo = null
+        ?string $dataCalculo = null,
+        string $baseRegra = 'fiscal'
     ): array {
-        return DB::transaction(function () use ($empresaId, $metodoDepreciacaoId, $dataCalculo): array {
-            $metodoForcado = $metodoDepreciacaoId !== null
-                ? $this->resolverMetodoDepreciacao($metodoDepreciacaoId)
-                : null;
-            $dataReferencia = Carbon::parse($dataCalculo ?? now())->toDateString();
+        $resultado = $this->razaoService->processarAte(
+            $empresaId,
+            $dataCalculo ?? now()->toDateString(),
+            $baseRegra,
+        );
 
-            $bens = BemPatrimonial::query()
-                ->where('empresa_id', $empresaId)
-                ->get();
-
-            $criados = 0;
-            $atualizados = 0;
-
-            foreach ($bens as $bem) {
-                $regraEfetiva = $this->regraEfetivaResolverService->resolverRegraEfetivaParaBem($bem);
-
-                if (! (bool) ($regraEfetiva['depreciavel'] ?? true)) {
-                    continue;
-                }
-
-                $metodo = $metodoForcado ?? $this->resolverMetodoDepreciacao(null, $bem, $regraEfetiva);
-                $payload = $this->montarPayloadDepreciacao($bem, $metodo, [
-                    'empresa_id' => $empresaId,
-                    'data_calculo' => $dataReferencia,
-                    'metodo_depreciacao_id' => $metodo->id,
-                ]);
-
-                $depreciacao = DepreciacaoBem::query()
-                    ->where('bem_patrimonial_id', $bem->id)
-                    ->whereDate('data_calculo', $dataReferencia)
-                    ->first();
-
-                if ($depreciacao) {
-                    $depreciacao->update($payload);
-                    $atualizados++;
-                    continue;
-                }
-
-                $novaDepreciacao = DepreciacaoBem::query()->create($payload);
-                $criados++;
-
-                app(LogOperacaoPatrimonialService::class)->registrar(
-                    'DEPRECIACAO_BEM',
-                    $novaDepreciacao,
-                    $novaDepreciacao->empresa_id,
-                    [],
-                    $novaDepreciacao->toArray(),
-                );
-            }
-
-            return [
-                'empresa_id' => $empresaId,
-                'metodo_depreciacao_id' => $metodoForcado?->id,
-                'data_calculo' => $dataReferencia,
-                'bens_processados' => $bens->count(),
-                'depreciacoes_criadas' => $criados,
-                'depreciacoes_atualizadas' => $atualizados,
-            ];
-        });
+        return $resultado + [
+            'metodo_depreciacao_id' => $metodoDepreciacaoId,
+            'data_calculo' => $resultado['ate'],
+            'bens_processados' => $resultado['lancamentos'],
+            'depreciacoes_criadas' => $resultado['lancamentos'],
+            'depreciacoes_atualizadas' => 0,
+        ];
     }
 
     public function calcularDepreciacaoAnual(float $valorAquisicao, float $valorResidual, int $vidaUtilAnos): float
@@ -157,12 +124,13 @@ class DepreciacaoService
 
             $existe = DepreciacaoBem::query()
                 ->where('bem_patrimonial_id', $payload['bem_patrimonial_id'])
-                ->whereDate('data_calculo', $payload['data_calculo'])
+                ->where('base_regra', $payload['base_regra'])
+                ->whereDate('competencia', $payload['competencia'])
                 ->exists();
 
             if ($existe) {
                 throw ValidationException::withMessages([
-                    'data_calculo' => 'Ja existe depreciacao registrada para o bem na data informada.',
+                    'data_calculo' => 'Ja existe depreciacao registrada para este bem na competencia informada.',
                 ]);
             }
 
@@ -217,6 +185,15 @@ class DepreciacaoService
         });
     }
 
+    /**
+     * Monta a linha de uma competencia a partir do cronograma do bem.
+     *
+     * Nao existe mais conta propria aqui: o cronograma e a unica fonte da
+     * verdade, para a depreciacao avulsa e a automatica nunca divergirem.
+     *
+     * @param  array<string, mixed>  $data
+     * @return array<string, mixed>
+     */
     protected function montarPayloadDepreciacao(BemPatrimonial $bem, MetodoDepreciacao $metodo, array $data): array
     {
         $empresaId = (int) ($data['empresa_id'] ?? $bem->empresa_id);
@@ -227,70 +204,60 @@ class DepreciacaoService
             ]);
         }
 
-        $dataCalculo = Carbon::parse($data['data_calculo'] ?? now())->toDateString();
         $baseRegra = trim((string) ($data['base_regra'] ?? 'fiscal'));
-        $regraEfetiva = $this->regraEfetivaResolverService->resolverRegraEfetivaParaBem(
-            $bem,
-            $baseRegra,
-            $dataCalculo,
-        );
+        $competencia = Carbon::parse($data['data_calculo'] ?? now())->startOfMonth();
+        $cronograma = $this->cronogramaService->gerar($bem, $baseRegra, $competencia->toDateString());
 
-        if (! (bool) ($regraEfetiva['depreciavel'] ?? true)) {
+        if (! $cronograma['depreciavel']) {
             throw ValidationException::withMessages([
-                'bem_patrimonial_id' => 'O bem informado esta marcado como nao depreciavel para a regra vigente.',
+                'bem_patrimonial_id' => $cronograma['motivo'] ?? 'O bem informado nao e depreciavel para a regra vigente.',
             ]);
         }
 
-        $valorAquisicao = (float) ($data['valor_aquisicao'] ?? $bem->valor_aquisicao ?? 0);
-        $valorResidualFonte = array_key_exists('valor_residual', $data)
-            ? $data['valor_residual']
-            : $bem->valor_residual;
-        $valorResidualPercentual = (float) ($regraEfetiva['valor_residual_percentual'] ?? 0);
-        $valorResidualMonetario = $regraEfetiva['valor_residual_monetario'] ?? null;
+        $inicio = $cronograma['inicio'];
 
-        if (($valorResidualFonte === null || (float) $valorResidualFonte <= 0) && $valorResidualMonetario !== null) {
-            $valorResidualFonte = (float) $valorResidualMonetario;
-        }
-
-        if (($valorResidualFonte === null || (float) $valorResidualFonte <= 0) && $valorResidualPercentual > 0) {
-            $valorResidualFonte = ($valorAquisicao * $valorResidualPercentual) / 100;
-        }
-
-        $valorResidual = (float) ($valorResidualFonte ?? 0);
-        $vidaUtilAnos = (int) ($data['vida_util_anos']
-            ?? $regraEfetiva['vida_util_anos']
-            ?? $bem->vida_util_anos
-            ?? $this->resolverVidaUtilPadrao($empresaId, $metodo->id));
-
-        $this->validarVidaUtil($vidaUtilAnos);
-
-        if ($bem->data_aquisicao && Carbon::parse($dataCalculo)->lt($bem->data_aquisicao)) {
+        if ($inicio !== null && $competencia->lt(Carbon::parse($inicio))) {
             throw ValidationException::withMessages([
-                'data_calculo' => 'A data de calculo nao pode ser anterior a data de aquisicao do bem.',
+                'data_calculo' => 'A competencia e anterior ao inicio da depreciacao do bem ('
+                    .Carbon::parse($inicio)->format('m/Y').').',
             ]);
         }
 
-        $taxaAnual = round((float) ($data['taxa_anual']
-            ?? $data['taxa_anual_percentual']
-            ?? $regraEfetiva['taxa_anual_percentual']
-            ?? (100 / $vidaUtilAnos)), 4);
-        $valorDepreciavel = max(0, round($valorAquisicao - $valorResidual, 2));
-        $depreciacaoAnual = round(($valorDepreciavel * $taxaAnual) / 100, 2);
-        $anosDepreciados = $this->calcularAnosDepreciados($bem, $dataCalculo, $vidaUtilAnos);
-        $valorDepreciadoAcumulado = min($valorDepreciavel, round($depreciacaoAnual * $anosDepreciados, 2));
-        $valorContabil = max(round($valorResidual, 2), $this->calcularValorContabil($valorAquisicao, $valorDepreciadoAcumulado));
+        $parcela = null;
+
+        foreach ($cronograma['parcelas'] as $candidata) {
+            if ($candidata->competenciaIso() === $competencia->toDateString()) {
+                $parcela = $candidata;
+                break;
+            }
+        }
+
+        if (! $parcela instanceof ParcelaDepreciacao) {
+            throw ValidationException::withMessages([
+                'data_calculo' => 'Nao ha depreciacao para este bem na competencia '.$competencia->format('m/Y')
+                    .' (vida util encerrada, bem baixado ou sem producao apontada).',
+            ]);
+        }
+
+        $regra = $cronograma['regra'];
 
         return [
             'bem_patrimonial_id' => $bem->id,
             'empresa_id' => $empresaId,
+            'base_regra' => $baseRegra,
+            'competencia' => $parcela->competenciaIso(),
             'metodo_depreciacao_id' => $metodo->id,
-            'valor_aquisicao' => round($valorAquisicao, 2),
-            'valor_residual' => round($valorResidual, 2),
-            'vida_util_anos' => $vidaUtilAnos,
-            'taxa_anual' => $taxaAnual,
-            'valor_depreciado_acumulado' => $valorDepreciadoAcumulado,
-            'valor_contabil' => $valorContabil,
-            'data_calculo' => $dataCalculo,
+            'regra_depreciacao_id' => $regra['regra_id'] ?? null,
+            'metodo' => (string) ($regra['metodo'] ?? 'linha_reta'),
+            'valor_aquisicao' => $cronograma['valor_aquisicao'],
+            'valor_residual' => $cronograma['valor_residual'],
+            'vida_util_anos' => (int) ($regra['vida_util_anos'] ?? 0),
+            'taxa_anual' => round((float) ($regra['taxa_anual_percentual'] ?? 0), 4),
+            'valor_depreciacao_periodo' => $parcela->valorDepreciacao,
+            'valor_depreciado_acumulado' => $parcela->acumulado,
+            'valor_contabil' => $parcela->valorContabil,
+            'meses_depreciados' => $parcela->mesesDepreciados,
+            'data_calculo' => $parcela->ultimoDiaDoMes(),
         ];
     }
 
@@ -631,19 +598,6 @@ class DepreciacaoService
         $valor = Str::ascii(Str::lower(trim((string) $tipoBem)));
 
         return (string) preg_replace('/[^a-z0-9]+/', '', $valor);
-    }
-
-    protected function calcularAnosDepreciados(BemPatrimonial $bem, string $dataCalculo, int $vidaUtilAnos): int
-    {
-        if (! $bem->data_aquisicao) {
-            return 1;
-        }
-
-        $inicio = $bem->data_aquisicao->copy()->startOfYear();
-        $fim = Carbon::parse($dataCalculo)->startOfYear();
-        $anos = $inicio->diffInYears($fim) + 1;
-
-        return max(1, min($vidaUtilAnos, $anos));
     }
 
     protected function validarVidaUtil(int $vidaUtilAnos): void

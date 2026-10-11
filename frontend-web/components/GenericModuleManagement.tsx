@@ -27,6 +27,8 @@ export type ModuleFieldConfig = {
   hidden?: boolean;
   readOnly?: boolean;
   placeholder?: string;
+  /** Explicacao curta abaixo do campo, para o que nao e obvio no rotulo. */
+  helpText?: string;
   rows?: number;
   valueType?: "string" | "number";
   defaultValue?: string | ((context: { empresaId: number | null }) => string);
@@ -3284,6 +3286,11 @@ export default function GenericModuleManagement({
                                     </option>
                                   ))}
                                 </select>
+                                {field.helpText ? (
+                                  <span className="mt-1 block text-[11px] leading-4 text-[var(--muted)]">
+                                    {field.helpText}
+                                  </span>
+                                ) : null}
                                 {(field.lookupKey === "plaquetas_disponiveis" ||
                                   field.lookupKey === "bens") &&
                                 !disabled ? (
@@ -3326,6 +3333,11 @@ export default function GenericModuleManagement({
                                 placeholder={getFieldPlaceholder(field)}
                                 className={inputClassName}
                               />
+                              {field.helpText ? (
+                                <span className="mt-1 block text-[11px] leading-4 text-[var(--muted)]">
+                                  {field.helpText}
+                                </span>
+                              ) : null}
                               {isDataFimField ? (
                                 <label className="mt-2 inline-flex items-center gap-2 text-[12px] font-medium text-[var(--muted)]">
                                   <input

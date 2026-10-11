@@ -71,6 +71,14 @@ class StoreBemPatrimonialRequest extends FormRequest
             'vida_util_anos' => ['nullable', 'integer', 'min:0'],
             'status_bem' => ['nullable', 'string', 'max:40'],
             'estado_conservacao' => ['nullable', 'string', 'max:40'],
+            // Produto do bem: e ele que escolhe a regra de depreciacao
+            // mais especifica (caminhao nao deprecia como automovel).
+            'tipo_produto_id' => ['nullable', 'integer', 'exists:tipos_produtos,id'],
+            // A depreciacao comeca quando o bem fica disponivel para uso,
+            // nao na data da nota fiscal (art. 317 do RIR/2018).
+            'data_inicio_uso' => ['nullable', 'date'],
+            'conta_contabil' => ['nullable', 'string', 'max:40'],
+            'centro_custo' => ['nullable', 'string', 'max:60'],
         ];
     }
 

@@ -8,6 +8,8 @@ use App\Domain\Depreciation\Models\ParametroDepreciacao;
 use App\Domain\Depreciation\Models\RegraDepreciacaoTipoBem;
 use App\Domain\Depreciation\Models\TipoBemPatrimonial;
 use App\Domain\Depreciation\Services\DepreciacaoService;
+use App\Domain\Depreciation\Services\RazaoDepreciacaoService;
+use App\Domain\Depreciation\Services\TabelaPadraoDepreciacaoService;
 use App\Domain\Organization\Models\Empresa;
 use Illuminate\Database\Seeder;
 
@@ -40,65 +42,17 @@ class NwbAssetDepreciationSeeder extends Seeder
             ],
         );
 
-        foreach (['Informática', 'Mobiliário'] as $tipoPadrao) {
-            TipoBemPatrimonial::query()->updateOrCreate([
-                'empresa_id' => $empresa->id,
-                'nome' => $tipoPadrao,
-            ]);
-        }
+        // As regras saem da tabela da Receita (Anexo III da IN RFB
+        // 1.700/2017), nas bases fiscal e societaria, em vez de duas regras
+        // inventadas: a empresa nasce com taxa correta para cada tipo.
+        app(TabelaPadraoDepreciacaoService::class)->aplicarNaEmpresa($empresa->id);
 
-        RegraDepreciacaoTipoBem::query()->updateOrCreate(
-            [
-                'empresa_id' => $empresa->id,
-                'tipo_bem' => 'Informática',
-            ],
-            [
-                'metodo_depreciacao_id' => $metodo->id,
-                'vida_util_anos' => 5,
-                'taxa_anual' => 20.0000,
-                'valor_residual_percentual' => 10.0000,
-            ],
+        // Apura a depreciacao de todos os bens ate o mes corrente, mes a
+        // mes, do jeito que a empresa vai usar no dia a dia.
+        app(RazaoDepreciacaoService::class)->processarAte(
+            $empresa->id,
+            now()->toDateString(),
+            'fiscal',
         );
-
-        RegraDepreciacaoTipoBem::query()->updateOrCreate(
-            [
-                'empresa_id' => $empresa->id,
-                'tipo_bem' => 'Mobiliário',
-            ],
-            [
-                'metodo_depreciacao_id' => $metodo->id,
-                'vida_util_anos' => 10,
-                'taxa_anual' => 10.0000,
-                'valor_residual_percentual' => 5.0000,
-            ],
-        );
-
-        $service = app(DepreciacaoService::class);
-
-        BemPatrimonial::query()
-            ->where('empresa_id', $empresa->id)
-            ->orderBy('numero_tombo')
-            ->get()
-            ->each(function (BemPatrimonial $bem) use ($service, $metodo, $empresa): void {
-                $dataCalculo = ($bem->data_aquisicao?->copy()->endOfYear() ?? now()->endOfYear())->toDateString();
-
-                $jaExiste = $bem->depreciacoes()
-                    ->whereDate('data_calculo', $dataCalculo)
-                    ->exists();
-
-                if ($jaExiste) {
-                    return;
-                }
-
-                $service->registrarDepreciacao([
-                    'bem_patrimonial_id' => $bem->id,
-                    'empresa_id' => $empresa->id,
-                    'metodo_depreciacao_id' => $metodo->id,
-                    'valor_aquisicao' => (float) $bem->valor_aquisicao,
-                    'valor_residual' => (float) $bem->valor_residual,
-                    'vida_util_anos' => (int) ($bem->vida_util_anos ?: 5),
-                    'data_calculo' => $dataCalculo,
-                ]);
-            });
     }
 }

@@ -108,8 +108,28 @@ class RegraDepreciacaoEfetivaResolverService
             ->first();
     }
 
+    /**
+     * Regra padrao do bem, da mais especifica para a mais generica:
+     *
+     *   1. regra do TIPO DE PRODUTO (caminhao, notebook, cadeira)
+     *   2. regra do TIPO DE BEM     (veiculos, informatica, mobiliario)
+     *
+     * A tabela da Receita exige essa granularidade: "Veiculos" nao e uma
+     * taxa so — automovel de passageiros deprecia em 5 anos (20% a.a.) e
+     * caminhao, onibus, moto e trator em 4 anos (25% a.a.).
+     */
     protected function buscarRegraPadraoVigente(BemPatrimonial $bem, string $base, string $data): ?RegraDepreciacaoTipoBem
     {
+        if ($bem->tipo_produto_id && Schema::hasColumn('regras_depreciacao_tipos_bens', 'tipo_produto_id')) {
+            $doProduto = $this->consultaDeRegras($bem, $base, $data)
+                ->where('tipo_produto_id', $bem->tipo_produto_id)
+                ->first();
+
+            if ($doProduto) {
+                return $doProduto;
+            }
+        }
+
         $tipoBemNome = trim((string) $bem->categoria);
         $tipoBemId = null;
 
@@ -120,18 +140,12 @@ class RegraDepreciacaoEfetivaResolverService
                 ->value('id');
         }
 
-        $query = RegraDepreciacaoTipoBem::query()
-            ->with('metodoDepreciacao')
-            ->where('empresa_id', $bem->empresa_id)
-            ->orderByDesc('data_inicio_vigencia')
-            ->orderByDesc('id');
+        $query = $this->consultaDeRegras($bem, $base, $data);
 
-        if (Schema::hasColumn('regras_depreciacao_tipos_bens', 'base_regra')) {
-            $query->where('base_regra', $base);
-        }
-
-        if ($this->tabelaPossuiColunas('regras_depreciacao_tipos_bens', ['ativo', 'data_inicio_vigencia', 'data_fim_vigencia'])) {
-            $query->ativasVigentes($data);
+        // A regra generica do tipo de bem nao pode capturar o bem que tem
+        // regra de produto: se chegou aqui, e porque nao existe a do produto.
+        if (Schema::hasColumn('regras_depreciacao_tipos_bens', 'tipo_produto_id')) {
+            $query->whereNull('tipo_produto_id');
         }
 
         $query->where(function ($inner) use ($tipoBemId, $tipoBemNome): void {
@@ -157,6 +171,26 @@ class RegraDepreciacaoEfetivaResolverService
         return null;
     }
 
+    /** Consulta base das regras da empresa, ja filtrada por base e vigencia. */
+    protected function consultaDeRegras(BemPatrimonial $bem, string $base, string $data)
+    {
+        $query = RegraDepreciacaoTipoBem::query()
+            ->with('metodoDepreciacao')
+            ->where('empresa_id', $bem->empresa_id)
+            ->orderByDesc('data_inicio_vigencia')
+            ->orderByDesc('id');
+
+        if (Schema::hasColumn('regras_depreciacao_tipos_bens', 'base_regra')) {
+            $query->where('base_regra', $base);
+        }
+
+        if ($this->tabelaPossuiColunas('regras_depreciacao_tipos_bens', ['ativo', 'data_inicio_vigencia', 'data_fim_vigencia'])) {
+            $query->ativasVigentes($data);
+        }
+
+        return $query;
+    }
+
     protected function mapearParametroBem(BemPatrimonial $bem, ParametroDepreciacaoBem $parametro): array
     {
         $metodoId = (int) ($parametro->metodo_depreciacao_id ?? $parametro->regraDepreciacao?->metodo_depreciacao_id ?? 0);
@@ -175,6 +209,11 @@ class RegraDepreciacaoEfetivaResolverService
             'taxa_anual_percentual' => $parametro->taxa_anual_percentual !== null ? (float) $parametro->taxa_anual_percentual : null,
             'valor_residual_percentual' => $parametro->valor_residual_percentual !== null ? (float) $parametro->valor_residual_percentual : null,
             'valor_residual_monetario' => $parametro->valor_residual_monetario !== null ? (float) $parametro->valor_residual_monetario : null,
+            'coeficiente_aceleracao' => (float) ($parametro->regraDepreciacao?->coeficiente_aceleracao ?? 1),
+            'unidades_vida_util' => $parametro->regraDepreciacao?->unidades_vida_util
+                ? (int) $parametro->regraDepreciacao->unidades_vida_util
+                : null,
+            'data_inicio_depreciacao' => $parametro->data_inicio_depreciacao?->toDateString(),
             'origem_da_regra' => 'parametro_bem',
             'regra_id' => $parametro->regra_depreciacao_id ? (int) $parametro->regra_depreciacao_id : null,
             'parametro_bem_id' => (int) $parametro->id,
@@ -199,6 +238,11 @@ class RegraDepreciacaoEfetivaResolverService
             'taxa_anual_percentual' => (float) $regra->taxa_anual_efetiva,
             'valor_residual_percentual' => (float) ($regra->valor_residual_percentual ?? 0),
             'valor_residual_monetario' => null,
+            'coeficiente_aceleracao' => (float) ($regra->coeficiente_aceleracao ?? 1),
+            'unidades_vida_util' => $regra->unidades_vida_util ? (int) $regra->unidades_vida_util : null,
+            'data_inicio_depreciacao' => null,
+            'nome_regra' => (string) ($regra->nome_regra ?? $regra->tipo_bem),
+            'tipo_produto_id' => $regra->tipo_produto_id ? (int) $regra->tipo_produto_id : null,
             'origem_da_regra' => 'regra_padrao',
             'regra_id' => (int) $regra->id,
             'parametro_bem_id' => null,
@@ -260,6 +304,9 @@ class RegraDepreciacaoEfetivaResolverService
             'taxa_anual_percentual' => round((float) ($taxa ?? 0), 4),
             'valor_residual_percentual' => round((float) $residual, 4),
             'valor_residual_monetario' => null,
+            'coeficiente_aceleracao' => 1.0,
+            'unidades_vida_util' => null,
+            'data_inicio_depreciacao' => null,
             'origem_da_regra' => 'fallback_legado',
             'regra_id' => $regraLegado?->id ? (int) $regraLegado->id : null,
             'parametro_bem_id' => null,

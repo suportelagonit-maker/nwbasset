@@ -14,6 +14,13 @@ class DepreciacaoBem extends Model
     protected $fillable = [
         'bem_patrimonial_id',
         'empresa_id',
+        'base_regra',
+        'competencia',
+        'valor_depreciacao_periodo',
+        'metodo',
+        'meses_depreciados',
+        'regra_depreciacao_id',
+        'fechado_em',
         'metodo_depreciacao_id',
         'valor_aquisicao',
         'valor_residual',
@@ -32,8 +39,12 @@ class DepreciacaoBem extends Model
             'vida_util_anos' => 'integer',
             'taxa_anual' => 'decimal:4',
             'valor_depreciado_acumulado' => 'decimal:2',
+            'valor_depreciacao_periodo' => 'decimal:2',
             'valor_contabil' => 'decimal:2',
+            'meses_depreciados' => 'integer',
+            'competencia' => 'date',
             'data_calculo' => 'date',
+            'fechado_em' => 'datetime',
         ];
     }
 

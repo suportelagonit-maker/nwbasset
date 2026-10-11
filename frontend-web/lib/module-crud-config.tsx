@@ -242,12 +242,7 @@ export const moduleCrudConfig: Record<string, ModuleConfig> = {
         description: 'Selecione o tipo do bem e preencha as informações principais do item.',
         fields: [
           'categoria',
-          'subtipo_equipamento',
-          'subtipo_informatica',
-          'subtipo_mobiliario',
-          'subtipo_utensilio',
-          'subtipo_veiculo',
-          'subtipo_generico',
+          'tipo_produto_id',
           'numero_tombo',
           'numero_serie',
           'descricao',
@@ -275,7 +270,7 @@ export const moduleCrudConfig: Record<string, ModuleConfig> = {
         key: 'valores',
         label: 'Valores e status',
         description: 'Informe aquisição, vida útil e situação atual do ativo.',
-        fields: ['data_aquisicao', 'valor_aquisicao', 'valor_residual', 'vida_util_anos', 'status_bem', 'estado_conservacao'],
+        fields: ['data_aquisicao', 'data_inicio_uso', 'valor_aquisicao', 'valor_residual', 'vida_util_anos', 'status_bem', 'estado_conservacao', 'conta_contabil', 'centro_custo'],
         compactSummary: true,
         formGridClassName: 'sm:grid-cols-2 xl:grid-cols-3',
       },
@@ -364,6 +359,24 @@ export const moduleCrudConfig: Record<string, ModuleConfig> = {
           'ergonomica',
           'voltagem',
         ],
+      },
+      {
+        name: 'tipo_produto_id',
+        label: 'Produto',
+        type: 'select',
+        valueType: 'number',
+        lookupKey: 'tipos_produtos',
+        placeholder: 'Selecione o produto',
+        helpText: 'O produto define a taxa de depreciação quando ela difere da do tipo (caminhão deprecia em 4 anos; automóvel, em 5).',
+        visibleWhen: (form) => Boolean(form.categoria),
+        filterOption: (option, form, lookups) => {
+          const categoria = normalizeText(form.categoria ?? '');
+          if (!categoria) return false;
+          const tipoNome = resolveTipoBemNome(option, lookups);
+          /* Produto sem tipo de bem amarrado aparece para todos: e cadastro
+             antigo, e esconder deixaria a pessoa sem opcao. */
+          return tipoNome === '' || tipoNome === categoria || categoria.includes(tipoNome) || tipoNome.includes(categoria);
+        },
       },
       { name: 'marca', label: 'Marca', type: 'text', visibleWhen: (form) => Boolean(form.categoria) },
       { name: 'modelo', label: 'Modelo', type: 'text', visibleWhen: (form) => Boolean(form.categoria) },
@@ -567,6 +580,25 @@ export const moduleCrudConfig: Record<string, ModuleConfig> = {
       { name: 'data_aquisicao', label: 'Data de aquisição', type: 'date' },
       { name: 'valor_aquisicao', label: 'Valor de aquisição', type: 'number' },
       { name: 'valor_residual', label: 'Valor residual (automático)', type: 'number', readOnly: true },
+      {
+        name: 'data_inicio_uso',
+        label: 'Início de uso',
+        type: 'date',
+        helpText: 'Quando o bem ficou disponível para uso. É daqui que a depreciação começa — não da data da nota. Em branco, vale a data de aquisição.',
+      },
+      {
+        name: 'conta_contabil',
+        label: 'Conta contábil',
+        type: 'text',
+        placeholder: 'Ex.: 1.2.3.01.001',
+        helpText: 'Usada para levar a despesa de depreciação à contabilidade.',
+      },
+      {
+        name: 'centro_custo',
+        label: 'Centro de custo',
+        type: 'text',
+        placeholder: 'Ex.: ADM-01',
+      },
       { name: 'vida_util_anos', label: 'Vida útil (anos) (automático)', type: 'number', valueType: 'number', readOnly: true },
       { name: 'status_bem', label: 'Status do bem', type: 'text', defaultValue: 'ativo' },
       { name: 'estado_conservacao', label: 'Estado de conservação', type: 'select', defaultValue: 'Novo', options: [{ value: 'Novo', label: 'Novo' }, { value: 'Usado', label: 'Usado' }] },
@@ -610,6 +642,17 @@ export const moduleCrudConfig: Record<string, ModuleConfig> = {
       {
         label: 'Status',
         render: (item) => primaryCell(item.status_bem, item.estado_conservacao),
+      },
+      {
+        label: 'Depreciação',
+        render: (item) => (
+          <a
+            href={`/dashboard/bens/${item.id}/depreciacao`}
+            className="inline-flex rounded-full border border-[var(--line)] bg-white px-3 py-1 text-[11px] font-semibold text-[var(--ink)] transition hover:border-[var(--accent)] hover:text-[var(--accent-deep)]"
+          >
+            Memória de cálculo
+          </a>
+        ),
       },
     ],
   },

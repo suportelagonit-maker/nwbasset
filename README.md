@@ -107,3 +107,4 @@ o domínio de onde a aplicação é servida precisa estar registrado lá, senão
 - `docs/NWB-ID.md` — autenticação pelo NWB ID / NWB Acessos
 - `docs/PWA-MOBILE.md` — aplicativo instalável, leitura de etiqueta pela câmera e uso sem rede
 - `docs/AVISOS-PUSH.md` — avisos de acesso por push (chaves VAPID, assuntos e regras)
+- `docs/DEPRECIACAO.md` — motor de depreciação: competência mensal, bases fiscal e societária, tabela da Receita

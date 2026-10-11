@@ -33,6 +33,7 @@ use App\Domain\Organization\Controllers\ResponsavelController;
 use App\Domain\Organization\Controllers\UnidadeAdministrativaController;
 use App\Domain\Reports\Controllers\ExportacaoRelatoriosController;
 use App\Domain\Reports\Controllers\RelatorioPatrimonialController;
+use App\Domain\Depreciation\Controllers\DepreciacaoOperacaoController;
 use App\Domain\Notifications\Controllers\PushController;
 use Illuminate\Support\Facades\Route;
 
@@ -121,6 +122,14 @@ Route::prefix('v1')->group(function (): void {
             Route::apiResource('tipos-bens-patrimoniais', TipoBemPatrimonialController::class)
                 ->parameters(['tipos-bens-patrimoniais' => 'tipo_bem'])
                 ->only(['index', 'store', 'update', 'destroy']);
+            // Operacoes da depreciacao: apuracao mensal, fechamento de
+            // competencia e memoria de calculo do bem.
+            Route::post('depreciacao/processar', [DepreciacaoOperacaoController::class, 'processar']);
+            Route::post('depreciacao/fechar', [DepreciacaoOperacaoController::class, 'fechar']);
+            Route::post('depreciacao/reabrir', [DepreciacaoOperacaoController::class, 'reabrir']);
+            Route::get('depreciacao/fechamentos', [DepreciacaoOperacaoController::class, 'fechamentos']);
+            Route::post('depreciacao/tabela-padrao', [DepreciacaoOperacaoController::class, 'tabelaPadrao']);
+            Route::get('bens/{bem}/cronograma-depreciacao', [DepreciacaoOperacaoController::class, 'cronograma']);
             Route::apiResource('regras-depreciacao', RegraDepreciacaoTipoBemController::class)
                 ->parameters(['regras-depreciacao' => 'regra_depreciacao']);
             Route::apiResource('parametros-depreciacao', ParametroDepreciacaoController::class)
