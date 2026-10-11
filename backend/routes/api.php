@@ -34,6 +34,7 @@ use App\Domain\Organization\Controllers\UnidadeAdministrativaController;
 use App\Domain\Reports\Controllers\ExportacaoRelatoriosController;
 use App\Domain\Reports\Controllers\RelatorioPatrimonialController;
 use App\Domain\Depreciation\Controllers\DepreciacaoOperacaoController;
+use App\Domain\Inventory\Controllers\ContagemInventarioController;
 use App\Domain\Notifications\Controllers\PushController;
 use Illuminate\Support\Facades\Route;
 
@@ -144,6 +145,11 @@ Route::prefix('v1')->group(function (): void {
         });
 
         Route::middleware(['empresa.context', 'role.permission:inventarios'])->group(function (): void {
+            // Contagem em campo: leitura de etiqueta, fila offline e
+            // conciliacao ao final.
+            Route::get('inventarios/{inventario}/contagem', [ContagemInventarioController::class, 'show']);
+            Route::post('inventarios/{inventario}/leituras', [ContagemInventarioController::class, 'registrarLeituras']);
+            Route::post('inventarios/{inventario}/finalizar', [ContagemInventarioController::class, 'finalizar']);
             Route::apiResource('inventarios', InventarioController::class)
                 ->parameters(['inventarios' => 'inventario']);
             Route::apiResource('inventario-itens', InventarioItemController::class)

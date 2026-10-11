@@ -343,6 +343,27 @@ export const AJUDA_SECOES: AjudaSecao[] = [
     icone: 'clipboard',
     topicos: [
       {
+        id: 'inventario-contar',
+        titulo: 'Como fazer a contagem do inventário em campo',
+        objetivo: 'Percorrer os locais com o celular, ler as etiquetas e fechar o inventário com as divergências apontadas.',
+        open: { href: '/dashboard/modulos/inventarios', label: 'Abrir Inventários' },
+        passos: [
+          { onde: 'Menu Inventário › Inventários', acao: 'Crie o inventário (nome, filial e data de início). O sistema já monta a lista do que tem de ser contado — só os bens daquela filial, sem os já baixados.' },
+          { onde: 'Coluna Contagem', acao: 'Clique em Contar em campo. A tela é feita para o celular.' },
+          { onde: 'Onde você está contando', acao: 'Escolha o local antes de começar a ler as etiquetas daquela sala.', porque: 'É assim que o sistema descobre o bem que está fora do lugar — o achado mais comum de um inventário.' },
+          { onde: 'Ler etiqueta', acao: 'Toque e aponte a câmera. Pode ler uma etiqueta atrás da outra, sem fechar a câmera. Cada leitura responde na hora: contado, já contado, em local diferente ou não identificado.' },
+          { onde: 'Digitar o número', acao: 'Etiqueta rasgada ou ilegível? Digite o número da plaqueta (ou o tombo) no campo abaixo do botão.' },
+          { onde: 'Finalizar contagem e conciliar', acao: 'Ao terminar, finalize. O sistema gera a conciliação: total no sistema, total encontrado e as divergências.', porque: 'Os bens não lidos entram como Não encontrado, e os lidos fora do lugar entram como Local diferente.' },
+        ],
+        dicas: [
+          'Sem sinal no almoxarifado? Continue contando. As leituras ficam guardadas no aparelho e sobem sozinhas quando a rede volta — a tela mostra quantas estão aguardando.',
+          'Pode fechar o navegador no meio da contagem: a fila local sobrevive e é enviada no próximo acesso.',
+          'Ler a mesma etiqueta duas vezes não conta duas vezes: o sistema avisa que aquele bem já tinha sido contado.',
+          'Etiqueta que não corresponde a nenhum bem também fica registrada — é o que revela o bem que existe fisicamente e não está no cadastro.',
+        ],
+        palavras: ['inventário', 'inventario', 'contagem', 'contar', 'campo', 'coletor', 'etiqueta', 'offline', 'sem rede', 'conciliação', 'divergência'],
+      },
+      {
         id: 'inventario-fluxo',
         titulo: 'Fluxo completo de um inventário',
         objetivo: 'Entender as etapas: abrir o inventário, contar em campo, registrar divergências, conciliar e auditar.',

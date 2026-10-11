@@ -751,6 +751,17 @@ export const moduleCrudConfig: Record<string, ModuleConfig> = {
         label: 'Status',
         render: (item) => String(item.status ?? 'Sem status'),
       },
+      {
+        label: 'Contagem',
+        render: (item) => (
+          <a
+            href={`/dashboard/inventario/${item.id}/contagem`}
+            className="inline-flex rounded-full bg-[var(--accent)] px-3 py-1 text-[11px] font-semibold text-white transition hover:opacity-90"
+          >
+            {String(item.status ?? '') === 'FINALIZADO' ? 'Ver contagem' : 'Contar em campo'}
+          </a>
+        ),
+      },
     ],
   },
   'transferencias-bens': {

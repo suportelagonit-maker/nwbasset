@@ -14,6 +14,11 @@ class InventarioItem extends Model
         'inventario_id',
         'bem_patrimonial_id',
         'localizado',
+        'local_encontrado_id',
+        'responsavel_encontrado_id',
+        'contado_em',
+        'contado_por',
+        'codigo_lido',
         'data_verificacao',
         'observacoes',
     ];
@@ -22,6 +27,7 @@ class InventarioItem extends Model
     {
         return [
             'localizado' => 'boolean',
+            'contado_em' => 'datetime',
             'data_verificacao' => 'date',
         ];
     }
@@ -34,5 +40,10 @@ class InventarioItem extends Model
     public function bemPatrimonial(): BelongsTo
     {
         return $this->belongsTo(BemPatrimonial::class, 'bem_patrimonial_id');
+    }
+
+    public function localEncontrado(): BelongsTo
+    {
+        return $this->belongsTo(\App\Domain\Organization\Models\Local::class, 'local_encontrado_id');
     }
 }

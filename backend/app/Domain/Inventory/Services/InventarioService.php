@@ -94,10 +94,22 @@ class InventarioService
         });
     }
 
+    /**
+     * Monta a lista do que tem de ser contado.
+     *
+     * Quando o inventario e de uma filial, so os bens dela entram: contar a
+     * filial A e ver os bens da filial B aparecendo como "nao encontrados"
+     * transformaria toda conciliacao em uma lista de falsas divergencias.
+     *
+     * Bem ja baixado tambem fica de fora — ele nao existe mais para ser
+     * encontrado.
+     */
     protected function carregarBensDaEmpresa(Inventario $inventario): void
     {
         BemPatrimonial::query()
             ->where('empresa_id', $inventario->empresa_id)
+            ->when($inventario->filial_id, fn ($consulta) => $consulta->where('filial_id', $inventario->filial_id))
+            ->where(fn ($consulta) => $consulta->whereNull('status_bem')->orWhere('status_bem', '!=', 'baixado'))
             ->orderBy('numero_tombo')
             ->get()
             ->each(function (BemPatrimonial $bem) use ($inventario): void {
@@ -165,6 +177,26 @@ class InventarioService
                         'bem_patrimonial_id' => $bem->id,
                         'tipo_divergencia' => TipoDivergenciaInventarioEnum::NAO_ENCONTRADO->value,
                         'descricao' => 'Bem nao localizado durante o inventario.',
+                    ]);
+                }
+
+                // Achado mais comum de um inventario: o bem existe, mas nao
+                // esta onde o cadastro diz.
+                if (
+                    $item->localizado
+                    && $item->local_encontrado_id
+                    && $bem->local_id
+                    && (int) $item->local_encontrado_id !== (int) $bem->local_id
+                ) {
+                    DivergenciaInventario::query()->create([
+                        'inventario_id' => $inventario->id,
+                        'bem_patrimonial_id' => $bem->id,
+                        'tipo_divergencia' => TipoDivergenciaInventarioEnum::LOCAL_DIFERENTE->value,
+                        'descricao' => sprintf(
+                            'Encontrado em local diferente do cadastro (cadastrado em %s, encontrado em %s).',
+                            $bem->local?->nome ?? 'local nao informado',
+                            $item->localEncontrado?->nome ?? 'local nao informado',
+                        ),
                     ]);
                 }
 
