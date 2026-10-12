@@ -36,11 +36,8 @@ type LookupPayload = {
       id: number | null;
       nome: string | null;
     };
-    responsavel: {
-      id: number | null;
-      nome: string | null;
-      matricula: string | null;
-    };
+    // O responsavel nao vem na consulta publica (dado pessoal); fica na
+    // area autenticada.
   };
 };
 
@@ -135,7 +132,6 @@ export default async function PatrimonioConsultaPage({
                   <p><span className="font-semibold">Empresa:</span> {payload.data.empresa.nome_fantasia ?? 'Não informada'}</p>
                   <p><span className="font-semibold">Filial:</span> {payload.data.filial.nome ?? 'Não informada'}</p>
                   <p><span className="font-semibold">Local:</span> {payload.data.local.nome ?? 'Não informado'}</p>
-                  <p><span className="font-semibold">Responsável:</span> {payload.data.responsavel.nome ?? 'Não informado'}</p>
                 </div>
               </div>
               <div className="rounded-[26px] border border-[var(--line)] bg-white p-6">

@@ -89,6 +89,61 @@ class MultiCompanyIsolationTest extends TestCase
         $response->assertForbidden();
     }
 
+    public function test_user_in_master_named_company_cannot_cross_tenants(): void
+    {
+        // A empresa do usuario se chama exatamente "NWB Asset" — o nome que
+        // antes dava acesso a todas as empresas. Agora nao da mais.
+        $mestra = $this->createEmpresaStack('A');
+        $mestra['empresa']->update(['nome_fantasia' => 'NWB Asset']);
+        $outra = $this->createEmpresaStack('B');
+
+        $user = $this->createUserForEmpresa($mestra['empresa']->fresh());
+        $this->actingAsComTermo($user);
+
+        // A propria empresa (mestra): continua enxergando.
+        $this->withHeader('X-Empresa-Id', (string) $mestra['empresa']->id)
+            ->getJson('/api/v1/bens')
+            ->assertOk();
+
+        // A empresa de outro cliente: agora e barrado.
+        $this->withHeader('X-Empresa-Id', (string) $outra['empresa']->id)
+            ->getJson('/api/v1/bens')
+            ->assertForbidden();
+
+        // E o bem do outro cliente, por ID, nao aparece.
+        $this->withHeader('X-Empresa-Id', (string) $mestra['empresa']->id)
+            ->getJson("/api/v1/bens/{$outra['bem']->id}")
+            ->assertNotFound();
+    }
+
+    public function test_super_admin_still_sees_every_company(): void
+    {
+        $stackA = $this->createEmpresaStack('A');
+        $stackB = $this->createEmpresaStack('B');
+
+        $this->grantPermissions(RoleEnum::SUPER_ADMIN->value, ['bens.visualizar']);
+        $super = Usuario::query()->create([
+            'empresa_id' => $stackA['empresa']->id,
+            'nome' => 'Super do fornecedor',
+            'email' => 'super@teste.local',
+            'password' => 'secret123',
+            'role' => RoleEnum::SUPER_ADMIN->value,
+            'ativo' => true,
+        ]);
+        $super->empresas()->attach($stackA['empresa']->id, [
+            'perfil' => RoleEnum::SUPER_ADMIN->value,
+            'created_at' => now(),
+        ]);
+
+        $this->actingAsComTermo($super);
+
+        // Supervisao do fornecedor: alcanca qualquer empresa, de proposito.
+        $this->withHeader('X-Empresa-Id', (string) $stackB['empresa']->id)
+            ->getJson('/api/v1/bens')
+            ->assertOk()
+            ->assertJsonPath('data.0.id', $stackB['bem']->id);
+    }
+
     private function createEmpresaStack(string $suffix): array
     {
         $empresa = Empresa::query()->create([

@@ -237,50 +237,23 @@ class Usuario extends Authenticatable
             : RoleEnum::OPERADOR_INVENTARIO->value;
     }
 
+    /**
+     * Quem pode agir fora da propria empresa.
+     *
+     * So o SUPER_ADMIN — o papel de supervisao do fornecedor. Qualquer
+     * outro perfil fica preso as empresas a que esta vinculado, mesmo que
+     * uma delas seja a "empresa mestra".
+     *
+     * Antes havia um atalho por NOME de empresa (MASTER_COMPANY_NAME, com
+     * padrao "NWB Asset"): quem pertencesse a uma empresa com esse nome
+     * enxergava TODAS as outras, independente do perfil. Como o
+     * provisionamento do NWB ID joga todo usuario novo na empresa padrao
+     * (id 1, "NWB Asset"), na pratica qualquer auditor recem-criado lia — e
+     * um gestor escrevia — os dados de qualquer cliente. Era uma quebra de
+     * isolamento multiempresa; o atalho foi removido.
+     */
     private function canAccessAllEmpresas(): bool
     {
-        if ($this->isSuperAdmin()) {
-            return true;
-        }
-
-        return $this->belongsToMasterCompany();
-    }
-
-    private function belongsToMasterCompany(): bool
-    {
-        $masterCompanyName = $this->normalizeCompanyName(env('MASTER_COMPANY_NAME', 'NWB Asset'));
-
-        if ($this->relationLoaded('empresa') && $this->empresa !== null) {
-            return $this->normalizeCompanyName($this->empresa->nome_fantasia) === $masterCompanyName;
-        }
-
-        if ($this->empresa_id !== null) {
-            $empresaNome = $this->relationLoaded('empresa')
-                ? $this->empresa?->nome_fantasia
-                : $this->empresa()->value('nome_fantasia');
-
-            if ($this->normalizeCompanyName($empresaNome) === $masterCompanyName) {
-                return true;
-            }
-        }
-
-        if ($this->relationLoaded('empresas')) {
-            return $this->empresas->contains(function (Empresa $empresa) use ($masterCompanyName): bool {
-                return $this->normalizeCompanyName($empresa->nome_fantasia) === $masterCompanyName;
-            });
-        }
-
-        return $this->empresas()
-            ->whereRaw('LOWER(REGEXP_REPLACE(nome_fantasia, \'[^a-zA-Z0-9]+\', \'\', \'g\')) = ?', [$masterCompanyName])
-            ->exists();
-    }
-
-    private function normalizeCompanyName(?string $value): string
-    {
-        $value = (string) ($value ?? '');
-        $value = iconv('UTF-8', 'ASCII//TRANSLIT//IGNORE', $value) ?: $value;
-        $value = preg_replace('/[^a-zA-Z0-9]+/', '', $value) ?? '';
-
-        return strtolower($value);
+        return $this->isSuperAdmin();
     }
 }

@@ -47,7 +47,10 @@ return [
     |
     */
 
-    'expiration' => null,
+    // Token de acesso expira (em minutos). Padrao: 12 horas — cabe um dia
+    // de trabalho de campo (contagem de inventario) e evita que um token
+    // vazado valha para sempre. Depois disso, entra-se de novo pelo NWB ID.
+    'expiration' => (int) env('SANCTUM_TOKEN_TTL', 720),
 
     /*
     |--------------------------------------------------------------------------

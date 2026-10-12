@@ -56,5 +56,9 @@ class AppServiceProvider extends ServiceProvider
             Limit::perMinute(20)->by('login-ip:'.$request->ip()),
             Limit::perMinute(5)->by('login-conta:'.strtolower((string) $request->input('email')).'|'.$request->ip()),
         ]);
+
+        // Consulta publica de plaqueta: anonima e com codigos sequenciais.
+        // O limite por IP evita a raspagem do inventario inteiro de fora.
+        RateLimiter::for('consulta-publica', static fn (Request $request): Limit => Limit::perMinute(20)->by('consulta:'.$request->ip()));
     }
 }

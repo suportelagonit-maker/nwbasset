@@ -246,7 +246,7 @@ abaixo na ordem em que travam o go-live.
 
 ### Recomendado antes ou logo após
 
-- Tokens Sanctum não expiram (`expiration => null`): definir p.ex. 12 h ou revogar no logout de todos os dispositivos.
+- ~~Tokens Sanctum não expiram~~ — **resolvido** (pentest 11/10): expiram em 12 h (`SANCTUM_TOKEN_TTL`). Ver `docs/SEGURANCA.md`.
 - ~~Ícones PWA 192/512~~ — **resolvido**: ícones 192/512 (normais e maskable) e apple-touch-icon publicados; o sistema é instalável como aplicativo e lê etiquetas pela câmera (ver `docs/PWA-MOBILE.md`).
 - Monitorar `docker stats`: a VPS tem ≈5 GB livres com os outros sistemas rodando; o conjunto do NWB Asset consome ~600 MB.
 - CentOS 7 ELS: planejar migração da VPS para um SO suportado no médio prazo (fora do escopo do NWB Asset).

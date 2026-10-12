@@ -60,11 +60,11 @@ class PublicPlaquetaLookupController extends Controller
                     'id' => $bem->local?->id,
                     'nome' => $bem->local?->nome,
                 ],
-                'responsavel' => [
-                    'id' => $bem->responsavel?->id,
-                    'nome' => $bem->responsavel?->nome,
-                    'matricula' => $bem->responsavel?->matricula,
-                ],
+                // O responsavel NAO entra na consulta publica: nome e
+                // matricula sao dados pessoais, e esta rota e anonima e com
+                // codigos sequenciais (enumeravel). Expor isso permitiria
+                // raspar os responsaveis de todos os bens de fora. Quem
+                // precisa do responsavel usa a area autenticada.
             ],
         ]);
     }

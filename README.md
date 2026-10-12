@@ -109,3 +109,4 @@ o domínio de onde a aplicação é servida precisa estar registrado lá, senão
 - `docs/AVISOS-PUSH.md` — avisos de acesso por push (chaves VAPID, assuntos e regras)
 - `docs/DEPRECIACAO.md` — motor de depreciação: competência mensal, bases fiscal e societária, tabela da Receita
 - `docs/INVENTARIO-CONTAGEM.md` — contagem em campo pelo celular, com fila offline e conciliação
+- `docs/SEGURANCA.md` — pentest de 11/10/2026 e correções (isolamento, consulta pública, dependências, endurecimento)

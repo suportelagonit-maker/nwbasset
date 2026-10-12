@@ -46,7 +46,7 @@ Route::get('/v1/status', function () {
 });
 
 Route::prefix('v1')->group(function (): void {
-    Route::get('public/plaquetas/lookup', [PublicPlaquetaLookupController::class, 'show']);
+    Route::get('public/plaquetas/lookup', [PublicPlaquetaLookupController::class, 'show'])->middleware('throttle:consulta-publica');
     Route::post('auth/login', [AuthController::class, 'login'])->middleware('throttle:login');
     Route::get('auth/nwbid/config', [AuthController::class, 'nwbidConfig']);
     Route::post('auth/nwbid', [AuthController::class, 'loginNwbId'])->middleware('throttle:login');
