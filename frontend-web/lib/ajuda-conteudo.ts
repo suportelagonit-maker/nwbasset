@@ -524,6 +524,24 @@ export const AJUDA_SECOES: AjudaSecao[] = [
         palavras: ['memória de cálculo', 'memoria', 'conferir', 'cronograma', 'parcela', 'auditoria', 'valor contábil', 'acumulado'],
       },
       {
+        id: 'depreciacao-eventos-valor',
+        titulo: 'Como registrar benfeitoria, reavaliação, impairment ou baixa parcial',
+        objetivo: 'Mudar o valor de um bem ao longo da vida e deixar a depreciação recalcular sozinha a partir do mês do evento.',
+        open: { href: '/dashboard/modulos/bens', label: 'Abrir Bens Patrimoniais' },
+        passos: [
+          { onde: 'Lista de bens › Memória de cálculo', acao: 'Abra a memória do bem e role até o bloco Eventos de valor.' },
+          { onde: 'Registrar evento', acao: 'Escolha o tipo: Acréscimo/benfeitoria (quanto foi acrescido), Reavaliação (o novo valor contábil), Impairment (quanto reduzir) ou Baixa parcial (quanto do valor sai). Informe a competência e o valor.', porque: 'A depreciação é recalculada do mês do evento para a frente, sem mexer no que já passou (CPC 27).' },
+          { onde: 'Nova vida útil (opcional)', acao: 'Na benfeitoria ou reavaliação, se a vida útil mudou, informe os novos anos; em branco, mantém o tempo que faltava.' },
+          { onde: 'Conferir', acao: 'A memória acima recalcula na hora — a quota do mês do evento muda.' },
+        ],
+        dicas: [
+          'Para retirar o bem inteiro do patrimônio, use a Baixa (total), não a baixa parcial.',
+          'Removeu um evento por engano? A depreciação volta ao cálculo anterior assim que ele é excluído.',
+          'Bem com evento de valor passa a depreciar o restante em linha reta — é o tratamento contábil para mudança de estimativa.',
+        ],
+        palavras: ['reavaliação', 'reavaliacao', 'impairment', 'benfeitoria', 'acréscimo', 'acrescimo', 'baixa parcial', 'cpc 27', 'cpc 01', 'evento de valor'],
+      },
+      {
         id: 'depreciacao-regras',
         titulo: 'Como configurar as regras de depreciação',
         objetivo: 'Definir, por tipo de bem, o método, a taxa anual, a vida útil e o valor residual usados nos cálculos.',

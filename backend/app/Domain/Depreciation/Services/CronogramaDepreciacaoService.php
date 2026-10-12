@@ -4,9 +4,12 @@ namespace App\Domain\Depreciation\Services;
 
 use App\Domain\AssetRegistry\Models\BemPatrimonial;
 use App\Domain\Depreciation\Enums\MetodoDepreciacaoRegraEnum;
+use App\Domain\Depreciation\Enums\TipoEventoValorEnum;
+use App\Domain\Depreciation\Models\EventoValorBem;
 use App\Domain\Depreciation\Models\ProducaoBem;
 use App\Domain\Depreciation\Support\ParcelaDepreciacao;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Schema;
 
 /**
  * Cronograma de depreciacao de um bem: a memoria de calculo, mes a mes.
@@ -116,16 +119,33 @@ class CronogramaDepreciacaoService
             ];
         }
 
-        $parcelas = $this->montarParcelas(
-            $bem,
-            $regra,
-            $inicio,
-            $fim,
-            $valorAquisicao,
-            $valorResidual,
-            $valorDepreciavel,
-            $mesesVidaUtil,
-        );
+        // Eventos de valor (acrescimo, reavaliacao, impairment, baixa
+        // parcial) mudam a base ao longo da vida. Quando existem, o
+        // cronograma e refeito mes a mes, prospectivamente (CPC 27); sem
+        // eventos, segue o caminho normal — que preserva soma dos digitos e
+        // unidades produzidas exatamente como antes.
+        $eventos = $this->eventosDoBem($bem);
+
+        $parcelas = $eventos === []
+            ? $this->montarParcelas(
+                $bem,
+                $regra,
+                $inicio,
+                $fim,
+                $valorAquisicao,
+                $valorResidual,
+                $valorDepreciavel,
+                $mesesVidaUtil,
+            )
+            : $this->montarParcelasComEventos(
+                $regra,
+                $inicio,
+                $fim,
+                $valorAquisicao,
+                $valorResidual,
+                $mesesVidaUtil,
+                $eventos,
+            );
 
         // O recorte vem por ultimo: o cronograma completo e que define a
         // quota de cada mes e quem recebe a sobra do arredondamento.
@@ -243,6 +263,175 @@ class CronogramaDepreciacaoService
         }
 
         return $parcelas;
+    }
+
+    /**
+     * Eventos de valor do bem, por competencia (dia 1 do mes).
+     *
+     * @return array<string, array<int, array{tipo: string, valor: float, nova_vida_util_meses: ?int}>>
+     */
+    private function eventosDoBem(BemPatrimonial $bem): array
+    {
+        if (! Schema::hasTable('eventos_valor_bens')) {
+            return [];
+        }
+
+        $agrupados = [];
+
+        $eventos = \App\Domain\Depreciation\Models\EventoValorBem::query()
+            ->where('bem_patrimonial_id', $bem->id)
+            ->orderBy('competencia')
+            ->orderBy('id')
+            ->get();
+
+        foreach ($eventos as $evento) {
+            $chave = $this->competenciaDe((string) $evento->competencia)->toDateString();
+            $agrupados[$chave][] = [
+                'tipo' => (string) $evento->tipo,
+                'valor' => (float) $evento->valor,
+                'nova_vida_util_meses' => $evento->nova_vida_util_meses !== null ? (int) $evento->nova_vida_util_meses : null,
+            ];
+        }
+
+        return $agrupados;
+    }
+
+    /**
+     * Cronograma mes a mes com eventos de valor.
+     *
+     * Trabalha com o estado corrente do bem — valor contabil, residual e
+     * meses que faltam — e, a cada competencia, aplica os eventos daquele
+     * mes antes de calcular a quota. A quota do mes e sempre o que falta
+     * depreciar dividido pelos meses restantes (linha reta prospectiva): e o
+     * tratamento do CPC 27 para mudancas de estimativa, aplicado dali para
+     * frente sem mexer no passado. Bem com evento deprecia o restante em
+     * linha reta, mesmo que a regra fosse outro metodo — nao ha tratamento
+     * padrao para misturar soma dos digitos com reavaliacao no meio da vida.
+     *
+     * @param  array<string, mixed>  $regra
+     * @param  array<string, array<int, array{tipo: string, valor: float, nova_vida_util_meses: ?int}>>  $eventos
+     * @return array<int, ParcelaDepreciacao>
+     */
+    private function montarParcelasComEventos(
+        array $regra,
+        Carbon $inicio,
+        Carbon $fim,
+        float $valorAquisicao,
+        float $valorResidual,
+        int $mesesVidaUtil,
+        array $eventos,
+    ): array {
+        $coeficiente = max(1.0, (float) ($regra['coeficiente_aceleracao'] ?? 1));
+
+        // Eventos podem estender a vida: o fim e recalculado dentro do laco.
+        $fimLimite = $fim->copy();
+        foreach ($eventos as $chave => $_) {
+            $competenciaEvento = $this->competenciaDe($chave);
+            if ($competenciaEvento->gt($fimLimite)) {
+                $fimLimite = $competenciaEvento->copy();
+            }
+        }
+
+        $valorContabil = $valorAquisicao;
+        $residual = $valorResidual;
+        $mesesRestantes = $mesesVidaUtil;
+        $acumulado = 0.0;
+        $competencia = $inicio->copy();
+        $parcelas = [];
+        $guarda = 0;
+
+        while ($competencia->lte($fimLimite) && $guarda < 1200) {
+            $guarda++;
+
+            // 1. Eventos deste mes mudam o estado antes da quota.
+            foreach ($eventos[$competencia->toDateString()] ?? [] as $evento) {
+                [$valorContabil, $residual, $mesesRestantes] = $this->aplicarEvento(
+                    $evento,
+                    $valorContabil,
+                    $residual,
+                    $mesesRestantes,
+                );
+            }
+
+            // 2. Quota do mes: o que falta depreciar sobre os meses restantes.
+            $aDepreciar = round($valorContabil - $residual, 2);
+            $quota = 0.0;
+
+            if ($aDepreciar > 0 && $mesesRestantes > 0) {
+                $quota = round(($aDepreciar / $mesesRestantes) * $coeficiente, 2);
+
+                if ($quota > $aDepreciar) {
+                    $quota = $aDepreciar;
+                }
+            }
+
+            if ($quota > 0) {
+                $valorContabil = round($valorContabil - $quota, 2);
+                $acumulado = round($acumulado + $quota, 2);
+                $parcelas[] = new ParcelaDepreciacao(
+                    competencia: $competencia->copy(),
+                    valorDepreciacao: $quota,
+                    acumulado: $acumulado,
+                    valorContabil: $valorContabil,
+                    mesesDepreciados: count($parcelas) + 1,
+                );
+            }
+
+            if ($mesesRestantes > 0) {
+                $mesesRestantes--;
+            }
+
+            $competencia->addMonth();
+        }
+
+        return $parcelas;
+    }
+
+    /**
+     * Aplica um evento de valor ao estado corrente do bem.
+     *
+     * @param  array{tipo: string, valor: float, nova_vida_util_meses: ?int}  $evento
+     * @return array{0: float, 1: float, 2: int}  [valorContabil, residual, mesesRestantes]
+     */
+    private function aplicarEvento(array $evento, float $valorContabil, float $residual, int $mesesRestantes): array
+    {
+        $valor = round((float) $evento['valor'], 2);
+        $novaVida = $evento['nova_vida_util_meses'];
+
+        switch ($evento['tipo']) {
+            case TipoEventoValorEnum::ACRESCIMO->value:
+                // A benfeitoria entra no valor e deprecia no tempo que falta
+                // (ou na vida nova, se informada).
+                $valorContabil = round($valorContabil + $valor, 2);
+                break;
+
+            case TipoEventoValorEnum::REAVALIACAO->value:
+                // O bem passa a valer o novo valor informado.
+                $valorContabil = $valor;
+                break;
+
+            case TipoEventoValorEnum::IMPAIRMENT->value:
+                // Perda ao valor recuperavel: reduz o contabil, nunca abaixo
+                // do residual.
+                $valorContabil = round(max($residual, $valorContabil - $valor), 2);
+                break;
+
+            case TipoEventoValorEnum::BAIXA_PARCIAL->value:
+                // Parte do bem sai: o residual encolhe na mesma proporcao.
+                $fracaoRestante = $valorContabil > 0 ? max(0.0, ($valorContabil - $valor) / $valorContabil) : 0.0;
+                $residual = round($residual * $fracaoRestante, 2);
+                $valorContabil = round(max(0.0, $valorContabil - $valor), 2);
+                break;
+        }
+
+        if ($novaVida !== null && $novaVida > 0) {
+            $mesesRestantes = $novaVida;
+        } elseif ($mesesRestantes <= 0) {
+            // Evento depois do fim da vida: da um mes para absorver o ajuste.
+            $mesesRestantes = 1;
+        }
+
+        return [$valorContabil, $residual, $mesesRestantes];
     }
 
     /** @return array<int, float> */

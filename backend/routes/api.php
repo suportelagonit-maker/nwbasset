@@ -35,6 +35,7 @@ use App\Domain\Reports\Controllers\ExportacaoRelatoriosController;
 use App\Domain\Reports\Controllers\RelatorioPatrimonialController;
 use App\Domain\Audit\Controllers\TrilhaAuditoriaController;
 use App\Domain\Depreciation\Controllers\DepreciacaoOperacaoController;
+use App\Domain\Depreciation\Controllers\EventoValorBemController;
 use App\Domain\Inventory\Controllers\ContagemInventarioController;
 use App\Domain\Notifications\Controllers\PushController;
 use Illuminate\Support\Facades\Route;
@@ -132,6 +133,10 @@ Route::prefix('v1')->group(function (): void {
             Route::get('depreciacao/fechamentos', [DepreciacaoOperacaoController::class, 'fechamentos']);
             Route::post('depreciacao/tabela-padrao', [DepreciacaoOperacaoController::class, 'tabelaPadrao']);
             Route::get('bens/{bem}/cronograma-depreciacao', [DepreciacaoOperacaoController::class, 'cronograma']);
+            // Eventos de valor do bem (acrescimo, reavaliacao, impairment, baixa parcial).
+            Route::get('bens/{bem}/eventos-valor', [EventoValorBemController::class, 'index']);
+            Route::post('bens/{bem}/eventos-valor', [EventoValorBemController::class, 'store']);
+            Route::delete('bens/{bem}/eventos-valor/{evento}', [EventoValorBemController::class, 'destroy']);
             Route::apiResource('regras-depreciacao', RegraDepreciacaoTipoBemController::class)
                 ->parameters(['regras-depreciacao' => 'regra_depreciacao']);
             Route::apiResource('parametros-depreciacao', ParametroDepreciacaoController::class)

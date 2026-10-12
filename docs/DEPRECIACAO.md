@@ -153,17 +153,46 @@ Também foram corrigidos nesta versão:
 - **Tipo sem regra travava o cadastro** com "Vida útil não informada".
 - **A vida útil do bem era ignorada** quando existia regra.
 
-## 8. Limites conhecidos
+## 8. Eventos de valor (CPC 27 / CPC 01)
+
+O valor de um bem não só cai em linha reta: ele recebe benfeitoria, é
+reavaliado, sofre impairment ou tem baixa parcial. Cada um é um **evento de
+valor** (`eventos_valor_bens`) com uma competência, e o cronograma recalcula
+dali para frente — **prospectivamente**, como manda o CPC 27 (não mexe no
+passado já depreciado).
+
+| Evento | `valor` significa | Efeito |
+|---|---|---|
+| Acréscimo / benfeitoria | quanto foi acrescido | entra no valor contábil e deprecia no tempo restante |
+| Reavaliação | o **novo** valor contábil | o bem passa a valer isso; pode redefinir a vida útil |
+| Impairment | quanto reduzir | baixa o contábil ao valor recuperável (nunca abaixo do residual) |
+| Baixa parcial | quanto do contábil sai | reduz o valor e o residual na mesma proporção |
+
+A quota de cada mês passa a ser **o que falta depreciar sobre os meses que
+restam**. Para bem com evento, o restante deprecia em **linha reta** mesmo
+que a regra fosse outro método — não há tratamento padrão para misturar soma
+dos dígitos com reavaliação no meio da vida. Bem **sem** evento segue o
+cálculo normal, inclusive soma dos dígitos e unidades produzidas, intacto.
+
+Peças: `.../Models/EventoValorBem.php`, `.../Enums/TipoEventoValorEnum.php`,
+`.../Services/EventoValorBemService.php`, integração em
+`CronogramaDepreciacaoService::montarParcelasComEventos()`. API:
+`GET|POST /api/v1/bens/{bem}/eventos-valor`, `DELETE .../{evento}`. Tela: na
+memória de cálculo do bem. Testes: `EventosValorDepreciacaoTest` (motor) e
+`EventosValorApiTest`.
+
+## 9. Limites conhecidos
 
 Fora do escopo desta entrega, em ordem de importância para quem vende o
 sistema:
 
 - **CIAP / Bloco G do EFD ICMS/IPI**, créditos de PIS/COFINS, ECD e ECF.
-- **Reavaliação, impairment (CPC 01), acréscimos/benfeitorias e baixa
-  parcial** — eventos que mudam a base depreciável.
+- ~~Reavaliação, impairment, acréscimos/benfeitorias e baixa parcial~~ —
+  **resolvido**: ver seção 9 (eventos de valor).
 - **Integração contábil**: os campos `conta_contabil` e `centro_custo` já
   existem no bem, mas ainda não há geração de lançamento nem exportação
   contábil por competência.
 - **Amortização de intangível** e benfeitoria em imóvel de terceiros.
-- A tela de regras ainda não expõe `coeficiente_aceleracao` nem
-  `unidades_vida_util` — hoje se ajusta pela API.
+- ~~A tela de regras não expõe aceleração nem unidades~~ — **resolvido**:
+  o modal de regra tem Método de cálculo, Depreciação acelerada (turnos) e
+  produção total prevista.
