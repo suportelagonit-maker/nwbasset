@@ -73,6 +73,7 @@ export default function ContagemInventario({ inventarioId }: { inventarioId: num
   const [responsavelAtual, setResponsavelAtual] = useState<string>('');
   const [paginacao, setPaginacao] = useState<Paginacao | null>(null);
   const [paginaPendentes, setPaginaPendentes] = useState(1);
+  const [buscaPendentes, setBuscaPendentes] = useState('');
   const [escopo, setEscopo] = useState<string[]>([]);
   const [tipo, setTipo] = useState('COMPLETO');
   const [nfcLigado, setNfcLigado] = useState(false);
@@ -100,7 +101,7 @@ export default function ContagemInventario({ inventarioId }: { inventarioId: num
 
   const carregar = useCallback(async () => {
     try {
-      const resposta = await fetch(`/api/admin/inventarios/${inventarioId}/contagem?pagina=${paginaPendentes}&por_pagina=50`, {
+      const resposta = await fetch(`/api/admin/inventarios/${inventarioId}/contagem?pagina=${paginaPendentes}&por_pagina=50&busca=${encodeURIComponent(buscaPendentes)}`, {
         headers: { Accept: 'application/json' },
         cache: 'no-store',
       });
@@ -132,7 +133,7 @@ export default function ContagemInventario({ inventarioId }: { inventarioId: num
     } catch (falha) {
       setErro(falha instanceof Error ? falha.message : 'Não foi possível carregar a contagem.');
     }
-  }, [inventarioId, paginaPendentes]);
+  }, [inventarioId, paginaPendentes, buscaPendentes]);
 
   const enviarFila = useCallback(async () => {
     // A trava e um ref de proposito: com leituras em sequencia rapida, o
@@ -579,11 +580,23 @@ export default function ContagemInventario({ inventarioId }: { inventarioId: num
         </section>
       ) : null}
 
-      {!finalizado && pendentes.length > 0 ? (
+      {!finalizado && (pendentes.length > 0 || buscaPendentes) ? (
         <section className="panel-surface rounded-[22px] p-4 md:rounded-[28px] md:p-6">
           <p className="text-xs font-semibold uppercase tracking-[0.16em] text-[var(--muted)]">
             Ainda não contados ({paginacao?.total ?? pendentes.length})
           </p>
+          <input
+            value={buscaPendentes}
+            onChange={(evento) => {
+              setPaginaPendentes(1);
+              setBuscaPendentes(evento.target.value);
+            }}
+            placeholder="Buscar por tombo ou descrição"
+            className="admin-input mt-3"
+          />
+          {pendentes.length === 0 ? (
+            <p className="mt-3 text-[13px] text-[var(--muted)]">Nenhum pendente corresponde à busca.</p>
+          ) : null}
           <div className="mt-3 grid gap-2">
             {pendentes.map((item) => (
               <div key={item.id} className="rounded-2xl border border-[var(--line)] bg-[#fafafa] px-4 py-3">

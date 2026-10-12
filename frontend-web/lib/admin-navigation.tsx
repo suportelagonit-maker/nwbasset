@@ -204,6 +204,14 @@ export const adminNavigation: AdminNavSection[] = [
         endpoints: ['/api/v1/auditorias'],
       },
       {
+        key: 'trilha-auditoria',
+        label: 'Trilha de eventos',
+        href: '/dashboard/auditoria',
+        icon: 'audit',
+        description: 'Linha do tempo de acessos e operações no patrimônio.',
+        endpoints: ['/api/v1/trilha-auditoria'],
+      },
+      {
         key: 'usuarios',
         label: 'Usuários',
         href: '/users',
@@ -481,7 +489,7 @@ export const adminNavGroups: AdminNavGroup[] = [
     itemKeys: ['responsaveis', 'transferencias-bens', 'baixas-bens', 'historico-localizacao-bens'],
   },
   { key: 'relatorios', label: 'Relatórios', icon: 'report', itemKeys: ['relatorios', 'exportacoes'] },
-  { key: 'administracao', label: 'Administração', icon: 'users', itemKeys: ['usuarios', 'permissoes', 'auditorias'] },
+  { key: 'administracao', label: 'Administração', icon: 'users', itemKeys: ['usuarios', 'permissoes', 'auditorias', 'trilha-auditoria'] },
 ];
 
 export function getAdminNavGroup(key: AdminNavGroupKey): AdminNavGroup {

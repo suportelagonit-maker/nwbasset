@@ -120,6 +120,52 @@ export default function DepreciacaoRegraModal({
           </label>
 
           <label className="admin-field">
+            Método de cálculo
+            <select
+              value={form.metodoDepreciacao}
+              onChange={(event) => onChange({ ...form, metodoDepreciacao: event.target.value })}
+              className="admin-input"
+              disabled={saving}
+            >
+              <option value="linha_reta">Linha reta (quota constante)</option>
+              <option value="soma_digitos">Soma dos dígitos (mais no começo)</option>
+              <option value="unidades_produzidas">Unidades produzidas (pela produção)</option>
+            </select>
+            <span className="text-[11px] text-[var(--muted)]">É este que define a conta mês a mês.</span>
+          </label>
+
+          <label className="admin-field">
+            Depreciação acelerada (turnos)
+            <select
+              value={form.coeficienteAceleracao}
+              onChange={(event) => onChange({ ...form, coeficienteAceleracao: event.target.value })}
+              className="admin-input"
+              disabled={saving}
+            >
+              <option value="1">Normal — um turno (1,0×)</option>
+              <option value="1.5">Dois turnos (1,5×)</option>
+              <option value="2">Três turnos (2,0×)</option>
+            </select>
+            <span className="text-[11px] text-[var(--muted)]">RIR art. 323: acelera a depreciação de bem usado em mais de um turno.</span>
+          </label>
+
+          {form.metodoDepreciacao === 'unidades_produzidas' ? (
+            <label className="admin-field">
+              Produção total prevista (unidades)
+              <input
+                type="number"
+                min={1}
+                value={form.unidadesVidaUtil}
+                onChange={(event) => onChange({ ...form, unidadesVidaUtil: event.target.value })}
+                className="admin-input"
+                disabled={saving}
+                placeholder="Ex.: 100000"
+              />
+              <span className="text-[11px] text-[var(--muted)]">O total que o bem deve produzir na vida; a quota do mês sai da produção apontada.</span>
+            </label>
+          ) : null}
+
+          <label className="admin-field">
             Vigencia inicial
             <input
               type="date"

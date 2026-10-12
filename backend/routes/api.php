@@ -33,6 +33,7 @@ use App\Domain\Organization\Controllers\ResponsavelController;
 use App\Domain\Organization\Controllers\UnidadeAdministrativaController;
 use App\Domain\Reports\Controllers\ExportacaoRelatoriosController;
 use App\Domain\Reports\Controllers\RelatorioPatrimonialController;
+use App\Domain\Audit\Controllers\TrilhaAuditoriaController;
 use App\Domain\Depreciation\Controllers\DepreciacaoOperacaoController;
 use App\Domain\Inventory\Controllers\ContagemInventarioController;
 use App\Domain\Notifications\Controllers\PushController;
@@ -158,6 +159,10 @@ Route::prefix('v1')->group(function (): void {
                 ->parameters(['conciliacoes' => 'conciliacao']);
             Route::apiResource('divergencias', DivergenciaInventarioController::class)
                 ->parameters(['divergencias' => 'divergencia']);
+        });
+
+        Route::middleware(['empresa.context', 'role.permission:auditoria'])->group(function (): void {
+            Route::get('trilha-auditoria', [TrilhaAuditoriaController::class, 'index']);
         });
 
         Route::middleware(['empresa.context', 'role.permission:relatorios'])->group(function (): void {

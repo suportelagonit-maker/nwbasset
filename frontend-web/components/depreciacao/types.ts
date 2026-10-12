@@ -14,6 +14,8 @@ export type RegraDepreciacaoTipoBem = {
   base_regra?: 'fiscal' | 'contabil' | string;
   metodo_depreciacao_id: number;
   metodo_depreciacao?: string | null;
+  coeficiente_aceleracao?: number | null;
+  unidades_vida_util?: number | null;
   vida_util_anos: number;
   taxa_anual: number | string;
   taxa_anual_percentual?: number | string;
@@ -30,6 +32,9 @@ export type RegraDepreciacaoTipoBem = {
 export type RegraDepreciacaoForm = {
   tipoBem: string;
   metodoDepreciacaoId: string;
+  metodoDepreciacao: string;
+  coeficienteAceleracao: string;
+  unidadesVidaUtil: string;
   baseRegra: 'fiscal' | 'contabil';
   vidaUtilAnos: string;
   taxaAnual: string;

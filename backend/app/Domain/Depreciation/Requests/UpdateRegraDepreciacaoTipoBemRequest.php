@@ -41,6 +41,10 @@ class UpdateRegraDepreciacaoTipoBemRequest extends StoreRegraDepreciacaoTipoBemR
             'taxa_anual' => ['nullable', 'numeric', 'min:0', 'max:100'],
             'taxa_anual_percentual' => ['nullable', 'numeric', 'min:0', 'max:100'],
             'valor_residual_percentual' => ['nullable', 'numeric', 'min:0', 'max:100'],
+            // Depreciacao acelerada por turnos (RIR art. 323): 1,0 / 1,5 / 2,0.
+            'coeficiente_aceleracao' => ['nullable', 'numeric', 'min:1', 'max:3'],
+            // Base do metodo de unidades produzidas.
+            'unidades_vida_util' => ['nullable', 'integer', 'min:1'],
             'depreciavel' => ['nullable', 'boolean'],
             'requer_override_manual' => ['nullable', 'boolean'],
             'data_inicio_vigencia' => ['nullable', 'date'],

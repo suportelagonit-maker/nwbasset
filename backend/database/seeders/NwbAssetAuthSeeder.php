@@ -38,6 +38,7 @@ class NwbAssetAuthSeeder extends Seeder
                 'depreciacoes.excluir',
                 'relatorios.visualizar',
                 'dashboard.visualizar',
+                'auditoria.visualizar',
                 'usuarios.visualizar',
                 'usuarios.criar',
                 'usuarios.atualizar',
@@ -66,6 +67,7 @@ class NwbAssetAuthSeeder extends Seeder
                 'depreciacoes.criar',
                 'relatorios.visualizar',
                 'dashboard.visualizar',
+                'auditoria.visualizar',
                 'usuarios.visualizar',
                 'usuarios.criar',
                 'usuarios.atualizar',
@@ -85,6 +87,7 @@ class NwbAssetAuthSeeder extends Seeder
                 'depreciacoes.criar',
                 'relatorios.visualizar',
                 'dashboard.visualizar',
+                'auditoria.visualizar',
             ],
             RoleEnum::AUDITOR->value => [
                 'bens.visualizar',
@@ -93,12 +96,14 @@ class NwbAssetAuthSeeder extends Seeder
                 'depreciacoes.visualizar',
                 'relatorios.visualizar',
                 'dashboard.visualizar',
+                'auditoria.visualizar',
                 'permissoes.visualizar',
             ],
             RoleEnum::OPERADOR_INVENTARIO->value => [
                 'inventarios.visualizar',
                 'inventarios.atualizar',
                 'dashboard.visualizar',
+                'auditoria.visualizar',
             ],
         ];
 

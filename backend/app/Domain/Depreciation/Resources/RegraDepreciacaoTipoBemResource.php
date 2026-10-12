@@ -26,6 +26,8 @@ class RegraDepreciacaoTipoBemResource extends JsonResource
             'base_regra' => $this->base_regra,
             'metodo_depreciacao_id' => $this->metodo_depreciacao_id,
             'metodo_depreciacao' => $metodoCodigo,
+            'coeficiente_aceleracao' => $this->coeficiente_aceleracao !== null ? (float) $this->coeficiente_aceleracao : 1,
+            'unidades_vida_util' => $this->unidades_vida_util !== null ? (int) $this->unidades_vida_util : null,
             'vida_util_anos' => $this->vida_util_anos,
             'taxa_anual_percentual' => $taxaEfetiva,
             'taxa_anual' => $taxaEfetiva,

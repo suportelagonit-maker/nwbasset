@@ -29,12 +29,21 @@ class ContagemInventarioController extends Controller
         // Paginado: inventario grande tem milhares de pendentes, e o
         // aparelho em campo nao aguenta receber tudo de uma vez.
         $porPagina = min(200, max(20, (int) $request->integer('por_pagina', 50)));
+        $busca = trim((string) $request->query('busca', ''));
+
         $paginaDePendentes = InventarioItem::query()
             ->where('inventario_id', $inventario->id)
             ->where('localizado', false)
             ->with(['bemPatrimonial:id,numero_tombo,descricao,local_id', 'bemPatrimonial.local:id,nome'])
+            // Busca por tombo ou descricao em TODA a lista, nao so na pagina.
+            ->when($busca !== '', fn ($consulta) => $consulta->whereHas(
+                'bemPatrimonial',
+                fn ($bem) => $bem->where('numero_tombo', 'ILIKE', '%'.$busca.'%')
+                    ->orWhere('descricao', 'ILIKE', '%'.$busca.'%'),
+            ))
             ->orderBy('id')
-            ->paginate($porPagina, ['*'], 'pagina');
+            ->paginate($porPagina, ['*'], 'pagina')
+            ->appends(['busca' => $busca]);
 
         $pendentes = $paginaDePendentes
             ->getCollection()
