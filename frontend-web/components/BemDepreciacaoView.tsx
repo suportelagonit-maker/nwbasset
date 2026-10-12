@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 
+import CiapBem from '@/components/CiapBem';
 import EventosValorBem from '@/components/EventosValorBem';
 import MemoriaCalculoDepreciacao from '@/components/MemoriaCalculoDepreciacao';
 
@@ -16,6 +17,7 @@ export default function BemDepreciacaoView({ bemId }: { bemId: number }) {
     <div className="grid gap-5">
       <MemoriaCalculoDepreciacao key={versao} bemId={bemId} />
       <EventosValorBem bemId={bemId} onMudou={() => setVersao((v) => v + 1)} />
+      <CiapBem bemId={bemId} />
     </div>
   );
 }

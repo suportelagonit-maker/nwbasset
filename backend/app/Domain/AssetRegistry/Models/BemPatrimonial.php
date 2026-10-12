@@ -41,6 +41,8 @@ class BemPatrimonial extends Model
         'data_aquisicao',
         'data_inicio_uso',
         'valor_aquisicao',
+        'valor_credito_icms',
+        'data_credito_icms',
         'valor_residual',
         'vida_util_anos',
         'status_bem',
@@ -55,6 +57,8 @@ class BemPatrimonial extends Model
             'data_aquisicao' => 'date',
             'data_inicio_uso' => 'date',
             'valor_aquisicao' => 'decimal:2',
+            'valor_credito_icms' => 'decimal:2',
+            'data_credito_icms' => 'date',
             'valor_residual' => 'decimal:2',
             'vida_util_anos' => 'integer',
         ];

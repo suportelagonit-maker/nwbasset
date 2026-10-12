@@ -110,3 +110,4 @@ o domínio de onde a aplicação é servida precisa estar registrado lá, senão
 - `docs/DEPRECIACAO.md` — motor de depreciação: competência mensal, bases fiscal e societária, tabela da Receita
 - `docs/INVENTARIO-CONTAGEM.md` — contagem em campo pelo celular, com fila offline e conciliação
 - `docs/SEGURANCA.md` — pentest de 11/10/2026 e correções (isolamento, consulta pública, dependências, endurecimento)
+- `docs/FISCAL-CIAP.md` — CIAP (crédito de ICMS do ativo) e os limites do SPED

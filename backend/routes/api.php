@@ -34,6 +34,7 @@ use App\Domain\Organization\Controllers\UnidadeAdministrativaController;
 use App\Domain\Reports\Controllers\ExportacaoRelatoriosController;
 use App\Domain\Reports\Controllers\RelatorioPatrimonialController;
 use App\Domain\Audit\Controllers\TrilhaAuditoriaController;
+use App\Domain\Depreciation\Controllers\CiapController;
 use App\Domain\Depreciation\Controllers\DepreciacaoOperacaoController;
 use App\Domain\Depreciation\Controllers\EventoValorBemController;
 use App\Domain\Inventory\Controllers\ContagemInventarioController;
@@ -137,6 +138,11 @@ Route::prefix('v1')->group(function (): void {
             Route::get('bens/{bem}/eventos-valor', [EventoValorBemController::class, 'index']);
             Route::post('bens/{bem}/eventos-valor', [EventoValorBemController::class, 'store']);
             Route::delete('bens/{bem}/eventos-valor/{evento}', [EventoValorBemController::class, 'destroy']);
+            // CIAP: credito de ICMS do ativo em 48 meses (Bloco G).
+            Route::get('bens/{bem}/ciap', [CiapController::class, 'doBem']);
+            Route::put('bens/{bem}/ciap', [CiapController::class, 'definirCredito']);
+            Route::get('ciap/apuracao', [CiapController::class, 'apuracao']);
+            Route::put('ciap/fatores', [CiapController::class, 'definirFator']);
             Route::apiResource('regras-depreciacao', RegraDepreciacaoTipoBemController::class)
                 ->parameters(['regras-depreciacao' => 'regra_depreciacao']);
             Route::apiResource('parametros-depreciacao', ParametroDepreciacaoController::class)
