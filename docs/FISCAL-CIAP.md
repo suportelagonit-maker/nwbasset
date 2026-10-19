@@ -48,6 +48,33 @@ CIAP, a apuração mensal), que são a parte correta e reutilizável, e deixa a
 desses dados. É a prática de qualquer sistema sério: o software calcula, o
 contador valida e transmite.
 
+## 2.1 Rascunho do Bloco G (gerador)
+
+Existe um **gerador de rascunho** do Bloco G, para o contador conferir — **não
+é o arquivo SPED validado e não deve ser transmitido como está**.
+
+- `GET /api/v1/ciap/bloco-g?competencia=YYYY-MM-DD` devolve JSON com `aviso`,
+  a lista de `pendencias` e as `linhas` dos registros **G001 / G110 / G125 /
+  (G130 / G140) / G990** daquela competência, montados a partir do CIAP.
+- `?formato=txt` baixa o mesmo conteúdo como texto, com nome de arquivo
+  marcado `RASCUNHO-blocoG-MMYYYY.txt` e cabeçalho `X-Rascunho: nao-transmitir`.
+- `documentos[bem_id] = {ind_emit, cod_part, cod_mod, serie, num_doc, chv_nfe,
+  num_item, cod_item}` preenche os G130/G140 (nota fiscal de origem). Sem isso,
+  cada bem sem NF vira uma **pendência nomeada** — o sistema não guarda NF do
+  bem.
+
+O que o gerador **deliberadamente NÃO resolve** (vem como pendência/placeholder
+`{{CAMPO}}`, a cargo do contador):
+
+- `COD_VER` (versão do leiaute, por Ato COTEPE), os **blocos 0/1/9** (abertura,
+  cadastros e totalização do arquivo) e a montagem final no PVA.
+- `SALDO_IN_ICMS`, `VL_TRIB_EXP`, `VL_TOTAL` do G110 — vêm da **apuração de
+  ICMS** (escrituração fiscal), não do controle patrimonial.
+- `COD_IND_BEM` saiu como o número de tombo; `TIPO_MOV` saiu como `SI` — ambos
+  o contador confirma conforme o plano de bens e o histórico.
+
+Peças: `SpedBlocoGService`, `CiapController@blocoG`. Teste: `SpedBlocoGTest`.
+
 ## 3. Aplicabilidade ao cliente atual
 
 A empresa em produção é a **IGREJA NOVOS COMEÇOS** — organização religiosa.
@@ -69,7 +96,7 @@ controle fica inativo (nenhum bem tem crédito informado) e não atrapalha.
 | Item | Situação |
 |---|---|
 | CIAP (controle 1/48 + fator + apuração) | **Feito e testado** — opt-in, para contribuinte de ICMS |
-| Bloco G (arquivo EFD ICMS/IPI) | A conferência existe; o **arquivo validado** é passo com o contador |
+| Bloco G (arquivo EFD ICMS/IPI) | **Rascunho dos registros G001–G990 gerado** (ver §2.1); o **arquivo validado** no PVA é passo com o contador |
 | PIS/COFINS sobre o ativo | Fora — depende do regime e do enquadramento |
 | ECD / ECF (arquivos SPED) | Fora — obrigações com leiaute oficial, exigem regime + plano de contas + validação PVA do contador |
 

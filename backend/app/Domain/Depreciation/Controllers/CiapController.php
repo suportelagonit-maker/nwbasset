@@ -4,9 +4,12 @@ namespace App\Domain\Depreciation\Controllers;
 
 use App\Domain\AssetRegistry\Models\BemPatrimonial;
 use App\Domain\Depreciation\Services\CiapService;
+use App\Domain\Depreciation\Services\SpedBlocoGService;
+use App\Domain\Organization\Models\Empresa;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 
 /**
  * CIAP: credito de ICMS do ativo, apropriado em 48 meses (Bloco G).
@@ -17,8 +20,10 @@ use Illuminate\Http\Request;
  */
 class CiapController extends Controller
 {
-    public function __construct(private readonly CiapService $service)
-    {
+    public function __construct(
+        private readonly CiapService $service,
+        private readonly SpedBlocoGService $sped,
+    ) {
     }
 
     /** Cronograma de 48 parcelas de um bem. */
@@ -85,6 +90,41 @@ class CiapController extends Controller
             'message' => 'Fator de proporcionalidade salvo.',
             'data' => ['fator' => (float) $fator->fator],
         ]);
+    }
+
+    /**
+     * RASCUNHO do Bloco G (EFD ICMS/IPI) de uma competência.
+     *
+     * Sem ?formato=txt devolve JSON com aviso + pendências + as linhas.
+     * Com ?formato=txt baixa o rascunho como texto (nome do arquivo marcado
+     * como RASCUNHO). Em nenhum caso é um arquivo SPED validado — o contador
+     * confere e valida no PVA antes de qualquer entrega.
+     */
+    public function blocoG(Request $request): JsonResponse|Response
+    {
+        $dados = $request->validate([
+            'competencia' => ['required', 'date'],
+            'documentos' => ['nullable', 'array'],
+        ]);
+
+        $empresaId = (int) $request->attributes->get('empresa_id');
+        $empresa = Empresa::query()->findOrFail($empresaId);
+
+        $resultado = $this->sped->gerar($empresa, $dados['competencia'], [
+            'documentos' => $dados['documentos'] ?? [],
+        ]);
+
+        if ($request->query('formato') === 'txt') {
+            $nome = 'RASCUNHO-blocoG-' . str_replace('/', '', $resultado['mes']) . '.txt';
+
+            return response($resultado['conteudo'], 200, [
+                'Content-Type' => 'text/plain; charset=utf-8',
+                'Content-Disposition' => 'attachment; filename="' . $nome . '"',
+                'X-Rascunho' => 'nao-transmitir',
+            ]);
+        }
+
+        return response()->json(['data' => $resultado]);
     }
 
     private function garantirEmpresa(Request $request, BemPatrimonial $bem): void

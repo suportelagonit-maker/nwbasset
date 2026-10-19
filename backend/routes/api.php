@@ -143,6 +143,7 @@ Route::prefix('v1')->group(function (): void {
             Route::put('bens/{bem}/ciap', [CiapController::class, 'definirCredito']);
             Route::get('ciap/apuracao', [CiapController::class, 'apuracao']);
             Route::put('ciap/fatores', [CiapController::class, 'definirFator']);
+            Route::get('ciap/bloco-g', [CiapController::class, 'blocoG']);
             Route::apiResource('regras-depreciacao', RegraDepreciacaoTipoBemController::class)
                 ->parameters(['regras-depreciacao' => 'regra_depreciacao']);
             Route::apiResource('parametros-depreciacao', ParametroDepreciacaoController::class)
