@@ -18,3 +18,5 @@ pnpm-debug.log*
 # OS/editor
 .DS_Store
 Thumbs.db
+/lib/build-version.ts
+/public/version.json

@@ -1,22 +1,13 @@
 import type { Metadata, Viewport } from 'next';
-import { Inter } from 'next/font/google';
+import { InputModality, Toaster } from '@nwb/ui';
 
 import RegistrarServiceWorker from '@/components/RegistrarServiceWorker';
+import { AutoUpdate } from '@/components/AutoUpdate';
 
+// ds.css (Tailwind + tokens + Inter self-hosted do NC Design System) ANTES do
+// globals.css, para as regras proprias vencerem o preflight do Tailwind.
+import './ds.css';
 import './globals.css';
-
-// NC Design System: Inter em todo o produto (corpo e titulos).
-const bodyFont = Inter({
-  subsets: ['latin'],
-  variable: '--font-body',
-  weight: ['400', '500', '600', '700'],
-});
-
-const headingFont = Inter({
-  subsets: ['latin'],
-  variable: '--font-heading',
-  weight: ['500', '600', '700'],
-});
 
 export const metadata: Metadata = {
   title: 'NWB Asset | Dashboard Patrimonial',
@@ -62,15 +53,21 @@ window.addEventListener('appinstalled', function () {
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="pt-BR">
+    // data-nc-product aplica a cor do sistema NWB Asset (#8b5e34) do DS.
+    // data-theme fixo em "light": a UI ainda tem muitas cores claras fixas;
+    // o tema escuro entra junto com a varredura de superficies + AppShell.
+    <html lang="pt-BR" data-nc-product="nwb-asset" data-theme="light">
       <head>
         {/* O aviso de "da para instalar" chega antes do React montar; sem
             guardar aqui, o convite de instalacao nunca apareceria. */}
         <script dangerouslySetInnerHTML={{ __html: SCRIPT_INSTALACAO }} />
       </head>
-      <body className={`${bodyFont.variable} ${headingFont.variable} bg-[var(--bg)] font-[family-name:var(--font-body)] text-[var(--ink)] antialiased`}>
+      <body className="bg-[var(--bg)] font-[family-name:var(--font-body)] text-[var(--ink)] antialiased">
         {children}
         <RegistrarServiceWorker />
+        <AutoUpdate />
+        <Toaster />
+        <InputModality />
       </body>
     </html>
   );

@@ -8,6 +8,9 @@ FROM node:24-alpine AS deps
 
 WORKDIR /app
 COPY frontend-web/package.json frontend-web/package-lock.json ./
+# Pacotes do NC Design System sao file:vendor/nwb/*.tgz — precisam existir no
+# npm ci.
+COPY frontend-web/vendor ./vendor
 RUN npm ci
 
 FROM node:24-alpine AS builder

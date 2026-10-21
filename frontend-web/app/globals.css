@@ -1,75 +1,17 @@
-@import "tailwindcss";
+/* O Tailwind e os tokens do DS vem do ds.css, carregado antes deste. */
 
 :root {
   /* ================================================================
-     NC Design System v0.19.1 — tokens (produto: nwb-asset)
-     Fonte: https://ds.igrejanovoscomecos.com.br (@nwb/tokens).
-     Replicados aqui para nao depender do pacote em build offline.
-     A cor do sistema NWB Asset no DS e #8b5e34 (marrom/bronze).
+     Mapa dos nomes legados do NWB Asset -> tokens do NC Design System
+     (@nwb/tokens, produto nwb-asset em <html data-nc-product>). Toda a
+     UI existente usa estes nomes; aponta-los para os --nc-* aplica a
+     identidade e segue o tema (claro/escuro) sem reescrever a UI.
      ================================================================ */
 
-  /* Marca */
-  --nc-brand-orange: #f35d2f;
-  --nc-brand-offwhite: #ffedd3;
-  --nc-brand-brick: #3a1f18;
-  --nc-brand-lime: #c1ff37;
+  /* Fonte Inter (self-hosted via @fontsource, importada no ds.css). */
+  --font-body: var(--nc-font-sans);
+  --font-heading: var(--nc-font-sans);
 
-  /* Raio, controle, movimento, fonte */
-  --nc-radius-xs: 4px;
-  --nc-radius-sm: 6px;
-  --nc-radius-md: 8px;
-  --nc-radius-lg: 12px;
-  --nc-radius-xl: 16px;
-  --nc-radius-pill: 999px;
-  --nc-size-control-sm: 32px;
-  --nc-size-control-md: 36px;
-  --nc-size-control-lg: 44px;
-  --nc-duration-fast: 0.12s;
-  --nc-duration-base: 0.16s;
-  --nc-ease-standard: cubic-bezier(0.2, 0, 0, 1);
-  --nc-font-sans: "Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
-
-  /* Superficies e texto (tema claro) */
-  --nc-background: #f7f7fa;
-  --nc-surface-elevated: #f4f4f8;
-  --nc-surface-interactive: #eaeaf0;
-  --nc-card: #ffffff;
-  --nc-foreground: #1a1a23;
-  --nc-muted-foreground: #5c5d70;
-  --nc-border: rgba(18, 18, 22, 0.11);
-  --nc-border-strong: rgba(18, 18, 22, 0.22);
-
-  /* Acao = cor do sistema NWB Asset */
-  --nc-primary: #8b5e34;
-  --nc-primary-foreground: #ffffff;
-  --nc-primary-hover: #734b28;
-  --nc-primary-muted: rgba(139, 94, 52, 0.12);
-  --nc-ring: #8b5e34;
-
-  /* Estados (nao mudam por sistema) */
-  --nc-success: #126e40;
-  --nc-warning: #9e4f0a;
-  --nc-destructive: #bd241f;
-  --nc-info: #125bba;
-
-  /* Paleta de graficos (validada para daltonismo) */
-  --nc-chart-1: #2a78d6;
-  --nc-chart-2: #d95926;
-  --nc-chart-3: #199e70;
-  --nc-chart-4: #c98500;
-  --nc-chart-5: #d55181;
-  --nc-chart-6: #008300;
-  --nc-chart-7: #6250d6;
-  --nc-chart-8: #e34948;
-  --nc-chart-accent: #8b5e34;
-  --nc-chart-grid: rgba(18, 18, 22, 0.09);
-  --nc-chart-muted: #6c6f7c;
-
-  /* ================================================================
-     Mapa para os nomes legados do NWB Asset. Toda a UI existente usa
-     estes nomes; aponta-los para os tokens do DS aplica a identidade
-     sem reescrever componente por componente.
-     ================================================================ */
   --bg: var(--nc-background);
   --workspace-bg: var(--nc-background);
   --content-bg: var(--nc-surface-elevated);
@@ -187,6 +129,66 @@ a {
   border: 1px solid var(--line);
   background: var(--bg-panel);
   box-shadow: 0 10px 24px rgba(17, 24, 39, 0.04);
+}
+
+/* Aviso de versao nova (AutoUpdate) — barra discreta no rodape. */
+.app-update-bar {
+  position: fixed;
+  left: 50%;
+  bottom: calc(16px + env(safe-area-inset-bottom));
+  z-index: 200;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  max-width: calc(100vw - 24px);
+  padding: 10px 12px 10px 16px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--bg-panel);
+  box-shadow: 0 16px 40px rgba(15, 23, 42, 0.18);
+}
+
+.app-update-bar span {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.25;
+}
+
+.app-update-bar b {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.app-update-bar small {
+  font-size: 11px;
+  color: var(--muted);
+}
+
+.app-update-bar button {
+  flex-shrink: 0;
+  height: 34px;
+  padding: 0 16px;
+  border-radius: 999px;
+  background: var(--accent);
+  color: #fff;
+  font-size: 12px;
+  font-weight: 600;
+  transition: opacity 120ms ease;
+}
+
+.app-update-bar button:hover {
+  opacity: 0.92;
+}
+
+@media (max-width: 640px) {
+  .app-update-bar {
+    left: 12px;
+    right: 12px;
+    transform: none;
+    max-width: none;
+  }
 }
 
 .chart-shell {

@@ -1,0 +1,11 @@
+/* NC Design System (@nwb/*) — carregado ANTES do globals.css.
+   Tailwind 4 gera as classes que os componentes do DS usam; o tema e a cor do
+   sistema vem de <html data-theme data-nc-product="nwb-asset">. As regras
+   proprias do NWB Asset (globals.css) vencem o preflight do Tailwind, que fica
+   em @layer base. */
+@import "tailwindcss";
+@import "@fontsource-variable/inter";
+@import "@nwb/tokens/tokens.css";
+@import "@nwb/tokens/tailwind.css";
+@import "@nwb/ui/styles.css";
+@source "../node_modules/@nwb/ui/dist";
