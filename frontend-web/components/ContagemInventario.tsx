@@ -250,6 +250,60 @@ export default function ContagemInventario({ inventarioId }: { inventarioId: num
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  // Contexto da contagem (onde estou contando + responsavel conferido) salvo
+  // por inventario. As leituras ja sobrevivem a um refresh pela fila local; o
+  // contexto tambem precisa sobreviver, senao as proximas leituras iriam sem
+  // local/responsavel depois de um reload do PWA no meio do trabalho.
+  const ctxStorageKey = `nwbasset:contagem:ctx:v1:${inventarioId}`;
+
+  useEffect(() => {
+    try {
+      const bruto = window.localStorage.getItem(ctxStorageKey);
+      if (!bruto) {
+        return;
+      }
+      const ctx = JSON.parse(bruto) as { local?: string; responsavel?: string } | null;
+      if (ctx?.local) {
+        setLocalAtual(String(ctx.local));
+      }
+      if (ctx?.responsavel) {
+        setResponsavelAtual(String(ctx.responsavel));
+      }
+    } catch {
+      // Sem localStorage (aba privada, bloqueio): a contagem segue sem o
+      // contexto salvo.
+    }
+  }, [ctxStorageKey]);
+
+  useEffect(() => {
+    try {
+      window.localStorage.setItem(
+        ctxStorageKey,
+        JSON.stringify({ local: localAtual, responsavel: responsavelAtual }),
+      );
+    } catch {
+      // Sem localStorage: a contagem continua, apenas nao persiste o contexto.
+    }
+  }, [ctxStorageKey, localAtual, responsavelAtual]);
+
+  // Um local/responsavel salvo que foi apagado no cadastro nao pode ficar
+  // "selecionado" sem opcao correspondente: limpa para nao contar com id morto.
+  useEffect(() => {
+    if (localAtual && locais.length > 0 && !locais.some((local) => String(local.id) === localAtual)) {
+      setLocalAtual('');
+    }
+  }, [locais, localAtual]);
+
+  useEffect(() => {
+    if (
+      responsavelAtual &&
+      responsaveis.length > 0 &&
+      !responsaveis.some((pessoa) => String(pessoa.id) === responsavelAtual)
+    ) {
+      setResponsavelAtual('');
+    }
+  }, [responsaveis, responsavelAtual]);
+
   async function registrar(codigo: string) {
     const limpo = codigo.trim();
 

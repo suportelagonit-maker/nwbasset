@@ -744,9 +744,9 @@ export default function GenericModuleManagement({
   const [assetPreview, setAssetPreview] = useState<AssetPreviewState | null>(
     null,
   );
-  const [assetDraftSnapshot, setAssetDraftSnapshot] =
+  const [draftSnapshot, setDraftSnapshot] =
     useState<AssetDraftPayload | null>(null);
-  const assetDraftTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const draftTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const isReadOnly = modalMode === "view";
   const isPlaquetasModule = config.key === "plaquetas";
   const plaquetaPreviewItems = useMemo(
@@ -784,9 +784,16 @@ export default function GenericModuleManagement({
   const steppedBodyMinHeightClassName =
     config.steppedBodyMinHeightClassName ?? "min-h-[420px] lg:min-h-[448px]";
   const isAssetModule = config.key === "bens";
-  const assetDraftStorageKey = useMemo(
-    () => `nwbasset:bens:draft:v1:${empresaId ?? "sem-empresa"}`,
-    [empresaId],
+  /*
+   * Auto-save do cadastro em andamento. Vale para qualquer modulo que permite
+   * criar (nao so bens): o rascunho do formulario fica no localStorage,
+   * recuperado ao reabrir e apagado ao salvar. E uma conveniencia por
+   * navegador — nao sobe ao servidor nem atravessa dispositivos.
+   */
+  const supportsDraft = config.allowCreate !== false;
+  const draftStorageKey = useMemo(
+    () => `nwbasset:${slug}:draft:v1:${empresaId ?? "sem-empresa"}`,
+    [empresaId, slug],
   );
   const isTipoProdutoModule = config.key === "tipos-produtos";
   const isCompactHeader = headerVariant === "compact";
@@ -794,14 +801,14 @@ export default function GenericModuleManagement({
   const isResponsaveisModule = config.key === "responsaveis";
   const isResponsabilidadeBensModule = config.key === "responsabilidade-bens";
   const isTransferenciasBensModule = config.key === "transferencias-bens";
-  const hasAssetDraft = useMemo(() => {
-    if (!assetDraftSnapshot?.form) {
+  const hasDraft = useMemo(() => {
+    if (!draftSnapshot?.form) {
       return false;
     }
-    return Object.values(assetDraftSnapshot.form).some(
+    return Object.values(draftSnapshot.form).some(
       (value) => String(value ?? "").trim() !== "",
     );
-  }, [assetDraftSnapshot]);
+  }, [draftSnapshot]);
   const selectedImages = getRecordImages(selectedRecord);
   const selectedDocuments = getRecordDocuments(selectedRecord);
   const visibleImages = selectedImages.slice(0, 5);
@@ -972,23 +979,23 @@ export default function GenericModuleManagement({
       pendingImages.length > 0 ||
       pendingDocuments.length > 0);
 
-  function readAssetDraft(): AssetDraftPayload | null {
-    if (!isAssetModule || typeof window === "undefined") {
+  function readDraft(): AssetDraftPayload | null {
+    if (!supportsDraft || typeof window === "undefined") {
       return null;
     }
     try {
-      const raw = window.localStorage.getItem(assetDraftStorageKey);
+      const raw = window.localStorage.getItem(draftStorageKey);
       if (!raw) {
         return null;
       }
       const normalized = raw.trim();
       if (!normalized || (!normalized.startsWith("{") && !normalized.startsWith("["))) {
-        window.localStorage.removeItem(assetDraftStorageKey);
+        window.localStorage.removeItem(draftStorageKey);
         return null;
       }
       const parsed = JSON.parse(normalized) as Partial<AssetDraftPayload> | null;
       if (!parsed || parsed.version !== 1 || !parsed.form) {
-        window.localStorage.removeItem(assetDraftStorageKey);
+        window.localStorage.removeItem(draftStorageKey);
         return null;
       }
       return {
@@ -998,21 +1005,21 @@ export default function GenericModuleManagement({
         savedAt: String(parsed.savedAt ?? ""),
       };
     } catch {
-      window.localStorage.removeItem(assetDraftStorageKey);
+      window.localStorage.removeItem(draftStorageKey);
       return null;
     }
   }
 
-  function clearAssetDraft() {
-    if (!isAssetModule || typeof window === "undefined") {
+  function clearDraft() {
+    if (!supportsDraft || typeof window === "undefined") {
       return;
     }
-    window.localStorage.removeItem(assetDraftStorageKey);
-    setAssetDraftSnapshot(null);
+    window.localStorage.removeItem(draftStorageKey);
+    setDraftSnapshot(null);
   }
   function requestDiscardDraft() {
-    if (!hasAssetDraft) {
-      clearAssetDraft();
+    if (!hasDraft) {
+      clearDraft();
       return;
     }
     setConfirmDialog({
@@ -1022,7 +1029,7 @@ export default function GenericModuleManagement({
       confirmLabel: "Descartar",
       tone: "danger",
       action: () => {
-        clearAssetDraft();
+        clearDraft();
         setMessageTitle("Rascunho descartado");
         setMessage("O rascunho local foi descartado com sucesso.");
       },
@@ -1041,15 +1048,15 @@ export default function GenericModuleManagement({
       tone: "danger",
       action: () => {
         if (modalMode === "create" && hasCreateData) {
-          persistAssetDraft(form, activeStepIndex);
+          persistDraft(form, activeStepIndex);
         }
         resetModal();
       },
     });
   }
 
-  function persistAssetDraft(nextForm: Record<string, string>, stepIndex: number) {
-    if (!isAssetModule || modalMode !== "create" || isReadOnly || typeof window === "undefined") {
+  function persistDraft(nextForm: Record<string, string>, stepIndex: number) {
+    if (!supportsDraft || modalMode !== "create" || isReadOnly || typeof window === "undefined") {
       return;
     }
     const payload: AssetDraftPayload = {
@@ -1058,35 +1065,42 @@ export default function GenericModuleManagement({
       activeStepIndex: stepIndex,
       savedAt: new Date().toISOString(),
     };
-    window.localStorage.setItem(assetDraftStorageKey, JSON.stringify(payload));
-    setAssetDraftSnapshot(payload);
+    window.localStorage.setItem(draftStorageKey, JSON.stringify(payload));
+    setDraftSnapshot(payload);
   }
 
   useEffect(() => {
-    if (!isAssetModule) {
+    if (!supportsDraft) {
       return;
     }
-    setAssetDraftSnapshot(readAssetDraft());
-  }, [assetDraftStorageKey, isAssetModule, modalMode]);
+    setDraftSnapshot(readDraft());
+  }, [draftStorageKey, supportsDraft, modalMode]);
 
   useEffect(() => {
-    if (!isAssetModule || modalMode !== "create" || isReadOnly) {
+    if (!supportsDraft || modalMode !== "create" || isReadOnly) {
       return;
     }
-    if (assetDraftTimerRef.current) {
-      clearTimeout(assetDraftTimerRef.current);
+    if (draftTimerRef.current) {
+      clearTimeout(draftTimerRef.current);
     }
-    assetDraftTimerRef.current = setTimeout(() => {
-      persistAssetDraft(form, activeStepIndex);
+    draftTimerRef.current = setTimeout(() => {
+      // So guarda se o usuario mexeu de fato: formulario igual ao inicial
+      // (apenas valores-padrao) nao gera rascunho nem o banner de recuperacao.
+      const pristine = createInitialForm(null);
+      if (JSON.stringify(form) === JSON.stringify(pristine)) {
+        clearDraft();
+        return;
+      }
+      persistDraft(form, activeStepIndex);
     }, 700);
 
     return () => {
-      if (assetDraftTimerRef.current) {
-        clearTimeout(assetDraftTimerRef.current);
-        assetDraftTimerRef.current = null;
+      if (draftTimerRef.current) {
+        clearTimeout(draftTimerRef.current);
+        draftTimerRef.current = null;
       }
     };
-  }, [activeStepIndex, form, isAssetModule, isReadOnly, modalMode]);
+  }, [activeStepIndex, form, supportsDraft, isReadOnly, modalMode]);
 
   async function refreshAll() {
     await Promise.all([loadRecords(), loadLookups()]);
@@ -1255,8 +1269,8 @@ export default function GenericModuleManagement({
     setError(null);
     setSelectedRecord(null);
     const initialForm = createInitialForm(null);
-    const draft = readAssetDraft();
-    if (isAssetModule && draft) {
+    const draft = readDraft();
+    if (supportsDraft && draft) {
       setForm({ ...initialForm, ...draft.form });
       setActiveStepIndex(
         Math.min(
@@ -1266,7 +1280,7 @@ export default function GenericModuleManagement({
       );
       setMessageTitle("Rascunho recuperado");
       setMessage(
-        "Recuperamos automaticamente o rascunho local do cadastro de bem.",
+        `Recuperamos automaticamente o rascunho local do cadastro de ${config.label.toLowerCase()}.`,
       );
     } else {
       setForm(initialForm);
@@ -1405,7 +1419,7 @@ export default function GenericModuleManagement({
         : `${config.label} cadastrado com sucesso.`,
     );
     if (modalMode === "create") {
-      clearAssetDraft();
+      clearDraft();
     }
     if (!closeAfterSave) {
       setSelectedRecord(payload.data);
@@ -2256,7 +2270,7 @@ export default function GenericModuleManagement({
                   </tr>
                 ) : (
                   <>
-                    {isAssetModule && hasAssetDraft ? (
+                    {supportsDraft && hasDraft ? (
                       <tr className="border-t border-[var(--line)] bg-[rgba(246,164,0,0.08)] text-[13px] text-[var(--ink)]">
                         <td
                           colSpan={config.columns.length + 1}
@@ -2265,13 +2279,13 @@ export default function GenericModuleManagement({
                           <div className="flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
                             <div>
                               <p className="text-sm font-semibold">
-                                Rascunho local de novo bem
+                                Rascunho local de {config.createLabel.toLowerCase()}
                               </p>
                               <p className="text-xs text-[var(--muted)]">
                                 Salvo automaticamente em{" "}
-                                {assetDraftSnapshot?.savedAt
+                                {draftSnapshot?.savedAt
                                   ? new Date(
-                                      assetDraftSnapshot.savedAt,
+                                      draftSnapshot.savedAt,
                                     ).toLocaleString("pt-BR")
                                   : "agora"}
                                 . Este item ainda nao foi cadastrado no banco.
