@@ -2271,7 +2271,7 @@ export default function GenericModuleManagement({
                 ) : (
                   <>
                     {supportsDraft && hasDraft ? (
-                      <tr className="border-t border-[var(--line)] bg-[rgba(246,164,0,0.08)] text-[13px] text-[var(--ink)]">
+                      <tr className="border-t border-[var(--line)] bg-[rgba(var(--accent-rgb),0.08)] text-[13px] text-[var(--ink)]">
                         <td
                           colSpan={config.columns.length + 1}
                           className="px-4 py-3.5"

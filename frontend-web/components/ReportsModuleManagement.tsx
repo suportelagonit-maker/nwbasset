@@ -100,8 +100,8 @@ type Column<T> = {
 
 const EMPTY_DATA: ReportData = { local: [], responsavel: [], depreciacao: [], inventario: [], divergencias: [] };
 
-const PALETTE = ['#374151', '#f6a400', '#4ade80', '#2563eb', '#9ca3af', '#111827', '#e11d48', '#d1d5db'];
-const DIVERGENCIA_PALETTE = ['#e11d48', '#f6a400', '#2563eb', '#374151'];
+const PALETTE = ['#374151', '#8b5e34', '#4ade80', '#2563eb', '#9ca3af', '#111827', '#e11d48', '#d1d5db'];
+const DIVERGENCIA_PALETTE = ['#e11d48', '#8b5e34', '#2563eb', '#374151'];
 
 const TIPO_DIVERGENCIA_LABEL: Record<string, string> = {
   NAO_ENCONTRADO: 'Não encontrado',
@@ -298,7 +298,7 @@ function LegendList({ items, colors }: { items: Array<{ nome: string; valor: num
 const INSIGHT_STYLES: Record<InsightTone, { card: string; badge: string; label: string }> = {
   good: { card: 'border-[rgba(34,197,94,0.25)] bg-[rgba(74,222,128,0.08)]', badge: 'bg-[var(--mint-deep)]', label: 'Em dia' },
   info: { card: 'border-[rgba(37,99,235,0.2)] bg-[rgba(37,99,235,0.06)]', badge: 'bg-[var(--blue)]', label: 'Informação' },
-  warn: { card: 'border-[rgba(246,164,0,0.3)] bg-[rgba(246,164,0,0.08)]', badge: 'bg-[var(--accent)]', label: 'Atenção' },
+  warn: { card: 'border-[rgba(var(--accent-rgb),0.3)] bg-[rgba(var(--accent-rgb),0.08)]', badge: 'bg-[var(--accent)]', label: 'Atenção' },
   bad: { card: 'border-[rgba(225,29,72,0.22)] bg-[rgba(225,29,72,0.06)]', badge: 'bg-[var(--rose)]', label: 'Ação necessária' },
 };
 
@@ -409,7 +409,7 @@ function StatusBadge({ status }: { status: string }) {
     <span
       className={[
         'inline-flex rounded-full px-2 py-0.5 text-[11px] font-semibold',
-        finalizado ? 'bg-[rgba(74,222,128,0.16)] text-[#166534]' : 'bg-[rgba(246,164,0,0.14)] text-[#b45309]',
+        finalizado ? 'bg-[rgba(74,222,128,0.16)] text-[#166534]' : 'bg-[rgba(var(--accent-rgb),0.14)] text-[#b45309]',
       ].join(' ')}
     >
       {STATUS_INVENTARIO_LABEL[status] ?? status}
@@ -1235,7 +1235,7 @@ export default function ReportsModuleManagement({ empresaNome, empresaCnpj }: Re
                   />
                   <Legend formatter={(value) => (value === 'contabil' ? 'Valor contábil' : 'Depreciação acumulada')} wrapperStyle={{ fontSize: 12 }} />
                   <Bar isAnimationActive={false} dataKey="contabil" stackId="a" fill="#374151" maxBarSize={36} />
-                  <Bar isAnimationActive={false} dataKey="depreciado" stackId="a" fill="#f6a400" radius={[6, 6, 0, 0]} maxBarSize={36} />
+                  <Bar isAnimationActive={false} dataKey="depreciado" stackId="a" fill="#8b5e34" radius={[6, 6, 0, 0]} maxBarSize={36} />
                 </BarChart>
               </ResponsiveContainer>
             </div>

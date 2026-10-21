@@ -5,7 +5,7 @@ type ExportButtonProps = {
 };
 
 const toneStyles: Record<NonNullable<ExportButtonProps['tone']>, string> = {
-  teal: 'border-[rgba(246,164,0,0.14)] bg-[rgba(246,164,0,0.08)] text-[var(--accent-deep)] hover:bg-[rgba(246,164,0,0.14)]',
+  teal: 'border-[rgba(var(--accent-rgb),0.14)] bg-[rgba(var(--accent-rgb),0.08)] text-[var(--accent-deep)] hover:bg-[rgba(var(--accent-rgb),0.14)]',
   amber: 'border-[rgba(74,222,128,0.18)] bg-[rgba(74,222,128,0.1)] text-[var(--mint-deep)] hover:bg-[rgba(74,222,128,0.16)]',
   rose: 'border-[rgba(190,18,60,0.18)] bg-[rgba(190,18,60,0.08)] text-[var(--rose)] hover:bg-[rgba(190,18,60,0.14)]',
 };

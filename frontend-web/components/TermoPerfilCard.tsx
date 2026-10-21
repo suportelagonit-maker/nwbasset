@@ -104,7 +104,7 @@ export default function TermoPerfilCard() {
           <CarimboAceite aceite={termo.aceite} largura={300} />
         </div>
       ) : termo ? (
-        <p className="mt-4 rounded-2xl border border-[rgba(246,164,0,0.3)] bg-[rgba(246,164,0,0.08)] px-4 py-3 text-[13px] text-[#7c4a03]">
+        <p className="mt-4 rounded-2xl border border-[rgba(var(--accent-rgb),0.3)] bg-[rgba(var(--accent-rgb),0.08)] px-4 py-3 text-[13px] text-[#7c4a03]">
           Este usuário ainda não aceitou a versão vigente do termo.
         </p>
       ) : null}

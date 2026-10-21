@@ -170,7 +170,7 @@ export default function LoginForm() {
   return (
     <form onSubmit={handleSubmit} className="panel-surface w-full max-w-md rounded-[28px] p-6 md:p-7">
       <div>
-        <span className="inline-flex rounded-full border border-[rgba(246,164,0,0.22)] bg-white/80 px-3 py-1 text-xs font-semibold uppercase tracking-[0.2em] text-[var(--accent-deep)]">
+        <span className="inline-flex rounded-full border border-[rgba(var(--accent-rgb),0.22)] bg-white/80 px-3 py-1 text-xs font-semibold uppercase tracking-[0.2em] text-[var(--accent-deep)]">
           Login multiempresa
         </span>
         <h1 className="mt-4 font-[family-name:var(--font-heading)] text-3xl font-semibold tracking-tight">

@@ -1,17 +1,18 @@
 import type { Metadata, Viewport } from 'next';
-import { IBM_Plex_Sans, Space_Grotesk } from 'next/font/google';
+import { Inter } from 'next/font/google';
 
 import RegistrarServiceWorker from '@/components/RegistrarServiceWorker';
 
 import './globals.css';
 
-const bodyFont = IBM_Plex_Sans({
+// NC Design System: Inter em todo o produto (corpo e titulos).
+const bodyFont = Inter({
   subsets: ['latin'],
   variable: '--font-body',
   weight: ['400', '500', '600', '700'],
 });
 
-const headingFont = Space_Grotesk({
+const headingFont = Inter({
   subsets: ['latin'],
   variable: '--font-heading',
   weight: ['500', '600', '700'],

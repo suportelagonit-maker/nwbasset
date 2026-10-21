@@ -24,13 +24,13 @@ export default function GraficoEvolucaoPatrimonio({ data }: GraficoEvolucaoPatri
       <div className="h-[380px]">
         <ResponsiveContainer width="100%" height="100%">
           <LineChart data={data} margin={{ left: 0, right: 0, top: 12, bottom: 8 }}>
-            <CartesianGrid stroke="rgba(15,23,42,0.08)" vertical={false} />
-            <XAxis dataKey="competencia" tickLine={false} axisLine={false} tick={{ fill: '#667085', fontSize: 12 }} />
+            <CartesianGrid stroke="rgba(18,18,22,0.09)" vertical={false} />
+            <XAxis dataKey="competencia" tickLine={false} axisLine={false} tick={{ fill: '#6c6f7c', fontSize: 12 }} />
             <YAxis
               yAxisId="left"
               tickLine={false}
               axisLine={false}
-              tick={{ fill: '#667085', fontSize: 12 }}
+              tick={{ fill: '#6c6f7c', fontSize: 12 }}
               tickFormatter={(value: number) => formatCurrency(value)}
             />
             <YAxis
@@ -38,7 +38,7 @@ export default function GraficoEvolucaoPatrimonio({ data }: GraficoEvolucaoPatri
               orientation="right"
               tickLine={false}
               axisLine={false}
-              tick={{ fill: '#667085', fontSize: 12 }}
+              tick={{ fill: '#6c6f7c', fontSize: 12 }}
             />
             <Tooltip
               formatter={(value, name) =>
@@ -52,18 +52,18 @@ export default function GraficoEvolucaoPatrimonio({ data }: GraficoEvolucaoPatri
               yAxisId="left"
               type="monotone"
               dataKey="valor_acumulado"
-              stroke="#2563eb"
+              stroke="#2a78d6"
               strokeWidth={3}
-              dot={{ r: 3, fill: '#2563eb' }}
+              dot={{ r: 3, fill: '#2a78d6' }}
               activeDot={{ r: 5 }}
             />
             <Line
               yAxisId="right"
               type="monotone"
               dataKey="total_bens_acumulado"
-              stroke="#0f172a"
+              stroke="#199e70"
               strokeWidth={2.5}
-              dot={{ r: 3, fill: '#0f172a' }}
+              dot={{ r: 3, fill: '#199e70' }}
               activeDot={{ r: 5 }}
             />
           </LineChart>

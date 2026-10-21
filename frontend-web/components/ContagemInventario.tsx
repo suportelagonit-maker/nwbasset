@@ -56,9 +56,9 @@ type RetornoLeitura = {
 
 const CORES: Record<string, string> = {
   CONTADO: 'bg-[rgba(74,222,128,0.16)] text-[#15803d]',
-  JA_CONTADO: 'bg-[rgba(246,164,0,0.16)] text-[var(--accent-deep)]',
-  LOCAL_DIFERENTE: 'bg-[rgba(246,164,0,0.16)] text-[var(--accent-deep)]',
-  RESPONSAVEL_DIFERENTE: 'bg-[rgba(246,164,0,0.16)] text-[var(--accent-deep)]',
+  JA_CONTADO: 'bg-[rgba(var(--accent-rgb),0.16)] text-[var(--accent-deep)]',
+  LOCAL_DIFERENTE: 'bg-[rgba(var(--accent-rgb),0.16)] text-[var(--accent-deep)]',
+  RESPONSAVEL_DIFERENTE: 'bg-[rgba(var(--accent-rgb),0.16)] text-[var(--accent-deep)]',
   FORA_DO_INVENTARIO: 'bg-[rgba(225,29,72,0.12)] text-[var(--rose)]',
   NAO_IDENTIFICADO: 'bg-[rgba(225,29,72,0.12)] text-[var(--rose)]',
 };
@@ -442,7 +442,7 @@ export default function ContagemInventario({ inventarioId }: { inventarioId: num
 
           <div className="flex items-center gap-2">
             {!online ? (
-              <span className="inline-flex items-center gap-1.5 rounded-full bg-[rgba(246,164,0,0.16)] px-3 py-1 text-[11px] font-semibold text-[var(--accent-deep)]">
+              <span className="inline-flex items-center gap-1.5 rounded-full bg-[rgba(var(--accent-rgb),0.16)] px-3 py-1 text-[11px] font-semibold text-[var(--accent-deep)]">
                 Sem rede · contagem continua
               </span>
             ) : null}

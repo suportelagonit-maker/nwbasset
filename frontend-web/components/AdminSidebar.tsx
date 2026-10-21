@@ -345,7 +345,7 @@ export default function AdminSidebar({
               ? 'gap-3 px-3 py-[10px] text-[0.875rem]'
               : 'gap-3 px-4 py-[11px] text-[0.9rem]',
           active
-            ? 'bg-[var(--accent)] text-white shadow-[0_10px_24px_rgba(246,164,0,0.22)]'
+            ? 'bg-[var(--accent)] text-white shadow-[0_10px_24px_rgba(var(--accent-rgb),0.22)]'
             : 'text-[#212734] hover:bg-[rgba(17,24,39,0.04)]',
         ].join(' ')}
       >
@@ -522,7 +522,7 @@ export default function AdminSidebar({
           type="button"
           onClick={onToggle}
           aria-label={collapsed ? 'Expandir menu lateral' : 'Recolher menu lateral'}
-          className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-[rgba(246,164,0,0.12)] text-[var(--accent)] transition hover:bg-[rgba(246,164,0,0.18)]"
+          className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-[rgba(var(--accent-rgb),0.12)] text-[var(--accent)] transition hover:bg-[rgba(var(--accent-rgb),0.18)]"
         >
           <svg aria-hidden="true" className="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
             <path d="M6 7h12" />
@@ -558,7 +558,7 @@ export default function AdminSidebar({
                   className={[
                     'flex w-full justify-center rounded-2xl px-0 py-3 font-medium transition',
                     item.active
-                      ? 'bg-[var(--accent)] text-white shadow-[0_10px_24px_rgba(246,164,0,0.22)]'
+                      ? 'bg-[var(--accent)] text-white shadow-[0_10px_24px_rgba(var(--accent-rgb),0.22)]'
                       : 'text-[#212734] hover:bg-[rgba(17,24,39,0.04)]',
                   ].join(' ')}
                 >
@@ -609,7 +609,7 @@ export default function AdminSidebar({
                   className={[
                     'flex w-full items-center justify-between gap-3 rounded-2xl px-3.5 py-2.5 text-left font-medium transition',
                     corporateHighlighted
-                      ? 'bg-[var(--accent)] text-[#111827] shadow-[0_10px_24px_rgba(246,164,0,0.22)]'
+                      ? 'bg-[var(--accent)] text-[#111827] shadow-[0_10px_24px_rgba(var(--accent-rgb),0.22)]'
                       : 'text-[#212734] hover:bg-[rgba(17,24,39,0.04)]',
                   ].join(' ')}
                 >
@@ -663,7 +663,7 @@ export default function AdminSidebar({
                   className={[
                     'flex w-full items-center justify-between gap-3 rounded-2xl px-3.5 py-2.5 text-left font-medium transition',
                     assetsHighlighted
-                      ? 'bg-[var(--accent)] text-[#111827] shadow-[0_10px_24px_rgba(246,164,0,0.22)]'
+                      ? 'bg-[var(--accent)] text-[#111827] shadow-[0_10px_24px_rgba(var(--accent-rgb),0.22)]'
                       : 'text-[#212734] hover:bg-[rgba(17,24,39,0.04)]',
                   ].join(' ')}
                 >
@@ -717,7 +717,7 @@ export default function AdminSidebar({
                   className={[
                     'flex w-full items-center justify-between gap-3 rounded-2xl px-3.5 py-2.5 text-left font-medium transition',
                     inventoryHighlighted
-                      ? 'bg-[var(--accent)] text-[#111827] shadow-[0_10px_24px_rgba(246,164,0,0.22)]'
+                      ? 'bg-[var(--accent)] text-[#111827] shadow-[0_10px_24px_rgba(var(--accent-rgb),0.22)]'
                       : 'text-[#212734] hover:bg-[rgba(17,24,39,0.04)]',
                   ].join(' ')}
                 >
@@ -771,7 +771,7 @@ export default function AdminSidebar({
                   className={[
                     'flex w-full items-center justify-between gap-3 rounded-2xl px-3.5 py-2.5 text-left font-medium transition',
                     depreciationHighlighted
-                      ? 'bg-[var(--accent)] text-[#111827] shadow-[0_10px_24px_rgba(246,164,0,0.22)]'
+                      ? 'bg-[var(--accent)] text-[#111827] shadow-[0_10px_24px_rgba(var(--accent-rgb),0.22)]'
                       : 'text-[#212734] hover:bg-[rgba(17,24,39,0.04)]',
                   ].join(' ')}
                 >
@@ -825,7 +825,7 @@ export default function AdminSidebar({
                   className={[
                     'flex w-full items-center justify-between gap-3 rounded-2xl px-3.5 py-2.5 text-left font-medium transition',
                     movementsHighlighted
-                      ? 'bg-[var(--accent)] text-[#111827] shadow-[0_10px_24px_rgba(246,164,0,0.22)]'
+                      ? 'bg-[var(--accent)] text-[#111827] shadow-[0_10px_24px_rgba(var(--accent-rgb),0.22)]'
                       : 'text-[#212734] hover:bg-[rgba(17,24,39,0.04)]',
                   ].join(' ')}
                 >
@@ -879,7 +879,7 @@ export default function AdminSidebar({
                   className={[
                     'flex w-full items-center justify-between gap-3 rounded-2xl px-3.5 py-2.5 text-left font-medium transition',
                     reportsHighlighted
-                      ? 'bg-[var(--accent)] text-[#111827] shadow-[0_10px_24px_rgba(246,164,0,0.22)]'
+                      ? 'bg-[var(--accent)] text-[#111827] shadow-[0_10px_24px_rgba(var(--accent-rgb),0.22)]'
                       : 'text-[#212734] hover:bg-[rgba(17,24,39,0.04)]',
                   ].join(' ')}
                 >
@@ -933,7 +933,7 @@ export default function AdminSidebar({
                   className={[
                     'flex w-full items-center justify-between gap-3 rounded-2xl px-3.5 py-2.5 text-left font-medium transition',
                     administrationHighlighted
-                      ? 'bg-[var(--accent)] text-[#111827] shadow-[0_10px_24px_rgba(246,164,0,0.22)]'
+                      ? 'bg-[var(--accent)] text-[#111827] shadow-[0_10px_24px_rgba(var(--accent-rgb),0.22)]'
                       : 'text-[#212734] hover:bg-[rgba(17,24,39,0.04)]',
                   ].join(' ')}
                 >

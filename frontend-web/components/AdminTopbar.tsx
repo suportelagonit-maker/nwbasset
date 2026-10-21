@@ -55,7 +55,7 @@ function MobileMenuButton({ onClick }: { onClick?: () => void }) {
       type="button"
       onClick={onClick}
       aria-label="Abrir menu"
-      className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[rgba(246,164,0,0.12)] text-[var(--accent)] md:hidden"
+      className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[rgba(var(--accent-rgb),0.12)] text-[var(--accent)] md:hidden"
     >
       <svg aria-hidden="true" className="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
         <path d="M5 8h14" />

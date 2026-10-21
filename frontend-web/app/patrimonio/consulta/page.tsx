@@ -77,10 +77,10 @@ export default async function PatrimonioConsultaPage({
       <div className="auth-art-orb auth-art-orb--one" aria-hidden="true" />
       <div className="auth-art-orb auth-art-orb--two" aria-hidden="true" />
 
-      <div className="relative z-[1] w-full max-w-3xl rounded-[32px] border border-[rgba(246,164,0,0.12)] bg-white/92 p-6 shadow-[0_30px_80px_rgba(15,23,42,0.10)] backdrop-blur">
+      <div className="relative z-[1] w-full max-w-3xl rounded-[32px] border border-[rgba(var(--accent-rgb),0.12)] bg-white/92 p-6 shadow-[0_30px_80px_rgba(15,23,42,0.10)] backdrop-blur">
         <div className="mb-6 flex items-center justify-between gap-4">
           <Image src="/logoasset.png" alt="NWB Asset" width={180} height={54} className="h-auto w-[140px] object-contain md:w-[180px]" priority />
-          <span className="inline-flex rounded-full border border-[rgba(246,164,0,0.28)] bg-[#fff8ec] px-3 py-1 text-xs font-semibold uppercase tracking-[0.2em] text-[var(--accent-deep)]">
+          <span className="inline-flex rounded-full border border-[rgba(var(--accent-rgb),0.28)] bg-[#fff8ec] px-3 py-1 text-xs font-semibold uppercase tracking-[0.2em] text-[var(--accent-deep)]">
             Consulta patrimonial
           </span>
         </div>

@@ -109,7 +109,7 @@ function StatusBadge({ status, matriz = false }: { status: string; matriz?: bool
   }
 
   return (
-    <span className="inline-flex rounded-full bg-[rgba(246,164,0,0.12)] px-3 py-1 text-xs font-semibold text-[var(--accent-deep)]">
+    <span className="inline-flex rounded-full bg-[rgba(var(--accent-rgb),0.12)] px-3 py-1 text-xs font-semibold text-[var(--accent-deep)]">
       {status}
     </span>
   );

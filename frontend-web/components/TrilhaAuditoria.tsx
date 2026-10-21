@@ -163,7 +163,7 @@ export default function TrilhaAuditoria() {
                       className={`rounded-full px-2 py-0.5 text-[10px] font-semibold ${
                         linha.fonte === 'acesso'
                           ? 'bg-[rgba(37,99,235,0.1)] text-[var(--blue)]'
-                          : 'bg-[rgba(246,164,0,0.16)] text-[var(--accent-deep)]'
+                          : 'bg-[rgba(var(--accent-rgb),0.16)] text-[var(--accent-deep)]'
                       }`}
                     >
                       {linha.fonte === 'acesso' ? 'Acesso' : 'Patrimônio'}

@@ -40,17 +40,18 @@ const MARGIN = 14;
 const CONTENT_W = PAGE_W - MARGIN * 2;
 const FOOTER_H = 14;
 
-const INK: Rgb = [22, 24, 29];
-const MUTED: Rgb = [112, 117, 127];
-const LINE: Rgb = [226, 228, 233];
-const ACCENT: Rgb = [246, 164, 0];
+// NC Design System: foreground, muted, border, acao (cor do sistema NWB Asset).
+const INK: Rgb = [26, 26, 35];
+const MUTED: Rgb = [92, 93, 112];
+const LINE: Rgb = [224, 224, 230];
+const ACCENT: Rgb = [139, 94, 52];
 const SOFT: Rgb = [250, 250, 250];
 
 const INSIGHT_COLORS: Record<BiPdfInsight['tone'], { fill: Rgb; badge: Rgb; label: string }> = {
-  good: { fill: [236, 253, 243], badge: [34, 197, 94], label: 'EM DIA' },
-  info: { fill: [239, 244, 255], badge: [37, 99, 235], label: 'INFORMACAO' },
-  warn: { fill: [255, 247, 230], badge: [246, 164, 0], label: 'ATENCAO' },
-  bad: { fill: [254, 241, 244], badge: [225, 29, 72], label: 'ACAO NECESSARIA' },
+  good: { fill: [236, 253, 243], badge: [18, 110, 64], label: 'EM DIA' },
+  info: { fill: [239, 244, 255], badge: [18, 91, 186], label: 'INFORMACAO' },
+  warn: { fill: [255, 247, 230], badge: [158, 79, 10], label: 'ATENCAO' },
+  bad: { fill: [254, 241, 244], badge: [189, 36, 31], label: 'ACAO NECESSARIA' },
 };
 
 async function loadImageDataUrl(src: string): Promise<{ dataUrl: string; width: number; height: number } | null> {

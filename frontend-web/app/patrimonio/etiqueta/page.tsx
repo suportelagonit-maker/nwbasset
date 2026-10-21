@@ -60,7 +60,7 @@ export default async function PatrimonioEtiquetaPage({
   if (!payload) {
     return (
       <main className="auth-art-page flex min-h-screen items-center justify-center px-4 py-10">
-        <div className="relative z-[1] w-full max-w-2xl rounded-[32px] border border-[rgba(246,164,0,0.12)] bg-white p-8 text-center shadow-[0_30px_80px_rgba(15,23,42,0.10)]">
+        <div className="relative z-[1] w-full max-w-2xl rounded-[32px] border border-[rgba(var(--accent-rgb),0.12)] bg-white p-8 text-center shadow-[0_30px_80px_rgba(15,23,42,0.10)]">
           <Image src="/logoasset.png" alt="NWB Asset" width={180} height={54} className="mx-auto h-auto w-[180px] object-contain" priority />
           <h1 className="mt-6 text-3xl font-semibold tracking-tight text-[var(--ink)]">Etiqueta não encontrada</h1>
           <p className="mt-3 text-sm leading-7 text-[var(--muted)]">

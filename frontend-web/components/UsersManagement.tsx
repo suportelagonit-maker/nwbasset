@@ -539,7 +539,7 @@ export default function UsersManagement() {
                         </div>
                       </td>
                       <td className="px-5 py-4">
-                        <span className="inline-flex rounded-full bg-[rgba(246,164,0,0.12)] px-3 py-1 text-xs font-semibold text-[var(--accent-deep)]">
+                        <span className="inline-flex rounded-full bg-[rgba(var(--accent-rgb),0.12)] px-3 py-1 text-xs font-semibold text-[var(--accent-deep)]">
                           {roleLabel(usuario.role_atual ?? usuario.role)}
                         </span>
                       </td>
@@ -727,7 +727,7 @@ export default function UsersManagement() {
                                 key={item.codigo}
                                 className={`flex items-start gap-3 rounded-[16px] border px-3 py-3 text-sm transition ${
                                   checked
-                                    ? 'border-[rgba(246,164,0,0.22)] bg-[rgba(246,164,0,0.08)]'
+                                    ? 'border-[rgba(var(--accent-rgb),0.22)] bg-[rgba(var(--accent-rgb),0.08)]'
                                     : 'border-[var(--line)] bg-white'
                                 } ${readOnly ? 'cursor-default' : 'cursor-pointer'}`}
                               >

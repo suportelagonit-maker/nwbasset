@@ -3,7 +3,8 @@
 import type { BensPorLocalItem } from '@/lib/patrimonio-api';
 import { Cell, Pie, PieChart, ResponsiveContainer, Tooltip } from 'recharts';
 
-const COLORS = ['#374151', '#4ade80', '#f6a400', '#9ca3af', '#111827', '#d1d5db'];
+// Paleta do NC Design System: cor do sistema + categoricas (daltonismo-safe).
+const COLORS = ['#8b5e34', '#2a78d6', '#d95926', '#199e70', '#c98500', '#d55181', '#6250d6', '#e34948'];
 
 type GraficoBensLocalProps = {
   data: BensPorLocalItem[];

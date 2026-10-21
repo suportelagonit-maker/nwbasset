@@ -181,7 +181,7 @@ function Kpi({
   const className = 'block min-w-0 rounded-[18px] border border-[var(--line)] bg-white px-4 py-3.5 transition';
 
   return href ? (
-    <Link href={href} prefetch={false} className={`${className} hover:border-[rgba(246,164,0,0.5)] hover:shadow-[0_10px_26px_rgba(17,24,39,0.06)]`}>
+    <Link href={href} prefetch={false} className={`${className} hover:border-[rgba(var(--accent-rgb),0.5)] hover:shadow-[0_10px_26px_rgba(17,24,39,0.06)]`}>
       {content}
     </Link>
   ) : (
@@ -542,18 +542,18 @@ export default function DashboardPatrimonioClient({ filters, isGeneralView, empr
                     <AreaChart data={evolucaoChart} margin={{ left: 0, right: 8, top: 8, bottom: 0 }}>
                       <defs>
                         <linearGradient id="dash-valor" x1="0" y1="0" x2="0" y2="1">
-                          <stop offset="0%" stopColor="#f6a400" stopOpacity={0.35} />
-                          <stop offset="100%" stopColor="#f6a400" stopOpacity={0} />
+                          <stop offset="0%" stopColor="#8b5e34" stopOpacity={0.35} />
+                          <stop offset="100%" stopColor="#8b5e34" stopOpacity={0} />
                         </linearGradient>
                       </defs>
-                      <CartesianGrid stroke="rgba(17,24,39,0.06)" vertical={false} />
-                      <XAxis dataKey="competencia" tickLine={false} axisLine={false} tick={{ fill: '#70757f', fontSize: 11 }} />
-                      <YAxis tickLine={false} axisLine={false} tick={{ fill: '#70757f', fontSize: 11 }} tickFormatter={(value) => formatCompactCurrency(Number(value))} width={70} />
+                      <CartesianGrid stroke="rgba(18,18,22,0.09)" vertical={false} />
+                      <XAxis dataKey="competencia" tickLine={false} axisLine={false} tick={{ fill: '#6c6f7c', fontSize: 11 }} />
+                      <YAxis tickLine={false} axisLine={false} tick={{ fill: '#6c6f7c', fontSize: 11 }} tickFormatter={(value) => formatCompactCurrency(Number(value))} width={70} />
                       <Tooltip
                         contentStyle={tooltipStyle}
                         formatter={(value, name) => (name === 'valor' ? [formatCurrency(Number(value)), 'Valor acumulado'] : [value, 'Bens acumulados'])}
                       />
-                      <Area type="monotone" dataKey="valor" stroke="#f6a400" strokeWidth={2.2} fill="url(#dash-valor)" isAnimationActive={false} />
+                      <Area type="monotone" dataKey="valor" stroke="#8b5e34" strokeWidth={2.2} fill="url(#dash-valor)" isAnimationActive={false} />
                     </AreaChart>
                   </ResponsiveContainer>
                 </div>
@@ -661,7 +661,7 @@ export default function DashboardPatrimonioClient({ filters, isGeneralView, empr
                 key={item.href}
                 href={item.href}
                 prefetch={false}
-                className="group flex min-w-0 items-center gap-3 rounded-[18px] border border-[var(--line)] bg-white px-3.5 py-3 transition hover:border-[rgba(246,164,0,0.5)] hover:shadow-[0_10px_26px_rgba(17,24,39,0.06)]"
+                className="group flex min-w-0 items-center gap-3 rounded-[18px] border border-[var(--line)] bg-white px-3.5 py-3 transition hover:border-[rgba(var(--accent-rgb),0.5)] hover:shadow-[0_10px_26px_rgba(17,24,39,0.06)]"
               >
                 <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-[14px] bg-[rgba(17,24,39,0.04)] text-[var(--ink)] transition group-hover:bg-[var(--accent-soft)] group-hover:text-[var(--accent-deep)] [&>svg]:h-5 [&>svg]:w-5">
                   {renderAdminIcon(item.icon)}

@@ -977,7 +977,7 @@ export default function PlaquetaManagement({ empresaId, empresaNome, empresaLogo
                         )}
                       </td>
                       <td className="py-4 pr-4">
-                        <span className="inline-flex rounded-full bg-[rgba(246,164,0,0.12)] px-3 py-1 text-xs font-semibold text-[var(--accent-deep)]">
+                        <span className="inline-flex rounded-full bg-[rgba(var(--accent-rgb),0.12)] px-3 py-1 text-xs font-semibold text-[var(--accent-deep)]">
                           {formatStatus(plaqueta.status)}
                         </span>
                       </td>
@@ -1126,7 +1126,7 @@ export default function PlaquetaManagement({ empresaId, empresaNome, empresaLogo
                 <span className="admin-field-label">Arquivo da importacao</span>
                 <input
                   type="file"
-                  className="admin-input file:mr-3 file:rounded-full file:border-0 file:bg-[rgba(246,164,0,0.14)] file:px-3 file:py-2 file:text-xs file:font-semibold file:text-[var(--accent-deep)]"
+                  className="admin-input file:mr-3 file:rounded-full file:border-0 file:bg-[rgba(var(--accent-rgb),0.14)] file:px-3 file:py-2 file:text-xs file:font-semibold file:text-[var(--accent-deep)]"
                   accept=".csv,.txt,.xlsx"
                   onChange={(event) => setImportFile(event.target.files?.[0] ?? null)}
                 />

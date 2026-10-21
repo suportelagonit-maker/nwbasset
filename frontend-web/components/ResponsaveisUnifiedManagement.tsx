@@ -117,8 +117,8 @@ export default function ResponsaveisUnifiedManagement({
                 className={[
                   'rounded-[16px] border px-4 py-3 text-left transition',
                   active
-                    ? 'border-[rgba(246,164,0,0.42)] bg-[rgba(246,164,0,0.1)]'
-                    : 'border-[var(--line)] bg-white hover:border-[rgba(246,164,0,0.3)] hover:bg-[rgba(246,164,0,0.04)]',
+                    ? 'border-[rgba(var(--accent-rgb),0.42)] bg-[rgba(var(--accent-rgb),0.1)]'
+                    : 'border-[var(--line)] bg-white hover:border-[rgba(var(--accent-rgb),0.3)] hover:bg-[rgba(var(--accent-rgb),0.04)]',
                 ].join(' ')}
               >
                 <div className="flex items-center justify-between gap-3">
@@ -126,7 +126,7 @@ export default function ResponsaveisUnifiedManagement({
                     <span
                       className={[
                         'inline-flex h-8 w-8 items-center justify-center rounded-lg',
-                        active ? 'bg-[rgba(246,164,0,0.2)] text-[var(--accent-deep)]' : 'bg-[#f3f4f6] text-[#334155]',
+                        active ? 'bg-[rgba(var(--accent-rgb),0.2)] text-[var(--accent-deep)]' : 'bg-[#f3f4f6] text-[#334155]',
                       ].join(' ')}
                     >
                       {icon}

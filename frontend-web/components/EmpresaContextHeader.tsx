@@ -95,7 +95,7 @@ export default function EmpresaContextHeader({
         value={empresaId}
         onChange={(event) => void handleEmpresaChange(event.target.value)}
         disabled={isPending || isNavigating}
-        className="h-10 w-full min-w-0 rounded-full border sm:w-auto sm:min-w-[280px] border-[var(--line)] bg-white px-4 text-sm text-[var(--ink)] shadow-none outline-none transition focus:border-[rgba(246,164,0,0.45)]"
+        className="h-10 w-full min-w-0 rounded-full border sm:w-auto sm:min-w-[280px] border-[var(--line)] bg-white px-4 text-sm text-[var(--ink)] shadow-none outline-none transition focus:border-[rgba(var(--accent-rgb),0.45)]"
       >
         {isSuperAdmin ? <option value="__geral__">Painel geral</option> : null}
         {empresas.map((empresa) => (
@@ -107,7 +107,7 @@ export default function EmpresaContextHeader({
       {isPending || isNavigating ? (
         <span
           aria-label="Alterando empresa"
-          className="inline-flex h-5 w-5 animate-spin rounded-full border-2 border-[rgba(246,164,0,0.16)] border-t-[var(--accent)]"
+          className="inline-flex h-5 w-5 animate-spin rounded-full border-2 border-[rgba(var(--accent-rgb),0.16)] border-t-[var(--accent)]"
         />
       ) : null}
       {friendlyError ? (

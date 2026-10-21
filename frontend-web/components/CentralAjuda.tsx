@@ -42,7 +42,7 @@ function Destaque({ texto, termo }: { texto: string; termo: string }) {
   while (indice !== -1) {
     partes.push(texto.slice(cursor, indice));
     partes.push(
-      <mark key={`${indice}-${cursor}`} className="rounded-sm bg-[rgba(246,164,0,0.35)] px-0.5 text-inherit">
+      <mark key={`${indice}-${cursor}`} className="rounded-sm bg-[rgba(var(--accent-rgb),0.35)] px-0.5 text-inherit">
         {texto.slice(indice, indice + chave.length)}
       </mark>,
     );
@@ -152,7 +152,7 @@ function Topico({
           </ol>
 
           {topico.dicas?.length ? (
-            <div className="mt-4 rounded-[14px] border border-[rgba(246,164,0,0.3)] bg-[rgba(246,164,0,0.08)] px-3.5 py-3">
+            <div className="mt-4 rounded-[14px] border border-[rgba(var(--accent-rgb),0.3)] bg-[rgba(var(--accent-rgb),0.08)] px-3.5 py-3">
               <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-[var(--accent-deep)]">Dicas</p>
               <ul className="mt-1.5 list-disc space-y-1 pl-4 text-[13px] leading-5 text-[#4a4f58]">
                 {topico.dicas.map((dica) => (
@@ -269,7 +269,7 @@ export default function CentralAjuda() {
               value={termo}
               onChange={(event) => setTermo(event.target.value)}
               placeholder="Pesquisar: plaqueta, inventário, PDF, senha..."
-              className="h-11 w-full rounded-full border border-[var(--line)] bg-white pl-10 pr-4 text-[14px] text-[var(--ink)] outline-none transition focus:border-[rgba(246,164,0,0.6)] focus:shadow-[0_0_0_3px_rgba(246,164,0,0.12)]"
+              className="h-11 w-full rounded-full border border-[var(--line)] bg-white pl-10 pr-4 text-[14px] text-[var(--ink)] outline-none transition focus:border-[rgba(var(--accent-rgb),0.6)] focus:shadow-[0_0_0_3px_rgba(var(--accent-rgb),0.12)]"
             />
           </label>
 

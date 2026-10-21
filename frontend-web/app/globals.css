@@ -1,28 +1,99 @@
 @import "tailwindcss";
 
 :root {
-  --bg: #f4f6f9;
-  --workspace-bg: #f6f7f9;
-  --content-bg: #edf0f3;
-  --bg-panel: #ffffff;
-  --bg-sidebar: #ffffff;
-  --ink: #16181d;
-  --muted: #70757f;
-  --line: rgba(17, 24, 39, 0.08);
-  --accent: #f6a400;
-  --accent-deep: #e99400;
-  --accent-soft: rgba(246, 164, 0, 0.12);
-  --mint: #4ade80;
-  --mint-deep: #22c55e;
-  --gold-soft: rgba(246, 164, 0, 0.18);
-  --mint-soft: rgba(74, 222, 128, 0.2);
-  --blue: #2563eb;
-  --blue-deep: #1d4ed8;
-  --blue-soft: rgba(37, 99, 235, 0.1);
-  --teal: #2563eb;
-  --teal-deep: #1d4ed8;
-  --amber: #3b82f6;
-  --rose: #e11d48;
+  /* ================================================================
+     NC Design System v0.19.1 — tokens (produto: nwb-asset)
+     Fonte: https://ds.igrejanovoscomecos.com.br (@nwb/tokens).
+     Replicados aqui para nao depender do pacote em build offline.
+     A cor do sistema NWB Asset no DS e #8b5e34 (marrom/bronze).
+     ================================================================ */
+
+  /* Marca */
+  --nc-brand-orange: #f35d2f;
+  --nc-brand-offwhite: #ffedd3;
+  --nc-brand-brick: #3a1f18;
+  --nc-brand-lime: #c1ff37;
+
+  /* Raio, controle, movimento, fonte */
+  --nc-radius-xs: 4px;
+  --nc-radius-sm: 6px;
+  --nc-radius-md: 8px;
+  --nc-radius-lg: 12px;
+  --nc-radius-xl: 16px;
+  --nc-radius-pill: 999px;
+  --nc-size-control-sm: 32px;
+  --nc-size-control-md: 36px;
+  --nc-size-control-lg: 44px;
+  --nc-duration-fast: 0.12s;
+  --nc-duration-base: 0.16s;
+  --nc-ease-standard: cubic-bezier(0.2, 0, 0, 1);
+  --nc-font-sans: "Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+
+  /* Superficies e texto (tema claro) */
+  --nc-background: #f7f7fa;
+  --nc-surface-elevated: #f4f4f8;
+  --nc-surface-interactive: #eaeaf0;
+  --nc-card: #ffffff;
+  --nc-foreground: #1a1a23;
+  --nc-muted-foreground: #5c5d70;
+  --nc-border: rgba(18, 18, 22, 0.11);
+  --nc-border-strong: rgba(18, 18, 22, 0.22);
+
+  /* Acao = cor do sistema NWB Asset */
+  --nc-primary: #8b5e34;
+  --nc-primary-foreground: #ffffff;
+  --nc-primary-hover: #734b28;
+  --nc-primary-muted: rgba(139, 94, 52, 0.12);
+  --nc-ring: #8b5e34;
+
+  /* Estados (nao mudam por sistema) */
+  --nc-success: #126e40;
+  --nc-warning: #9e4f0a;
+  --nc-destructive: #bd241f;
+  --nc-info: #125bba;
+
+  /* Paleta de graficos (validada para daltonismo) */
+  --nc-chart-1: #2a78d6;
+  --nc-chart-2: #d95926;
+  --nc-chart-3: #199e70;
+  --nc-chart-4: #c98500;
+  --nc-chart-5: #d55181;
+  --nc-chart-6: #008300;
+  --nc-chart-7: #6250d6;
+  --nc-chart-8: #e34948;
+  --nc-chart-accent: #8b5e34;
+  --nc-chart-grid: rgba(18, 18, 22, 0.09);
+  --nc-chart-muted: #6c6f7c;
+
+  /* ================================================================
+     Mapa para os nomes legados do NWB Asset. Toda a UI existente usa
+     estes nomes; aponta-los para os tokens do DS aplica a identidade
+     sem reescrever componente por componente.
+     ================================================================ */
+  --bg: var(--nc-background);
+  --workspace-bg: var(--nc-background);
+  --content-bg: var(--nc-surface-elevated);
+  --bg-panel: var(--nc-card);
+  --bg-sidebar: var(--nc-card);
+  --ink: var(--nc-foreground);
+  --muted: var(--nc-muted-foreground);
+  --line: var(--nc-border);
+  --accent: var(--nc-primary);
+  /* Componentes do app usam rgba(var(--accent-rgb), a) para o accent translucido. */
+  --accent-rgb: 139, 94, 52;
+  --accent-deep: var(--nc-primary-hover);
+  --accent-soft: var(--nc-primary-muted);
+  --mint: #28bd73;
+  --mint-deep: var(--nc-success);
+  --gold-soft: rgba(139, 94, 52, 0.18);
+  --mint-soft: rgba(18, 110, 64, 0.16);
+  --blue: var(--nc-info);
+  --blue-deep: #0f4c9e;
+  --blue-soft: rgba(18, 91, 186, 0.1);
+  --teal: var(--nc-info);
+  --teal-deep: #0f4c9e;
+  --amber: var(--nc-info);
+  --rose: var(--nc-destructive);
   --rail-icon: #475467;
   --avatar-bg: #111827;
   --avatar-ink: #ffffff;
@@ -40,7 +111,7 @@ html {
 body {
   margin: 0;
   min-height: 100vh;
-  background: #f8f8f9;
+  background: var(--bg);
   color: var(--ink);
   font-family: var(--font-body), "Segoe UI", "Helvetica Neue", Arial, sans-serif;
 }
@@ -48,8 +119,8 @@ body {
 .auth-art-page {
   position: relative;
   background:
-    radial-gradient(circle at 18% 24%, rgba(246, 164, 0, 0.09), transparent 26%),
-    radial-gradient(circle at 78% 18%, rgba(246, 164, 0, 0.05), transparent 22%),
+    radial-gradient(circle at 18% 24%, rgba(var(--accent-rgb), 0.09), transparent 26%),
+    radial-gradient(circle at 78% 18%, rgba(var(--accent-rgb), 0.05), transparent 22%),
     linear-gradient(180deg, #fffaf2 0%, #fff7eb 100%);
 }
 
@@ -60,13 +131,13 @@ body {
   pointer-events: none;
   opacity: 0.9;
   background-image:
-    radial-gradient(circle at 160px 180px, rgba(246, 164, 0, 0.18) 0 7px, transparent 8px),
-    radial-gradient(circle at 278px 132px, rgba(246, 164, 0, 0.24) 0 8px, transparent 9px),
-    radial-gradient(circle at 420px 288px, rgba(246, 164, 0, 0.14) 0 10px, transparent 11px),
-    radial-gradient(circle at 212px 344px, rgba(246, 164, 0, 0.16) 0 9px, transparent 10px),
-    linear-gradient(125deg, transparent 0 22%, rgba(246, 164, 0, 0.11) 22.3%, transparent 22.7%),
-    linear-gradient(96deg, transparent 0 32%, rgba(246, 164, 0, 0.08) 32.2%, transparent 32.6%),
-    repeating-linear-gradient(113deg, rgba(246, 164, 0, 0.18) 0 1px, transparent 1px 11px);
+    radial-gradient(circle at 160px 180px, rgba(var(--accent-rgb), 0.18) 0 7px, transparent 8px),
+    radial-gradient(circle at 278px 132px, rgba(var(--accent-rgb), 0.24) 0 8px, transparent 9px),
+    radial-gradient(circle at 420px 288px, rgba(var(--accent-rgb), 0.14) 0 10px, transparent 11px),
+    radial-gradient(circle at 212px 344px, rgba(var(--accent-rgb), 0.16) 0 9px, transparent 10px),
+    linear-gradient(125deg, transparent 0 22%, rgba(var(--accent-rgb), 0.11) 22.3%, transparent 22.7%),
+    linear-gradient(96deg, transparent 0 32%, rgba(var(--accent-rgb), 0.08) 32.2%, transparent 32.6%),
+    repeating-linear-gradient(113deg, rgba(var(--accent-rgb), 0.18) 0 1px, transparent 1px 11px);
   mask-image: linear-gradient(90deg, rgba(0, 0, 0, 0.95), rgba(0, 0, 0, 0.2) 78%, transparent);
 }
 
@@ -82,7 +153,7 @@ body {
   top: 22%;
   height: 280px;
   width: 280px;
-  background: radial-gradient(circle, rgba(246, 164, 0, 0.12), rgba(246, 164, 0, 0.02) 58%, transparent 72%);
+  background: radial-gradient(circle, rgba(var(--accent-rgb), 0.12), rgba(var(--accent-rgb), 0.02) 58%, transparent 72%);
 }
 
 .auth-art-orb--two {
@@ -90,7 +161,7 @@ body {
   bottom: 10%;
   height: 220px;
   width: 220px;
-  background: radial-gradient(circle, rgba(246, 164, 0, 0.08), rgba(246, 164, 0, 0.015) 55%, transparent 70%);
+  background: radial-gradient(circle, rgba(var(--accent-rgb), 0.08), rgba(var(--accent-rgb), 0.015) 55%, transparent 70%);
 }
 
 @media (max-width: 1024px) {
@@ -265,8 +336,8 @@ a {
 }
 
 .admin-step-card--active {
-  border-color: rgba(37, 99, 235, 0.9);
-  background: rgba(37, 99, 235, 0.06);
+  border-color: rgba(var(--accent-rgb), 0.9);
+  background: rgba(var(--accent-rgb), 0.08);
 }
 
 .admin-step-card--done {
@@ -288,7 +359,7 @@ a {
 }
 
 .admin-step-card--active .admin-step-badge {
-  background: var(--blue);
+  background: var(--accent);
   color: #ffffff;
 }
 
@@ -468,8 +539,8 @@ a {
 .admin-input:focus,
 .admin-select:focus,
 .admin-textarea:focus {
-  border-color: rgba(37, 99, 235, 0.42);
-  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.08);
+  border-color: rgba(var(--accent-rgb), 0.5);
+  box-shadow: 0 0 0 3px rgba(var(--accent-rgb), 0.12);
 }
 
 .admin-input:disabled,

@@ -257,7 +257,7 @@ export default function MobileBottomNav({
               aria-current={dashboardActive ? 'page' : undefined}
               onClick={closeSheet}
               className={[
-                'absolute -top-5 flex h-[58px] w-[58px] items-center justify-center rounded-full border-[4px] border-[var(--workspace-bg)] text-white shadow-[0_12px_28px_rgba(246,164,0,0.38)] transition',
+                'absolute -top-5 flex h-[58px] w-[58px] items-center justify-center rounded-full border-[4px] border-[var(--workspace-bg)] text-white shadow-[0_12px_28px_rgba(var(--accent-rgb),0.38)] transition',
                 dashboardActive && !sheetOpen ? 'bg-[var(--accent-deep)]' : 'bg-[var(--accent)]',
               ].join(' ')}
             >
@@ -373,7 +373,7 @@ function GroupList({ items, pathname }: { items: AdminNavItem[]; pathname: strin
               className={[
                 'flex items-center gap-3 rounded-[18px] border px-3.5 py-3 transition',
                 active
-                  ? 'border-transparent bg-[var(--accent)] text-white shadow-[0_10px_24px_rgba(246,164,0,0.22)]'
+                  ? 'border-transparent bg-[var(--accent)] text-white shadow-[0_10px_24px_rgba(var(--accent-rgb),0.22)]'
                   : 'border-[var(--line)] bg-white text-[var(--ink)] active:bg-[rgba(17,24,39,0.04)]',
               ].join(' ')}
             >
@@ -421,7 +421,7 @@ function GroupGrid({ group, items, pathname }: { group: AdminNavGroup; items: Ad
               className={[
                 'flex min-h-[84px] flex-col items-center justify-center gap-1.5 rounded-[18px] border px-1.5 py-2.5 text-center transition',
                 active
-                  ? 'border-transparent bg-[var(--accent)] text-white shadow-[0_10px_24px_rgba(246,164,0,0.22)]'
+                  ? 'border-transparent bg-[var(--accent)] text-white shadow-[0_10px_24px_rgba(var(--accent-rgb),0.22)]'
                   : 'border-[var(--line)] bg-white text-[var(--ink)] active:bg-[rgba(17,24,39,0.04)]',
               ].join(' ')}
             >
