@@ -2180,7 +2180,7 @@ export default function GenericModuleManagement({
               <select
                 value={tipoBemFiltro}
                 onChange={(event) => setTipoBemFiltro(event.target.value)}
-                className="h-10 min-w-[180px] rounded-full border border-[var(--line)] bg-white px-3 text-[13px] font-medium text-[var(--ink)] shadow-sm outline-none transition hover:border-[var(--accent)] focus:border-[var(--accent)]"
+                className="h-10 min-w-[180px] rounded-full border border-[var(--line)] bg-[var(--nc-card)] px-3 text-[13px] font-medium text-[var(--ink)] shadow-sm outline-none transition hover:border-[var(--accent)] focus:border-[var(--accent)]"
               >
                 <option value="">Tipo do bem: todos</option>
                 {tipoBemFiltroOptions.map((option) => (
@@ -2193,7 +2193,7 @@ export default function GenericModuleManagement({
             <button
               type="button"
               onClick={() => void refreshAll()}
-              className="inline-flex h-10 items-center justify-center rounded-full border border-[var(--line)] bg-white px-4.5 text-[13px] font-semibold text-[var(--ink)] transition hover:border-[var(--accent)] hover:text-[var(--accent)]"
+              className="inline-flex h-10 items-center justify-center rounded-full border border-[var(--line)] bg-[var(--nc-card)] px-4.5 text-[13px] font-semibold text-[var(--ink)] transition hover:border-[var(--accent)] hover:text-[var(--accent)]"
             >
               
               Atualizar
@@ -2201,7 +2201,7 @@ export default function GenericModuleManagement({
           </div>
         </div>
         {isPlaquetasModule ? (
-          <section className="mt-6 rounded-[24px] border border-[var(--line)] bg-[#fafafa] p-4 md:p-5">
+          <section className="mt-6 rounded-[24px] border border-[var(--line)] bg-[var(--nc-surface-elevated)] p-4 md:p-5">
             
             <div className="flex flex-col gap-1.5 md:flex-row md:items-end md:justify-between">
               
@@ -2245,7 +2245,7 @@ export default function GenericModuleManagement({
           <div className="overflow-x-auto">
             <table className="min-w-full border-collapse"><thead>
                 
-                <tr className="bg-[#f8fafc] text-left text-[11px] uppercase tracking-[0.16em] text-[var(--muted)]">
+                <tr className="bg-[var(--nc-surface-elevated)] text-left text-[11px] uppercase tracking-[0.16em] text-[var(--muted)]">
                   
                   {config.columns.map((column) => (
                     <th key={column.label} className="px-4 py-3.5">
@@ -2295,14 +2295,14 @@ export default function GenericModuleManagement({
                               <button
                                 type="button"
                                 onClick={openCreateModal}
-                                className="inline-flex h-8 items-center justify-center rounded-full border border-[var(--line)] bg-white px-3 text-xs font-semibold text-[var(--ink)] transition hover:border-[var(--accent)] hover:text-[var(--accent)]"
+                                className="inline-flex h-8 items-center justify-center rounded-full border border-[var(--line)] bg-[var(--nc-card)] px-3 text-xs font-semibold text-[var(--ink)] transition hover:border-[var(--accent)] hover:text-[var(--accent)]"
                               >
                                 Continuar rascunho
                               </button>
                               <button
                                 type="button"
                                 onClick={requestDiscardDraft}
-                                className="inline-flex h-8 items-center justify-center rounded-full border border-[rgba(190,18,60,0.2)] bg-white px-3 text-xs font-semibold text-[var(--rose)] transition hover:bg-[rgba(190,18,60,0.06)]"
+                                className="inline-flex h-8 items-center justify-center rounded-full border border-[rgba(190,18,60,0.2)] bg-[var(--nc-card)] px-3 text-xs font-semibold text-[var(--rose)] transition hover:bg-[rgba(190,18,60,0.06)]"
                               >
                                 Descartar
                               </button>
@@ -2350,7 +2350,7 @@ export default function GenericModuleManagement({
                                 <button
                                   type="button"
                                   onClick={() => openViewModal(record)}
-                                  className="inline-flex h-8.5 w-8.5 items-center justify-center rounded-full border border-[var(--line)] bg-white text-[var(--ink)] transition hover:border-[var(--accent)] hover:text-[var(--accent)]"
+                                  className="inline-flex h-8.5 w-8.5 items-center justify-center rounded-full border border-[var(--line)] bg-[var(--nc-card)] text-[var(--ink)] transition hover:border-[var(--accent)] hover:text-[var(--accent)]"
                                   aria-label={`Visualizar ${config.label.toLowerCase()}`}
                                   title="Visualizar"
                                 >
@@ -2360,7 +2360,7 @@ export default function GenericModuleManagement({
                                 <button
                                   type="button"
                                   onClick={() => openEditModal(record)}
-                                  className="inline-flex h-8.5 w-8.5 items-center justify-center rounded-full border border-[var(--line)] bg-white text-[var(--ink)] transition hover:border-[var(--accent)] hover:text-[var(--accent)]"
+                                  className="inline-flex h-8.5 w-8.5 items-center justify-center rounded-full border border-[var(--line)] bg-[var(--nc-card)] text-[var(--ink)] transition hover:border-[var(--accent)] hover:text-[var(--accent)]"
                                   aria-label={`Editar ${config.label.toLowerCase()}`}
                                   title="Editar"
                                 >
@@ -2370,7 +2370,7 @@ export default function GenericModuleManagement({
                                 <button
                                   type="button"
                                   onClick={() => void handleDelete(record)}
-                                  className="inline-flex h-8.5 w-8.5 items-center justify-center rounded-full border border-[rgba(190,18,60,0.15)] bg-white text-[var(--rose)] transition hover:border-[rgba(190,18,60,0.35)] hover:bg-[rgba(190,18,60,0.06)]"
+                                  className="inline-flex h-8.5 w-8.5 items-center justify-center rounded-full border border-[rgba(190,18,60,0.15)] bg-[var(--nc-card)] text-[var(--rose)] transition hover:border-[rgba(190,18,60,0.35)] hover:bg-[rgba(190,18,60,0.06)]"
                                   aria-label={`Excluir ${config.label.toLowerCase()}`}
                                   title="Excluir"
                                 >
@@ -2420,7 +2420,7 @@ export default function GenericModuleManagement({
               <button
                 type="button"
                 onClick={requestCloseModal}
-                className="inline-flex h-9 items-center justify-center self-start rounded-full border border-[var(--line)] bg-white px-4 text-[13px] font-semibold text-[var(--ink)] transition hover:border-[var(--accent)] hover:text-[var(--accent)]"
+                className="inline-flex h-9 items-center justify-center self-start rounded-full border border-[var(--line)] bg-[var(--nc-card)] px-4 text-[13px] font-semibold text-[var(--ink)] transition hover:border-[var(--accent)] hover:text-[var(--accent)]"
               >
                 
                 Fechar
@@ -2429,7 +2429,7 @@ export default function GenericModuleManagement({
             <div className="admin-modal-content mt-2.5 pr-1">
               
               {hasSteps ? (
-                <div className="rounded-[18px] border border-[var(--line)] bg-[#fafafa] p-2.5 md:p-3">
+                <div className="rounded-[18px] border border-[var(--line)] bg-[var(--nc-surface-elevated)] p-2.5 md:p-3">
                   
                   <div className="flex flex-col gap-1.5 sm:flex-row sm:items-start sm:justify-between">
                     
@@ -2459,11 +2459,11 @@ export default function GenericModuleManagement({
                           key={step.key}
                           type="button"
                           onClick={() => setActiveStepIndex(index)}
-                          className={`flex min-w-[142px] flex-1 items-center gap-2.5 rounded-[16px] border px-2.5 py-2 text-left transition md:min-w-0 ${isActive ? "border-[var(--blue)] bg-[rgba(37,99,235,0.08)]" : isCompleted ? "border-[rgba(34,197,94,0.18)] bg-[rgba(74,222,128,0.08)]" : "border-[var(--line)] bg-white hover:border-[var(--blue)]"}`}
+                          className={`flex min-w-[142px] flex-1 items-center gap-2.5 rounded-[16px] border px-2.5 py-2 text-left transition md:min-w-0 ${isActive ? "border-[var(--blue)] bg-[rgba(37,99,235,0.08)]" : isCompleted ? "border-[rgba(34,197,94,0.18)] bg-[rgba(74,222,128,0.08)]" : "border-[var(--line)] bg-[var(--nc-card)] hover:border-[var(--blue)]"}`}
                         >
                           
                           <span
-                            className={`inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-full text-[11px] font-semibold ${isActive ? "bg-[var(--blue)] text-white" : isCompleted ? "bg-[var(--mint-deep)] text-white" : "bg-[#eef2f7] text-[var(--muted)]"}`}
+                            className={`inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-full text-[11px] font-semibold ${isActive ? "bg-[var(--blue)] text-white" : isCompleted ? "bg-[var(--mint-deep)] text-white" : "bg-[var(--nc-surface-interactive)] text-[var(--muted)]"}`}
                           >
                             
                             {index + 1}
@@ -2491,12 +2491,12 @@ export default function GenericModuleManagement({
                 
                 <div className="grid gap-3">
                   
-                  <div className="h-full rounded-[18px] border border-[var(--line)] bg-[#fafafa] p-3">
+                  <div className="h-full rounded-[18px] border border-[var(--line)] bg-[var(--nc-surface-elevated)] p-3">
                     
                     {isAssetAttachmentsStep ? (
                       <div className="grid gap-3 lg:grid-cols-2">
                         
-                        <section className="rounded-[18px] border border-[var(--line)] bg-white p-3.5">
+                        <section className="rounded-[18px] border border-[var(--line)] bg-[var(--nc-card)] p-3.5">
                           
                           <div className="flex items-start justify-between gap-3">
                             
@@ -2549,7 +2549,7 @@ export default function GenericModuleManagement({
                               <label
                                 htmlFor={`${imageInputId}-camera`}
                                 title="Tirar foto com a camera"
-                                className={`inline-flex h-9 cursor-pointer items-center justify-center gap-1.5 rounded-full px-3 text-xs font-semibold transition md:hidden ${uploadingImages || totalImageCount >= 5 ? "bg-[#dbe3f1] text-[var(--muted)]" : "border border-[var(--line)] bg-white text-[var(--ink)] hover:border-[var(--accent)] hover:text-[var(--accent)]"}`}
+                                className={`inline-flex h-9 cursor-pointer items-center justify-center gap-1.5 rounded-full px-3 text-xs font-semibold transition md:hidden ${uploadingImages || totalImageCount >= 5 ? "bg-[#dbe3f1] text-[var(--muted)]" : "border border-[var(--line)] bg-[var(--nc-card)] text-[var(--ink)] hover:border-[var(--accent)] hover:text-[var(--accent)]"}`}
                               >
                                 <svg aria-hidden="true" className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
                                   <path d="M4 8.5h3l1.5-2h7L17 8.5h3a1 1 0 0 1 1 1v8a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1v-8a1 1 0 0 1 1-1Z" />
@@ -2559,7 +2559,7 @@ export default function GenericModuleManagement({
                               </label>
                               <label
                                 htmlFor={imageInputId}
-                                className={`inline-flex h-9 cursor-pointer items-center justify-center rounded-full px-3 text-xs font-semibold transition ${uploadingImages || totalImageCount >= 5 ? "bg-[#dbe3f1] text-[var(--muted)]" : "border border-[var(--line)] bg-white text-[var(--ink)] hover:border-[var(--accent)] hover:text-[var(--accent)]"}`}
+                                className={`inline-flex h-9 cursor-pointer items-center justify-center rounded-full px-3 text-xs font-semibold transition ${uploadingImages || totalImageCount >= 5 ? "bg-[#dbe3f1] text-[var(--muted)]" : "border border-[var(--line)] bg-[var(--nc-card)] text-[var(--ink)] hover:border-[var(--accent)] hover:text-[var(--accent)]"}`}
                               >
                                 
                                 {uploadingImages
@@ -2581,7 +2581,7 @@ export default function GenericModuleManagement({
                                         imagem.url ??
                                         `${selectedRecord?.id}-img-${index}`,
                                     )}
-                                    className="group overflow-hidden rounded-[16px] border border-[var(--line)] bg-[#fafafa] cursor-pointer"
+                                    className="group overflow-hidden rounded-[16px] border border-[var(--line)] bg-[var(--nc-surface-elevated)] cursor-pointer"
                                     onClick={() =>
                                       openAssetPreview({
                                         type: "image",
@@ -2598,7 +2598,7 @@ export default function GenericModuleManagement({
                                     title="Visualizar imagem"
                                   >
                                     
-                                    <div className="relative aspect-square bg-[#eef2f7]">
+                                    <div className="relative aspect-square bg-[var(--nc-surface-interactive)]">
                                       
                                       <div className="absolute left-1.5 top-1.5 z-10 flex items-center gap-1">
                                         
@@ -2616,7 +2616,7 @@ export default function GenericModuleManagement({
                                                 imagem.id,
                                               );
                                             }}
-                                            className="inline-flex h-7 items-center justify-center rounded-full bg-[rgba(255,255,255,0.94)] px-2 text-[10px] font-semibold text-[var(--blue)] shadow-sm transition hover:bg-white"
+                                            className="inline-flex h-7 items-center justify-center rounded-full bg-[var(--bg-panel)] px-2 text-[10px] font-semibold text-[var(--blue)] shadow-sm transition hover:bg-[var(--nc-card)]"
                                             title="Definir como principal"
                                           >
                                             
@@ -2638,7 +2638,7 @@ export default function GenericModuleManagement({
                                           event.stopPropagation();
                                           void handleImageDelete(imagem.id);
                                         }}
-                                        className="absolute right-1.5 top-1.5 inline-flex h-7 w-7 items-center justify-center rounded-full bg-[rgba(255,255,255,0.94)] text-[var(--rose)] shadow-sm transition hover:bg-white"
+                                        className="absolute right-1.5 top-1.5 inline-flex h-7 w-7 items-center justify-center rounded-full bg-[var(--bg-panel)] text-[var(--rose)] shadow-sm transition hover:bg-[var(--nc-card)]"
                                         aria-label="Remover imagem"
                                         title="Remover imagem"
                                       >
@@ -2669,7 +2669,7 @@ export default function GenericModuleManagement({
                                                 "previous",
                                               );
                                             }}
-                                            className="inline-flex h-6 w-6 items-center justify-center rounded-full border border-[var(--line)] bg-white text-[var(--ink)] transition hover:border-[var(--blue)] hover:text-[var(--blue)]"
+                                            className="inline-flex h-6 w-6 items-center justify-center rounded-full border border-[var(--line)] bg-[var(--nc-card)] text-[var(--ink)] transition hover:border-[var(--blue)] hover:text-[var(--blue)]"
                                             title="Mover para a esquerda"
                                           >
                                             
@@ -2686,7 +2686,7 @@ export default function GenericModuleManagement({
                                                 "next",
                                               );
                                             }}
-                                            className="inline-flex h-6 w-6 items-center justify-center rounded-full border border-[var(--line)] bg-white text-[var(--ink)] transition hover:border-[var(--blue)] hover:text-[var(--blue)]"
+                                            className="inline-flex h-6 w-6 items-center justify-center rounded-full border border-[var(--line)] bg-[var(--nc-card)] text-[var(--ink)] transition hover:border-[var(--blue)] hover:text-[var(--blue)]"
                                             title="Mover para a direita"
                                           >
                                             
@@ -2702,7 +2702,7 @@ export default function GenericModuleManagement({
                                 {pendingImages.map((imagem) => (
                                   <div
                                     key={imagem.id}
-                                    className="group overflow-hidden rounded-[16px] border border-dashed border-[rgba(37,99,235,0.22)] bg-[#fafafa] cursor-pointer"
+                                    className="group overflow-hidden rounded-[16px] border border-dashed border-[rgba(37,99,235,0.22)] bg-[var(--nc-surface-elevated)] cursor-pointer"
                                     onClick={() =>
                                       openAssetPreview({
                                         type: "image",
@@ -2714,7 +2714,7 @@ export default function GenericModuleManagement({
                                     title="Visualizar imagem"
                                   >
                                     
-                                    <div className="relative aspect-square bg-[#eef2f7]">
+                                    <div className="relative aspect-square bg-[var(--nc-surface-interactive)]">
                                       
                                       <div className="absolute left-1.5 top-1.5 z-10">
                                         
@@ -2734,7 +2734,7 @@ export default function GenericModuleManagement({
                                           event.stopPropagation();
                                           void handleImageDelete(imagem.id);
                                         }}
-                                        className="absolute right-1.5 top-1.5 inline-flex h-7 w-7 items-center justify-center rounded-full bg-[rgba(255,255,255,0.94)] text-[var(--rose)] shadow-sm transition hover:bg-white"
+                                        className="absolute right-1.5 top-1.5 inline-flex h-7 w-7 items-center justify-center rounded-full bg-[var(--bg-panel)] text-[var(--rose)] shadow-sm transition hover:bg-[var(--nc-card)]"
                                         aria-label="Remover imagem"
                                         title="Remover imagem"
                                       >
@@ -2755,14 +2755,14 @@ export default function GenericModuleManagement({
                                 ))}
                               </div>
                             ) : (
-                              <div className="rounded-[16px] border border-dashed border-[var(--line)] bg-[#fafafa] px-4 py-5 text-sm text-[var(--muted)]">
+                              <div className="rounded-[16px] border border-dashed border-[var(--line)] bg-[var(--nc-surface-elevated)] px-4 py-5 text-sm text-[var(--muted)]">
                                 
                                 Nenhuma imagem selecionada.
                               </div>
                             )}
                           </div>
                         </section>
-                        <section className="rounded-[18px] border border-[var(--line)] bg-white p-3.5">
+                        <section className="rounded-[18px] border border-[var(--line)] bg-[var(--nc-card)] p-3.5">
                           
                           <div className="flex items-start justify-between gap-3">
                             
@@ -2791,7 +2791,7 @@ export default function GenericModuleManagement({
                                 onClick={() =>
                                   setDocumentTypeMenuOpen((current) => !current)
                                 }
-                                className={`inline-flex h-9 items-center justify-center rounded-full px-3 text-xs font-semibold transition ${uploadingDocuments ? "bg-[#dbe3f1] text-[var(--muted)]" : "border border-[var(--line)] bg-white text-[var(--ink)] hover:border-[var(--accent)] hover:text-[var(--accent)]"}`}
+                                className={`inline-flex h-9 items-center justify-center rounded-full px-3 text-xs font-semibold transition ${uploadingDocuments ? "bg-[#dbe3f1] text-[var(--muted)]" : "border border-[var(--line)] bg-[var(--nc-card)] text-[var(--ink)] hover:border-[var(--accent)] hover:text-[var(--accent)]"}`}
                                 disabled={uploadingDocuments}
                               >
                                 
@@ -2800,7 +2800,7 @@ export default function GenericModuleManagement({
                                   : `Anexar ${getDocumentTypeLabel(uploadDocumentType)}`}
                               </button>
                               {documentTypeMenuOpen && !uploadingDocuments ? (
-                                <div className="absolute right-0 top-11 z-20 min-w-[170px] overflow-hidden rounded-[16px] border border-[var(--line)] bg-white p-1 shadow-[0_14px_36px_rgba(15,23,42,0.12)]">
+                                <div className="absolute right-0 top-11 z-20 min-w-[170px] overflow-hidden rounded-[16px] border border-[var(--line)] bg-[var(--nc-card)] p-1 shadow-[0_14px_36px_rgba(15,23,42,0.12)]">
                                   
                                   {documentTypeOptions.map((option) => (
                                     <button
@@ -2809,7 +2809,7 @@ export default function GenericModuleManagement({
                                       onClick={() =>
                                         handleDocumentTypeSelect(option.value)
                                       }
-                                      className={`flex w-full items-center justify-between rounded-[12px] px-3 py-2 text-left text-[12px] font-medium transition ${uploadDocumentType === option.value ? "bg-[rgba(37,99,235,0.08)] text-[var(--blue)]" : "text-[var(--ink)] hover:bg-[#f8fafc]"}`}
+                                      className={`flex w-full items-center justify-between rounded-[12px] px-3 py-2 text-left text-[12px] font-medium transition ${uploadDocumentType === option.value ? "bg-[rgba(37,99,235,0.08)] text-[var(--blue)]" : "text-[var(--ink)] hover:bg-[var(--nc-surface-elevated)]"}`}
                                     >
                                       
                                       <span>{option.label}</span>
@@ -2837,7 +2837,7 @@ export default function GenericModuleManagement({
                                         documento.url ??
                                         `${selectedRecord?.id}-doc-${index}`,
                                     )}
-                                    className="group overflow-hidden rounded-[16px] border border-[var(--line)] bg-[#fafafa] cursor-pointer"
+                                    className="group overflow-hidden rounded-[16px] border border-[var(--line)] bg-[var(--nc-surface-elevated)] cursor-pointer"
                                     onClick={() =>
                                       openAssetPreview({
                                         type: "document",
@@ -2854,7 +2854,7 @@ export default function GenericModuleManagement({
                                     title="Visualizar documento"
                                   >
                                     
-                                    <div className="relative aspect-[4/3] overflow-hidden bg-[#eef2f7]">
+                                    <div className="relative aspect-[4/3] overflow-hidden bg-[var(--nc-surface-interactive)]">
                                       
                                       {String(
                                         documento.mime_type ?? "",
@@ -2884,10 +2884,10 @@ export default function GenericModuleManagement({
                                             documento.nome_original ??
                                               "Documento fiscal",
                                           )}
-                                          className="h-full w-full border-0 bg-white pointer-events-none"
+                                          className="h-full w-full border-0 bg-[var(--nc-card)] pointer-events-none"
                                         />
                                       )}
-                                      <div className="absolute left-2 top-2 inline-flex items-center gap-1 rounded-full bg-[rgba(255,255,255,0.94)] px-2.5 py-1 text-[10px] font-semibold text-[var(--blue)] shadow-sm">
+                                      <div className="absolute left-2 top-2 inline-flex items-center gap-1 rounded-full bg-[var(--bg-panel)] px-2.5 py-1 text-[10px] font-semibold text-[var(--blue)] shadow-sm">
                                         
                                         {getDocumentTypeLabel(
                                           documento.tipo_documento,
@@ -2901,7 +2901,7 @@ export default function GenericModuleManagement({
                                             documento.id,
                                           );
                                         }}
-                                        className="absolute right-2 top-2 inline-flex h-7 w-7 items-center justify-center rounded-full bg-[rgba(255,255,255,0.94)] text-[var(--rose)] shadow-sm transition hover:bg-white"
+                                        className="absolute right-2 top-2 inline-flex h-7 w-7 items-center justify-center rounded-full bg-[var(--bg-panel)] text-[var(--rose)] shadow-sm transition hover:bg-[var(--nc-card)]"
                                         aria-label="Remover documento"
                                         title="Remover documento"
                                       >
@@ -2940,7 +2940,7 @@ export default function GenericModuleManagement({
                                               event.target.value,
                                             )
                                           }
-                                          className="h-7 rounded-full border border-[var(--line)] bg-white px-2.5 text-[10px] font-semibold text-[var(--ink)] outline-none"
+                                          className="h-7 rounded-full border border-[var(--line)] bg-[var(--nc-card)] px-2.5 text-[10px] font-semibold text-[var(--ink)] outline-none"
                                         >
                                           
                                           {documentTypeOptions.map((option) => (
@@ -2960,7 +2960,7 @@ export default function GenericModuleManagement({
                                 {pendingDocuments.map((documento) => (
                                   <div
                                     key={documento.id}
-                                    className="group overflow-hidden rounded-[16px] border border-dashed border-[rgba(37,99,235,0.22)] bg-[#fafafa] cursor-pointer"
+                                    className="group overflow-hidden rounded-[16px] border border-dashed border-[rgba(37,99,235,0.22)] bg-[var(--nc-surface-elevated)] cursor-pointer"
                                     onClick={() =>
                                       openAssetPreview({
                                         type: "document",
@@ -2972,7 +2972,7 @@ export default function GenericModuleManagement({
                                     title="Visualizar documento"
                                   >
                                     
-                                    <div className="relative aspect-[4/3] overflow-hidden bg-[#eef2f7]">
+                                    <div className="relative aspect-[4/3] overflow-hidden bg-[var(--nc-surface-interactive)]">
                                       
                                       {documento.mimeType.includes("xml") ||
                                       documento.name
@@ -3000,10 +3000,10 @@ export default function GenericModuleManagement({
                                             documento.previewUrl,
                                           )}
                                           title={documento.name}
-                                          className="h-full w-full border-0 bg-white pointer-events-none"
+                                          className="h-full w-full border-0 bg-[var(--nc-card)] pointer-events-none"
                                         />
                                       )}
-                                      <div className="absolute left-2 top-2 inline-flex items-center gap-1 rounded-full bg-[rgba(255,255,255,0.94)] px-2.5 py-1 text-[10px] font-semibold text-[var(--blue)] shadow-sm">
+                                      <div className="absolute left-2 top-2 inline-flex items-center gap-1 rounded-full bg-[var(--bg-panel)] px-2.5 py-1 text-[10px] font-semibold text-[var(--blue)] shadow-sm">
                                         
                                         {getDocumentTypeLabel(
                                           documento.tipoDocumento,
@@ -3017,7 +3017,7 @@ export default function GenericModuleManagement({
                                             documento.id,
                                           );
                                         }}
-                                        className="absolute right-2 top-2 inline-flex h-7 w-7 items-center justify-center rounded-full bg-[rgba(255,255,255,0.94)] text-[var(--rose)] shadow-sm transition hover:bg-white"
+                                        className="absolute right-2 top-2 inline-flex h-7 w-7 items-center justify-center rounded-full bg-[var(--bg-panel)] text-[var(--rose)] shadow-sm transition hover:bg-[var(--nc-card)]"
                                         aria-label="Remover documento"
                                         title="Remover documento"
                                       >
@@ -3047,7 +3047,7 @@ export default function GenericModuleManagement({
                                               event.target.value,
                                             )
                                           }
-                                          className="h-7 rounded-full border border-[var(--line)] bg-white px-2.5 text-[10px] font-semibold text-[var(--ink)] outline-none"
+                                          className="h-7 rounded-full border border-[var(--line)] bg-[var(--nc-card)] px-2.5 text-[10px] font-semibold text-[var(--ink)] outline-none"
                                         >
                                           
                                           {documentTypeOptions.map((option) => (
@@ -3066,7 +3066,7 @@ export default function GenericModuleManagement({
                                 ))}
                               </div>
                             ) : (
-                              <div className="rounded-[16px] border border-dashed border-[var(--line)] bg-[#fafafa] px-4 py-5 text-sm text-[var(--muted)]">
+                              <div className="rounded-[16px] border border-dashed border-[var(--line)] bg-[var(--nc-surface-elevated)] px-4 py-5 text-sm text-[var(--muted)]">
                                 
                                 Nenhuma Nota Fiscal selecionada.
                               </div>
@@ -3077,13 +3077,13 @@ export default function GenericModuleManagement({
                     ) : (
                       <div className="space-y-2.5">
                         {isTransferenciasBensModule ? (
-                          <section className="rounded-[16px] border border-[var(--line)] bg-white px-3 py-2.5">
+                          <section className="rounded-[16px] border border-[var(--line)] bg-[var(--nc-card)] px-3 py-2.5">
                             <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[var(--muted)]">
                               Contexto do bem para transferencia
                             </p>
                             {transferenciaBemSelecionado ? (
                               <div className="mt-2.5 grid gap-2 sm:grid-cols-2 xl:grid-cols-4">
-                                <div className="rounded-[12px] border border-[var(--line)] bg-[#fafafa] px-2.5 py-2">
+                                <div className="rounded-[12px] border border-[var(--line)] bg-[var(--nc-surface-elevated)] px-2.5 py-2">
                                   <p className="text-[10px] font-semibold uppercase tracking-[0.14em] text-[var(--muted)]">
                                     Responsavel atual
                                   </p>
@@ -3096,7 +3096,7 @@ export default function GenericModuleManagement({
                                       : "Sem responsavel"}
                                   </p>
                                 </div>
-                                <div className="rounded-[12px] border border-[var(--line)] bg-[#fafafa] px-2.5 py-2">
+                                <div className="rounded-[12px] border border-[var(--line)] bg-[var(--nc-surface-elevated)] px-2.5 py-2">
                                   <p className="text-[10px] font-semibold uppercase tracking-[0.14em] text-[var(--muted)]">
                                     Unidade atual
                                   </p>
@@ -3107,7 +3107,7 @@ export default function GenericModuleManagement({
                                     )}
                                   </p>
                                 </div>
-                                <div className="rounded-[12px] border border-[var(--line)] bg-[#fafafa] px-2.5 py-2">
+                                <div className="rounded-[12px] border border-[var(--line)] bg-[var(--nc-surface-elevated)] px-2.5 py-2">
                                   <p className="text-[10px] font-semibold uppercase tracking-[0.14em] text-[var(--muted)]">
                                     Departamento atual
                                   </p>
@@ -3118,7 +3118,7 @@ export default function GenericModuleManagement({
                                     )}
                                   </p>
                                 </div>
-                                <div className="rounded-[12px] border border-[var(--line)] bg-[#fafafa] px-2.5 py-2">
+                                <div className="rounded-[12px] border border-[var(--line)] bg-[var(--nc-surface-elevated)] px-2.5 py-2">
                                   <p className="text-[10px] font-semibold uppercase tracking-[0.14em] text-[var(--muted)]">
                                     Local atual
                                   </p>
@@ -3190,7 +3190,7 @@ export default function GenericModuleManagement({
                             return (
                               <label key={field.name} className="admin-field">
                                 {field.label}
-                                <div className="mt-0.5 flex flex-wrap items-center gap-4 rounded-[14px] border border-[var(--line)] bg-white px-3 py-2.5">
+                                <div className="mt-0.5 flex flex-wrap items-center gap-4 rounded-[14px] border border-[var(--line)] bg-[var(--nc-card)] px-3 py-2.5">
                                   {checkboxOptions.map((option) => {
                                     const checked = currentSelection.has(option.value);
                                     return (
@@ -3311,7 +3311,7 @@ export default function GenericModuleManagement({
                                   <button
                                     type="button"
                                     onClick={() => setLeitor({ campo: field, opcoes: options })}
-                                    className="mt-2 inline-flex h-9 w-fit items-center gap-1.5 rounded-full border border-[var(--line)] bg-white px-3.5 text-[12px] font-semibold text-[var(--ink)] transition hover:border-[var(--accent)] hover:text-[var(--accent-deep)]"
+                                    className="mt-2 inline-flex h-9 w-fit items-center gap-1.5 rounded-full border border-[var(--line)] bg-[var(--nc-card)] px-3.5 text-[12px] font-semibold text-[var(--ink)] transition hover:border-[var(--accent)] hover:text-[var(--accent-deep)]"
                                   >
                                     <svg
                                       aria-hidden="true"
@@ -3385,7 +3385,7 @@ export default function GenericModuleManagement({
                 </div>
               </div>
             </div>
-            <div className="sticky bottom-0 mt-2.5 -mx-3 border-t border-[var(--line)] bg-[rgba(255,255,255,0.96)] px-3 pt-2.5 pb-1 backdrop-blur md:-mx-3.5 md:px-3.5">
+            <div className="sticky bottom-0 mt-2.5 -mx-3 border-t border-[var(--line)] bg-[var(--bg-panel)] px-3 pt-2.5 pb-1 backdrop-blur md:-mx-3.5 md:px-3.5">
               
               <div className="flex flex-col-reverse gap-2 sm:flex-row sm:items-center sm:justify-between">
                 
@@ -3463,7 +3463,7 @@ export default function GenericModuleManagement({
                   href={assetPreview.url}
                   target="_blank"
                   rel="noreferrer"
-                  className="inline-flex h-10 items-center justify-center rounded-full border border-[var(--line)] bg-white px-4 text-sm font-semibold text-[var(--ink)] transition hover:border-[var(--blue)] hover:text-[var(--blue)]"
+                  className="inline-flex h-10 items-center justify-center rounded-full border border-[var(--line)] bg-[var(--nc-card)] px-4 text-sm font-semibold text-[var(--ink)] transition hover:border-[var(--blue)] hover:text-[var(--blue)]"
                 >
                   
                   Abrir em nova guia
@@ -3471,14 +3471,14 @@ export default function GenericModuleManagement({
                 <button
                   type="button"
                   onClick={closeAssetPreview}
-                  className="inline-flex h-10 items-center justify-center rounded-full border border-[var(--line)] bg-white px-4 text-sm font-semibold text-[var(--ink)] transition hover:border-[var(--accent)] hover:text-[var(--accent)]"
+                  className="inline-flex h-10 items-center justify-center rounded-full border border-[var(--line)] bg-[var(--nc-card)] px-4 text-sm font-semibold text-[var(--ink)] transition hover:border-[var(--accent)] hover:text-[var(--accent)]"
                 >
                   
                   Fechar
                 </button>
               </div>
             </div>
-            <div className="mt-3 rounded-[18px] border border-[var(--line)] bg-[#fafafa] px-3 py-3">
+            <div className="mt-3 rounded-[18px] border border-[var(--line)] bg-[var(--nc-surface-elevated)] px-3 py-3">
               
               <p className="text-[12px] leading-5 text-[var(--muted)]">
                 
@@ -3487,7 +3487,7 @@ export default function GenericModuleManagement({
                   : "Visualização do documento fiscal vinculado ao bem."}
               </p>
             </div>
-            <div className="mt-3 flex min-h-[60vh] items-center justify-center rounded-[20px] border border-[var(--line)] bg-[#f8fafc] p-3">
+            <div className="mt-3 flex min-h-[60vh] items-center justify-center rounded-[20px] border border-[var(--line)] bg-[var(--nc-surface-elevated)] p-3">
               
               {assetPreview.type === "image" ? (
                 <img
@@ -3499,10 +3499,10 @@ export default function GenericModuleManagement({
                 <iframe
                   src={getDocumentPreviewUrl(assetPreview.url)}
                   title={assetPreview.name}
-                  className="h-[68vh] w-full rounded-[16px] border-0 bg-white"
+                  className="h-[68vh] w-full rounded-[16px] border-0 bg-[var(--nc-card)]"
                 />
               ) : (
-                <div className="rounded-[18px] border border-dashed border-[var(--line)] bg-white px-6 py-8 text-center">
+                <div className="rounded-[18px] border border-dashed border-[var(--line)] bg-[var(--nc-card)] px-6 py-8 text-center">
                   
                   <p className="text-sm font-semibold text-[var(--ink)]">
                     Visualização interna indisponivel

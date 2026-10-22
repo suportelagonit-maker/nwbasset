@@ -62,10 +62,10 @@ function FeedbackCard({
 }) {
   const cardToneClass =
     tone === 'success'
-      ? 'border-[rgba(34,197,94,0.15)] bg-white text-[var(--ink)]'
+      ? 'border-[rgba(34,197,94,0.15)] bg-[var(--nc-card)] text-[var(--ink)]'
       : tone === 'warning'
-        ? 'border-[rgba(245,158,11,0.2)] bg-white text-[var(--ink)]'
-        : 'border-[rgba(225,29,72,0.15)] bg-white text-[var(--ink)]';
+        ? 'border-[rgba(245,158,11,0.2)] bg-[var(--nc-card)] text-[var(--ink)]'
+        : 'border-[rgba(225,29,72,0.15)] bg-[var(--nc-card)] text-[var(--ink)]';
 
   const iconToneClass =
     tone === 'success'
@@ -91,7 +91,7 @@ function FeedbackCard({
           <button
             type="button"
             onClick={onClose}
-            className="inline-flex h-8 w-8 items-center justify-center rounded-full border border-[var(--line)] bg-white text-[var(--muted)] transition hover:border-[var(--blue)] hover:text-[var(--blue)]"
+            className="inline-flex h-8 w-8 items-center justify-center rounded-full border border-[var(--line)] bg-[var(--nc-card)] text-[var(--muted)] transition hover:border-[var(--blue)] hover:text-[var(--blue)]"
             aria-label="Fechar mensagem"
           >
             <CloseIcon />

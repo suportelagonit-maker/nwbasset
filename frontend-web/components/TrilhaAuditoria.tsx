@@ -147,14 +147,14 @@ export default function TrilhaAuditoria() {
         <>
           <div className="mt-5 grid gap-2">
             {linhas.length === 0 ? (
-              <p className="rounded-2xl border border-[var(--line)] bg-[#fafafa] px-4 py-6 text-center text-sm text-[var(--muted)]">
+              <p className="rounded-2xl border border-[var(--line)] bg-[var(--nc-surface-elevated)] px-4 py-6 text-center text-sm text-[var(--muted)]">
                 Nenhum evento no período.
               </p>
             ) : null}
             {linhas.map((linha) => (
               <div
                 key={`${linha.fonte}-${linha.id}`}
-                className="flex flex-wrap items-start justify-between gap-3 rounded-2xl border border-[var(--line)] bg-[#fafafa] px-4 py-3"
+                className="flex flex-wrap items-start justify-between gap-3 rounded-2xl border border-[var(--line)] bg-[var(--nc-surface-elevated)] px-4 py-3"
               >
                 <div className="min-w-0">
                   <p className="flex flex-wrap items-center gap-2">
@@ -194,7 +194,7 @@ export default function TrilhaAuditoria() {
                   type="button"
                   disabled={meta.pagina <= 1}
                   onClick={() => setPagina((p) => Math.max(1, p - 1))}
-                  className="inline-flex h-9 items-center rounded-full border border-[var(--line)] bg-white px-4 text-[12px] font-semibold text-[var(--ink)] transition hover:border-[var(--accent)] disabled:opacity-50"
+                  className="inline-flex h-9 items-center rounded-full border border-[var(--line)] bg-[var(--nc-card)] px-4 text-[12px] font-semibold text-[var(--ink)] transition hover:border-[var(--accent)] disabled:opacity-50"
                 >
                   Anterior
                 </button>
@@ -202,7 +202,7 @@ export default function TrilhaAuditoria() {
                   type="button"
                   disabled={meta.pagina >= meta.ultima_pagina}
                   onClick={() => setPagina((p) => p + 1)}
-                  className="inline-flex h-9 items-center rounded-full border border-[var(--line)] bg-white px-4 text-[12px] font-semibold text-[var(--ink)] transition hover:border-[var(--accent)] disabled:opacity-50"
+                  className="inline-flex h-9 items-center rounded-full border border-[var(--line)] bg-[var(--nc-card)] px-4 text-[12px] font-semibold text-[var(--ink)] transition hover:border-[var(--accent)] disabled:opacity-50"
                 >
                   Próxima
                 </button>

@@ -97,7 +97,7 @@ export default function ResponsaveisUnifiedManagement({
           </div>
 
           {empresaNome ? (
-            <div className="rounded-xl border border-[var(--line)] bg-[#fafafa] px-3 py-2">
+            <div className="rounded-xl border border-[var(--line)] bg-[var(--nc-surface-elevated)] px-3 py-2">
               <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-[var(--muted)]">Empresa ativa</p>
               <p className="mt-0.5 text-[13px] font-semibold text-[var(--ink)]">{empresaNome}</p>
             </div>
@@ -118,7 +118,7 @@ export default function ResponsaveisUnifiedManagement({
                   'rounded-[16px] border px-4 py-3 text-left transition',
                   active
                     ? 'border-[rgba(var(--accent-rgb),0.42)] bg-[rgba(var(--accent-rgb),0.1)]'
-                    : 'border-[var(--line)] bg-white hover:border-[rgba(var(--accent-rgb),0.3)] hover:bg-[rgba(var(--accent-rgb),0.04)]',
+                    : 'border-[var(--line)] bg-[var(--nc-card)] hover:border-[rgba(var(--accent-rgb),0.3)] hover:bg-[rgba(var(--accent-rgb),0.04)]',
                 ].join(' ')}
               >
                 <div className="flex items-center justify-between gap-3">
@@ -126,7 +126,7 @@ export default function ResponsaveisUnifiedManagement({
                     <span
                       className={[
                         'inline-flex h-8 w-8 items-center justify-center rounded-lg',
-                        active ? 'bg-[rgba(var(--accent-rgb),0.2)] text-[var(--accent-deep)]' : 'bg-[#f3f4f6] text-[#334155]',
+                        active ? 'bg-[rgba(var(--accent-rgb),0.2)] text-[var(--accent-deep)]' : 'bg-[var(--nc-surface-interactive)] text-[var(--ink)]',
                       ].join(' ')}
                     >
                       {icon}

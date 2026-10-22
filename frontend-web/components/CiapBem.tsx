@@ -105,14 +105,14 @@ export default function CiapBem({ bemId }: { bemId: number }) {
         <button
           type="button"
           onClick={() => setEditando((v) => !v)}
-          className="inline-flex h-9 shrink-0 items-center rounded-full border border-[var(--line)] bg-white px-4 text-[12px] font-semibold text-[var(--ink)] transition hover:border-[var(--accent)]"
+          className="inline-flex h-9 shrink-0 items-center rounded-full border border-[var(--line)] bg-[var(--nc-card)] px-4 text-[12px] font-semibold text-[var(--ink)] transition hover:border-[var(--accent)]"
         >
           {editando ? 'Fechar' : dados?.tem_credito ? 'Editar crédito' : 'Informar crédito'}
         </button>
       </div>
 
       {editando ? (
-        <div className="mt-4 grid gap-3 rounded-2xl border border-[var(--line)] bg-[#fafafa] p-4 sm:grid-cols-2">
+        <div className="mt-4 grid gap-3 rounded-2xl border border-[var(--line)] bg-[var(--nc-surface-elevated)] p-4 sm:grid-cols-2">
           <label className="admin-field">
             Crédito de ICMS (R$)
             <input type="text" inputMode="decimal" value={valor} onChange={(e) => setValor(e.target.value)} placeholder="0,00 (vazio = sem crédito)" className="admin-input" />
@@ -144,15 +144,15 @@ export default function CiapBem({ bemId }: { bemId: number }) {
       {!carregando && dados?.tem_credito ? (
         <>
           <div className="mt-4 grid gap-3 sm:grid-cols-3">
-            <div className="rounded-2xl border border-[var(--line)] bg-[#fafafa] px-4 py-3.5">
+            <div className="rounded-2xl border border-[var(--line)] bg-[var(--nc-surface-elevated)] px-4 py-3.5">
               <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-[var(--muted)]">Crédito total</p>
               <p className="mt-1.5 text-sm font-semibold text-[var(--ink)]">{moeda(dados.valor_credito_icms)}</p>
             </div>
-            <div className="rounded-2xl border border-[var(--line)] bg-[#fafafa] px-4 py-3.5">
+            <div className="rounded-2xl border border-[var(--line)] bg-[var(--nc-surface-elevated)] px-4 py-3.5">
               <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-[var(--muted)]">Parcela base (1/48)</p>
               <p className="mt-1.5 text-sm font-semibold text-[var(--ink)]">{moeda(dados.parcela_mensal ?? 0)}</p>
             </div>
-            <div className="rounded-2xl border border-[var(--line)] bg-[#fafafa] px-4 py-3.5">
+            <div className="rounded-2xl border border-[var(--line)] bg-[var(--nc-surface-elevated)] px-4 py-3.5">
               <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-[var(--muted)]">Apropriado</p>
               <p className="mt-1.5 text-sm font-semibold text-[var(--ink)]">{moeda(dados.total_apropriado ?? 0)}</p>
             </div>
@@ -187,7 +187,7 @@ export default function CiapBem({ bemId }: { bemId: number }) {
             <button
               type="button"
               onClick={() => setMostrarTudo((v) => !v)}
-              className="mt-3 inline-flex h-9 items-center rounded-full border border-[var(--line)] bg-white px-4 text-[12px] font-semibold text-[var(--ink)] transition hover:border-[var(--accent)]"
+              className="mt-3 inline-flex h-9 items-center rounded-full border border-[var(--line)] bg-[var(--nc-card)] px-4 text-[12px] font-semibold text-[var(--ink)] transition hover:border-[var(--accent)]"
             >
               {mostrarTudo ? 'Mostrar só 12 meses' : 'Ver as 48 parcelas'}
             </button>

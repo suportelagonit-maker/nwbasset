@@ -193,7 +193,7 @@ a {
 
 .chart-shell {
   border: 1px solid rgba(17, 24, 39, 0.08);
-  background: #ffffff;
+  background: var(--nc-card);
   box-shadow: 0 10px 22px rgba(17, 24, 39, 0.04);
 }
 
@@ -205,13 +205,13 @@ a {
 
 .admin-topbar-surface {
   border: 1px solid rgba(17, 24, 39, 0.07);
-  background: rgba(255, 255, 255, 0.96);
+  background: var(--bg-panel);
   box-shadow: none;
 }
 
 .admin-filter-surface {
   border: 1px solid rgba(15, 23, 42, 0.08);
-  background: rgba(255, 255, 255, 0.98);
+  background: var(--bg-panel);
   box-shadow: 0 12px 28px rgba(15, 23, 42, 0.045);
 }
 
@@ -292,7 +292,7 @@ a {
 
 .admin-modal-block {
   border: 1px solid var(--line);
-  background: #fafafa;
+  background: var(--nc-surface-elevated);
   border-radius: 20px;
   padding: 10px;
 }
@@ -308,7 +308,7 @@ a {
 
 .admin-modal-side {
   border: 1px solid var(--line);
-  background: #fafafa;
+  background: var(--nc-surface-elevated);
   border-radius: 20px;
   padding: 10px;
 }
@@ -320,7 +320,7 @@ a {
 
 .admin-step-shell {
   border: 1px solid var(--line);
-  background: #fafafa;
+  background: var(--nc-surface-elevated);
   border-radius: 20px;
   padding: 10px;
 }
@@ -332,7 +332,7 @@ a {
 
 .admin-step-card {
   border: 1px solid var(--line);
-  background: #ffffff;
+  background: var(--nc-card);
   border-radius: 16px;
   padding: 10px 12px;
 }
@@ -354,7 +354,7 @@ a {
   align-items: center;
   justify-content: center;
   border-radius: 999px;
-  background: #eef2f7;
+  background: var(--nc-surface-interactive);
   color: var(--muted);
   font-size: 11px;
   font-weight: 700;
@@ -388,7 +388,7 @@ a {
   bottom: 0;
   margin-top: 10px;
   border-top: 1px solid var(--line);
-  background: rgba(255, 255, 255, 0.96);
+  background: var(--bg-panel);
   padding-top: 8px;
   padding-bottom: 2px;
   backdrop-filter: blur(8px);
@@ -477,7 +477,7 @@ a {
   bottom: 0;
   margin-top: 10px;
   border-top: 1px solid var(--line);
-  background: rgba(255, 255, 255, 0.96);
+  background: var(--bg-panel);
   padding-top: 8px;
   padding-bottom: 2px;
   backdrop-filter: blur(8px);
@@ -515,7 +515,7 @@ a {
 .admin-textarea {
   width: 100%;
   border: 1px solid var(--line);
-  background: #ffffff;
+  background: var(--nc-card);
   color: var(--ink);
   outline: none;
   transition: border-color 120ms ease, box-shadow 120ms ease, background-color 120ms ease;
@@ -548,7 +548,7 @@ a {
 .admin-input:disabled,
 .admin-select:disabled,
 .admin-textarea:disabled {
-  background: #f3f4f6;
+  background: var(--nc-surface-interactive);
 }
 
 .admin-field {
@@ -561,7 +561,7 @@ a {
 
 .admin-summary-card {
   border: 1px solid var(--line);
-  background: #ffffff;
+  background: var(--nc-card);
   border-radius: 16px;
   padding: 9px 11px;
 }
@@ -589,7 +589,7 @@ a {
   justify-content: center;
   border-radius: 999px;
   border: 1px solid var(--line);
-  background: #ffffff;
+  background: var(--nc-card);
   padding: 0 15px;
   font-size: 12px;
   font-weight: 600;
@@ -709,7 +709,7 @@ pre {
 
 @media print {
   body {
-    background: #ffffff;
+    background: var(--nc-card);
   }
 
   .admin-frame-grid {
@@ -771,7 +771,7 @@ pre {
 .termo-conteudo .termo-intro {
   padding: 12px 14px;
   border-radius: 14px;
-  background: #fafafa;
+  background: var(--nc-surface-elevated);
   border: 1px solid var(--line);
 }
 
@@ -784,7 +784,7 @@ pre {
   body.termo-viewer-aberto .termo-viewer {
     position: static;
     display: block;
-    background: #ffffff;
+    background: var(--nc-card);
     backdrop-filter: none;
   }
 

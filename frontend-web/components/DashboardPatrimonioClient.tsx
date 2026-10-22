@@ -178,7 +178,7 @@ function Kpi({
     </>
   );
 
-  const className = 'block min-w-0 rounded-[18px] border border-[var(--line)] bg-white px-4 py-3.5 transition';
+  const className = 'block min-w-0 rounded-[18px] border border-[var(--line)] bg-[var(--nc-card)] px-4 py-3.5 transition';
 
   return href ? (
     <Link href={href} prefetch={false} className={`${className} hover:border-[rgba(var(--accent-rgb),0.5)] hover:shadow-[0_10px_26px_rgba(17,24,39,0.06)]`}>
@@ -203,7 +203,7 @@ function Card({
   className?: string;
 }) {
   return (
-    <article className={`flex min-w-0 flex-col rounded-[20px] border border-[var(--line)] bg-white p-4 md:p-5 ${className}`}>
+    <article className={`flex min-w-0 flex-col rounded-[20px] border border-[var(--line)] bg-[var(--nc-card)] p-4 md:p-5 ${className}`}>
       <div className="flex flex-wrap items-start justify-between gap-2">
         <div className="min-w-0">
           <h3 className="text-[15px] font-semibold tracking-[-0.02em] text-[var(--ink)] md:text-[16px]">{title}</h3>
@@ -219,7 +219,7 @@ function Card({
 function Placeholder({ text, height = 240 }: { text: string; height?: number }) {
   return (
     <div
-      className="flex items-center justify-center rounded-[14px] border border-dashed border-[var(--line)] bg-[#fafafa] px-6 text-center text-[13px] text-[var(--muted)]"
+      className="flex items-center justify-center rounded-[14px] border border-dashed border-[var(--line)] bg-[var(--nc-surface-elevated)] px-6 text-center text-[13px] text-[var(--muted)]"
       style={{ height }}
     >
       {text}
@@ -275,14 +275,14 @@ function SectionToggle({
         type="button"
         onClick={() => setOpen((current) => !current)}
         aria-expanded={open}
-        className="inline-flex h-9 items-center gap-2 rounded-full border border-[var(--line)] bg-white px-3.5 text-[12px] font-semibold text-[var(--ink)] transition hover:border-[var(--accent)] hover:text-[var(--accent)]"
+        className="inline-flex h-9 items-center gap-2 rounded-full border border-[var(--line)] bg-[var(--nc-card)] px-3.5 text-[12px] font-semibold text-[var(--ink)] transition hover:border-[var(--accent)] hover:text-[var(--accent)]"
       >
         <span className="[&>svg]:h-4 [&>svg]:w-4">{renderAdminIcon('sliders')}</span>
         Personalizar
       </button>
 
       {open ? (
-        <div className="absolute right-0 top-[calc(100%+8px)] z-40 w-[300px] max-w-[calc(100vw-32px)] rounded-2xl border border-[var(--line)] bg-white p-2 shadow-[0_18px_38px_rgba(17,24,39,0.12)]">
+        <div className="absolute right-0 top-[calc(100%+8px)] z-40 w-[300px] max-w-[calc(100vw-32px)] rounded-2xl border border-[var(--line)] bg-[var(--nc-card)] p-2 shadow-[0_18px_38px_rgba(17,24,39,0.12)]">
           <p className="px-2 pb-1 pt-1.5 text-[10px] font-semibold uppercase tracking-[0.16em] text-[var(--muted)]">Seções do painel</p>
           <ul className="max-h-[60vh] overflow-y-auto">
             {SECTIONS.map((section) => (
@@ -467,7 +467,7 @@ export default function DashboardPatrimonioClient({ filters, isGeneralView, empr
           <Link
             href="/dashboard/modulos/relatorios"
             prefetch={false}
-            className="inline-flex h-9 items-center rounded-full border border-[var(--line)] bg-white px-3.5 text-[12px] font-semibold text-[var(--ink)] transition hover:border-[var(--accent)] hover:text-[var(--accent)]"
+            className="inline-flex h-9 items-center rounded-full border border-[var(--line)] bg-[var(--nc-card)] px-3.5 text-[12px] font-semibold text-[var(--ink)] transition hover:border-[var(--accent)] hover:text-[var(--accent)]"
           >
             Relatório BI
           </Link>
@@ -626,7 +626,7 @@ export default function DashboardPatrimonioClient({ filters, isGeneralView, empr
 
       {/* Estrutura */}
       {sections.estrutura ? (
-        <section className="rounded-[20px] border border-[var(--line)] bg-white px-4 py-3.5 md:px-5">
+        <section className="rounded-[20px] border border-[var(--line)] bg-[var(--nc-card)] px-4 py-3.5 md:px-5">
           <div className="grid grid-cols-2 gap-x-4 gap-y-3 sm:grid-cols-3 lg:grid-cols-5">
             {[
               { label: 'Empresas', value: resumo.total_empresas ?? 0, href: '/dashboard/modulos/empresas', icon: 'building' },
@@ -661,7 +661,7 @@ export default function DashboardPatrimonioClient({ filters, isGeneralView, empr
                 key={item.href}
                 href={item.href}
                 prefetch={false}
-                className="group flex min-w-0 items-center gap-3 rounded-[18px] border border-[var(--line)] bg-white px-3.5 py-3 transition hover:border-[rgba(var(--accent-rgb),0.5)] hover:shadow-[0_10px_26px_rgba(17,24,39,0.06)]"
+                className="group flex min-w-0 items-center gap-3 rounded-[18px] border border-[var(--line)] bg-[var(--nc-card)] px-3.5 py-3 transition hover:border-[rgba(var(--accent-rgb),0.5)] hover:shadow-[0_10px_26px_rgba(17,24,39,0.06)]"
               >
                 <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-[14px] bg-[rgba(17,24,39,0.04)] text-[var(--ink)] transition group-hover:bg-[var(--accent-soft)] group-hover:text-[var(--accent-deep)] [&>svg]:h-5 [&>svg]:w-5">
                   {renderAdminIcon(item.icon)}
@@ -678,7 +678,7 @@ export default function DashboardPatrimonioClient({ filters, isGeneralView, empr
 
       {/* Exportações */}
       {sections.exportacoes ? (
-        <section className="flex flex-wrap items-center gap-2 rounded-[20px] border border-[var(--line)] bg-white px-4 py-3" id="exportacoes">
+        <section className="flex flex-wrap items-center gap-2 rounded-[20px] border border-[var(--line)] bg-[var(--nc-card)] px-4 py-3" id="exportacoes">
           <span className="mr-1 text-[11px] font-semibold uppercase tracking-[0.16em] text-[var(--muted)]">Exportar</span>
           {[
             { label: 'Bens por local · PDF', href: buildExportUrl('exportacoes/bens-por-local/pdf', filters) },
@@ -689,7 +689,7 @@ export default function DashboardPatrimonioClient({ filters, isGeneralView, empr
             <a
               key={item.href}
               href={item.href}
-              className="inline-flex h-8 items-center rounded-full border border-[var(--line)] bg-white px-3 text-[12px] font-semibold text-[var(--ink)] transition hover:border-[var(--accent)] hover:text-[var(--accent)]"
+              className="inline-flex h-8 items-center rounded-full border border-[var(--line)] bg-[var(--nc-card)] px-3 text-[12px] font-semibold text-[var(--ink)] transition hover:border-[var(--accent)] hover:text-[var(--accent)]"
             >
               {item.label}
             </a>

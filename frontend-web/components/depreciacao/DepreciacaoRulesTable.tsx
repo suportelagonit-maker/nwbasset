@@ -38,7 +38,7 @@ export default function DepreciacaoRulesTable({ loading, regras, metodos, onEdit
       <div className="overflow-x-auto">
         <table className="min-w-full border-collapse">
           <thead>
-            <tr className="bg-[#f8fafc] text-left text-[11px] uppercase tracking-[0.16em] text-[var(--muted)]">
+            <tr className="bg-[var(--nc-surface-elevated)] text-left text-[11px] uppercase tracking-[0.16em] text-[var(--muted)]">
               <th className="px-4 py-3.5">Tipo de bem</th>
               <th className="px-4 py-3.5">Base</th>
               <th className="px-4 py-3.5">Metodo</th>
@@ -82,14 +82,14 @@ export default function DepreciacaoRulesTable({ loading, regras, metodos, onEdit
                       <button
                         type="button"
                         onClick={() => onEdit(regra)}
-                        className="inline-flex h-8.5 items-center justify-center rounded-full border border-[var(--line)] bg-white px-3 text-[12px] font-semibold text-[var(--ink)] transition hover:border-[var(--accent)] hover:text-[var(--accent)]"
+                        className="inline-flex h-8.5 items-center justify-center rounded-full border border-[var(--line)] bg-[var(--nc-card)] px-3 text-[12px] font-semibold text-[var(--ink)] transition hover:border-[var(--accent)] hover:text-[var(--accent)]"
                       >
                         Editar
                       </button>
                       <button
                         type="button"
                         onClick={() => onDelete(regra)}
-                        className="inline-flex h-8.5 items-center justify-center rounded-full border border-[rgba(190,18,60,0.2)] bg-white px-3 text-[12px] font-semibold text-[var(--rose)] transition hover:border-[rgba(190,18,60,0.4)] hover:bg-[rgba(190,18,60,0.06)]"
+                        className="inline-flex h-8.5 items-center justify-center rounded-full border border-[rgba(190,18,60,0.2)] bg-[var(--nc-card)] px-3 text-[12px] font-semibold text-[var(--rose)] transition hover:border-[rgba(190,18,60,0.4)] hover:bg-[rgba(190,18,60,0.06)]"
                       >
                         Excluir
                       </button>

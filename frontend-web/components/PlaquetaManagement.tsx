@@ -987,7 +987,7 @@ export default function PlaquetaManagement({ empresaId, empresaNome, empresaLogo
                             href={`/patrimonio/etiqueta?codigo=${encodeURIComponent(plaqueta.codigo_barras_conteudo)}`}
                             target="_blank"
                             rel="noreferrer"
-                            className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-[var(--line)] bg-white text-[var(--ink)]"
+                            className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-[var(--line)] bg-[var(--nc-card)] text-[var(--ink)]"
                             title="Abrir etiqueta"
                           >
                             <EyeIcon />
@@ -995,7 +995,7 @@ export default function PlaquetaManagement({ empresaId, empresaNome, empresaLogo
                           {!plaqueta.bem_patrimonial_id && (
                             <button
                               type="button"
-                              className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-[var(--line)] bg-white text-[var(--ink)]"
+                              className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-[var(--line)] bg-[var(--nc-card)] text-[var(--ink)]"
                               title="Vincular ao bem"
                               onClick={() => openBindModal(plaqueta)}
                             >
@@ -1004,7 +1004,7 @@ export default function PlaquetaManagement({ empresaId, empresaNome, empresaLogo
                           )}
                           <button
                             type="button"
-                            className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-[rgba(239,68,68,0.2)] bg-white text-[#ef4444]"
+                            className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-[rgba(239,68,68,0.2)] bg-[var(--nc-card)] text-[#ef4444]"
                             title="Excluir"
                             onClick={() =>
                               setConfirmDialog({

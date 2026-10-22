@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from 'next';
-import { InputModality, Toaster } from '@nwb/ui';
+import { InputModality, Toaster, scriptTemaAntesDoPaint } from '@nwb/ui';
 
 import RegistrarServiceWorker from '@/components/RegistrarServiceWorker';
 import { AutoUpdate } from '@/components/AutoUpdate';
@@ -54,10 +54,11 @@ window.addEventListener('appinstalled', function () {
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
     // data-nc-product aplica a cor do sistema NWB Asset (#8b5e34) do DS.
-    // data-theme fixo em "light": a UI ainda tem muitas cores claras fixas;
-    // o tema escuro entra junto com a varredura de superficies + AppShell.
-    <html lang="pt-BR" data-nc-product="nwb-asset" data-theme="light">
+    // O tema (claro/escuro) vem do cookie compartilhado do DS; o script abaixo
+    // o aplica antes do paint (sem flash).
+    <html lang="pt-BR" data-nc-product="nwb-asset" suppressHydrationWarning>
       <head>
+        <script dangerouslySetInnerHTML={{ __html: scriptTemaAntesDoPaint(['nwbasset.theme']) }} />
         {/* O aviso de "da para instalar" chega antes do React montar; sem
             guardar aqui, o convite de instalacao nunca apareceria. */}
         <script dangerouslySetInnerHTML={{ __html: SCRIPT_INSTALACAO }} />

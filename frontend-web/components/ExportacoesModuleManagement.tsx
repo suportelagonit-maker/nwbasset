@@ -51,7 +51,7 @@ export default function ExportacoesModuleManagement(_: { empresaId: number | nul
 
       <div className="mt-6 grid gap-5 md:grid-cols-2 xl:grid-cols-3">
         {exportacoes.map((item) => (
-          <article key={item.path} className="rounded-[24px] border border-[var(--line)] bg-[#fafafa] p-4.5">
+          <article key={item.path} className="rounded-[24px] border border-[var(--line)] bg-[var(--nc-surface-elevated)] p-4.5">
             <p className="text-[12px] font-semibold uppercase tracking-[0.16em] text-[var(--muted)]">{item.format}</p>
             <h3 className="mt-1.5 text-[15px] font-semibold text-[var(--ink)]">{item.label}</h3>
             <p className="mt-2 font-mono text-xs text-[var(--muted)]">{item.path}</p>

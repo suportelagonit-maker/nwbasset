@@ -31,24 +31,24 @@ export default async function PerfilPage() {
             <h3 className="text-lg font-semibold text-[var(--ink)]">Informações da sessão</h3>
 
             <div className="mt-5 grid gap-4 md:grid-cols-2">
-              <div className="rounded-2xl border border-[var(--line)] bg-[#fafafa] px-4 py-4">
+              <div className="rounded-2xl border border-[var(--line)] bg-[var(--nc-surface-elevated)] px-4 py-4">
                 <p className="text-xs font-semibold uppercase tracking-[0.16em] text-[var(--muted)]">Nome</p>
                 <p className="mt-2 text-sm font-medium text-[var(--ink)]">{session.userName ?? 'Não informado'}</p>
               </div>
 
-              <div className="rounded-2xl border border-[var(--line)] bg-[#fafafa] px-4 py-4">
+              <div className="rounded-2xl border border-[var(--line)] bg-[var(--nc-surface-elevated)] px-4 py-4">
                 <p className="text-xs font-semibold uppercase tracking-[0.16em] text-[var(--muted)]">E-mail</p>
                 <p className="mt-2 text-sm font-medium text-[var(--ink)]">{session.userEmail ?? 'Não informado'}</p>
               </div>
 
-              <div className="rounded-2xl border border-[var(--line)] bg-[#fafafa] px-4 py-4">
+              <div className="rounded-2xl border border-[var(--line)] bg-[var(--nc-surface-elevated)] px-4 py-4">
                 <p className="text-xs font-semibold uppercase tracking-[0.16em] text-[var(--muted)]">Empresa ativa</p>
                 <p className="mt-2 text-sm font-medium text-[var(--ink)]">
                   {session.empresaNome ?? (session.dashboardScope === 'geral' ? 'Painel geral' : 'Não selecionada')}
                 </p>
               </div>
 
-              <div className="rounded-2xl border border-[var(--line)] bg-[#fafafa] px-4 py-4">
+              <div className="rounded-2xl border border-[var(--line)] bg-[var(--nc-surface-elevated)] px-4 py-4">
                 <p className="text-xs font-semibold uppercase tracking-[0.16em] text-[var(--muted)]">Sessão</p>
                 <p className="mt-2 text-sm font-medium text-[var(--ink)]">Ativa no navegador</p>
               </div>

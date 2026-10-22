@@ -492,7 +492,7 @@ export default function UsersManagement() {
         <div className="overflow-x-auto">
           <table className="min-w-full border-collapse">
             <thead>
-              <tr className="border-b border-[var(--line)] bg-[#f8fafc] text-left text-[11px] uppercase tracking-[0.18em] text-[var(--muted)]">
+              <tr className="border-b border-[var(--line)] bg-[var(--nc-surface-elevated)] text-left text-[11px] uppercase tracking-[0.18em] text-[var(--muted)]">
                 <th className="px-5 py-4">Usuário</th>
                 <th className="px-5 py-4">Perfil</th>
                 <th className="px-5 py-4">Permissões</th>
@@ -568,7 +568,7 @@ export default function UsersManagement() {
                           <button
                             type="button"
                             onClick={() => openViewModal(usuario)}
-                            className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-[var(--line)] bg-white text-[var(--ink)] transition hover:border-[var(--blue)] hover:text-[var(--blue)]"
+                            className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-[var(--line)] bg-[var(--nc-card)] text-[var(--ink)] transition hover:border-[var(--blue)] hover:text-[var(--blue)]"
                             aria-label={`Visualizar ${usuario.nome}`}
                           >
                             <EyeIcon />
@@ -579,8 +579,8 @@ export default function UsersManagement() {
                             disabled={!canManage}
                             className={`inline-flex h-9 w-9 items-center justify-center rounded-full border transition ${
                               canManage
-                                ? 'border-[var(--line)] bg-white text-[var(--ink)] hover:border-[var(--blue)] hover:text-[var(--blue)]'
-                                : 'cursor-not-allowed border-[var(--line)] bg-[#f3f4f6] text-[var(--muted)]'
+                                ? 'border-[var(--line)] bg-[var(--nc-card)] text-[var(--ink)] hover:border-[var(--blue)] hover:text-[var(--blue)]'
+                                : 'cursor-not-allowed border-[var(--line)] bg-[var(--nc-surface-interactive)] text-[var(--muted)]'
                             }`}
                             aria-label={`Editar ${usuario.nome}`}
                             title={
@@ -597,8 +597,8 @@ export default function UsersManagement() {
                             disabled={!canManage}
                             className={`inline-flex h-9 w-9 items-center justify-center rounded-full border transition ${
                               canManage
-                                ? 'border-[rgba(225,29,72,0.16)] bg-white text-[var(--rose)] hover:bg-[rgba(225,29,72,0.06)]'
-                                : 'cursor-not-allowed border-[var(--line)] bg-[#f3f4f6] text-[var(--muted)]'
+                                ? 'border-[rgba(225,29,72,0.16)] bg-[var(--nc-card)] text-[var(--rose)] hover:bg-[rgba(225,29,72,0.06)]'
+                                : 'cursor-not-allowed border-[var(--line)] bg-[var(--nc-surface-interactive)] text-[var(--muted)]'
                             }`}
                             aria-label={`Inativar ${usuario.nome}`}
                             title={
@@ -638,14 +638,14 @@ export default function UsersManagement() {
               <button
                 type="button"
                 onClick={resetModal}
-                className="inline-flex h-11 items-center justify-center rounded-full border border-[var(--line)] bg-white px-4 text-sm font-semibold text-[var(--ink)] transition hover:border-[var(--blue)] hover:text-[var(--blue)]"
+                className="inline-flex h-11 items-center justify-center rounded-full border border-[var(--line)] bg-[var(--nc-card)] px-4 text-sm font-semibold text-[var(--ink)] transition hover:border-[var(--blue)] hover:text-[var(--blue)]"
               >
                 Fechar
               </button>
             </div>
 
             <div className="mt-4 grid gap-4 lg:grid-cols-[minmax(0,1.1fr)_360px]">
-              <section className="space-y-4 rounded-[24px] border border-[var(--line)] bg-white p-4">
+              <section className="space-y-4 rounded-[24px] border border-[var(--line)] bg-[var(--nc-card)] p-4">
                 <div className="grid gap-3 md:grid-cols-2">
                   <label className="admin-field">
                     <span className="admin-label">Nome</span>
@@ -694,7 +694,7 @@ export default function UsersManagement() {
                   </label>
                 </div>
 
-                <label className="flex items-center gap-3 rounded-[18px] border border-[var(--line)] bg-[#fafafa] px-3 py-3 text-sm text-[var(--ink)]">
+                <label className="flex items-center gap-3 rounded-[18px] border border-[var(--line)] bg-[var(--nc-surface-elevated)] px-3 py-3 text-sm text-[var(--ink)]">
                   <input
                     type="checkbox"
                     className="mt-0.5 h-4 w-4 rounded border-[var(--line)] text-[var(--blue)]"
@@ -705,7 +705,7 @@ export default function UsersManagement() {
                   Usuário ativo para acessar a empresa selecionada
                 </label>
 
-                <div className="rounded-[24px] border border-[var(--line)] bg-white p-4">
+                <div className="rounded-[24px] border border-[var(--line)] bg-[var(--nc-card)] p-4">
                   <div className="mb-3 space-y-1">
                     <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[var(--muted)]">Permissões da empresa</p>
                     <p className="text-sm leading-6 text-[var(--muted)]">
@@ -716,7 +716,7 @@ export default function UsersManagement() {
 
                   <div className="space-y-4">
                     {(catalogo?.grupos ?? []).map((grupo) => (
-                      <section key={grupo.grupo} className="rounded-[18px] border border-[var(--line)] bg-[#fafafa] p-3">
+                      <section key={grupo.grupo} className="rounded-[18px] border border-[var(--line)] bg-[var(--nc-surface-elevated)] p-3">
                         <p className="mb-3 text-[11px] font-semibold uppercase tracking-[0.16em] text-[var(--muted)]">{grupo.grupo}</p>
                         <div className="grid gap-2 md:grid-cols-2">
                           {grupo.itens.map((item) => {
@@ -728,7 +728,7 @@ export default function UsersManagement() {
                                 className={`flex items-start gap-3 rounded-[16px] border px-3 py-3 text-sm transition ${
                                   checked
                                     ? 'border-[rgba(var(--accent-rgb),0.22)] bg-[rgba(var(--accent-rgb),0.08)]'
-                                    : 'border-[var(--line)] bg-white'
+                                    : 'border-[var(--line)] bg-[var(--nc-card)]'
                                 } ${readOnly ? 'cursor-default' : 'cursor-pointer'}`}
                               >
                                 <input
@@ -754,7 +754,7 @@ export default function UsersManagement() {
                 </div>
               </section>
 
-              <aside className="space-y-3 rounded-[24px] border border-[var(--line)] bg-white p-4">
+              <aside className="space-y-3 rounded-[24px] border border-[var(--line)] bg-[var(--nc-card)] p-4">
                 <div className="admin-summary-card">
                   <p className="admin-summary-label">Empresa</p>
                   <p className="admin-summary-value">Empresa ativa</p>

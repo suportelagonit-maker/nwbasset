@@ -214,7 +214,7 @@ const KPI_BAR: Record<KpiTone, string> = {
 
 function KpiTile({ label, value, hint, tone = 'neutral' }: { label: string; value: string; hint?: string; tone?: KpiTone }) {
   return (
-    <article className="relative min-w-0 overflow-hidden rounded-[18px] border border-[var(--line)] bg-white px-4 py-3.5">
+    <article className="relative min-w-0 overflow-hidden rounded-[18px] border border-[var(--line)] bg-[var(--nc-card)] px-4 py-3.5">
       <span className={`absolute inset-y-3 left-0 w-1 rounded-r-full ${KPI_BAR[tone]}`} aria-hidden="true" />
       <p className="truncate text-[10px] font-semibold uppercase tracking-[0.16em] text-[var(--muted)]">{label}</p>
       <p className="mt-1.5 truncate font-[family-name:var(--font-heading)] text-[1.3rem] font-semibold tracking-[-0.04em] text-[var(--ink)] md:text-[1.5rem]">
@@ -237,7 +237,7 @@ function ChartCard({
   children: React.ReactNode;
 }) {
   return (
-    <article className="flex min-w-0 flex-col rounded-[20px] border border-[var(--line)] bg-white p-4 md:p-5">
+    <article className="flex min-w-0 flex-col rounded-[20px] border border-[var(--line)] bg-[var(--nc-card)] p-4 md:p-5">
       <div className="flex flex-wrap items-start justify-between gap-2">
         <div className="min-w-0">
           <h3 className="text-[15px] font-semibold tracking-[-0.02em] text-[var(--ink)] md:text-[16px]">{title}</h3>
@@ -252,7 +252,7 @@ function ChartCard({
 
 function EmptyChart({ text }: { text: string }) {
   return (
-    <div className="flex h-[240px] items-center justify-center rounded-[14px] border border-dashed border-[var(--line)] bg-[#fafafa] px-6 text-center text-[13px] text-[var(--muted)]">
+    <div className="flex h-[240px] items-center justify-center rounded-[14px] border border-dashed border-[var(--line)] bg-[var(--nc-surface-elevated)] px-6 text-center text-[13px] text-[var(--muted)]">
       {text}
     </div>
   );
@@ -260,7 +260,7 @@ function EmptyChart({ text }: { text: string }) {
 
 function MetricToggle({ value, onChange }: { value: Metric; onChange: (next: Metric) => void }) {
   return (
-    <div className="inline-flex rounded-full border border-[var(--line)] bg-[#fafafa] p-0.5 text-[11px] font-semibold">
+    <div className="inline-flex rounded-full border border-[var(--line)] bg-[var(--nc-surface-elevated)] p-0.5 text-[11px] font-semibold">
       {(['quantidade', 'valor'] as Metric[]).map((option) => (
         <button
           key={option}
@@ -285,7 +285,7 @@ function LegendList({ items, colors }: { items: Array<{ nome: string; valor: num
   return (
     <ul className="grid content-center gap-1.5">
       {items.map((item, index) => (
-        <li key={item.nome} className="flex items-center gap-2 rounded-[10px] border border-[var(--line)] bg-[#fafafa] px-2.5 py-1.5">
+        <li key={item.nome} className="flex items-center gap-2 rounded-[10px] border border-[var(--line)] bg-[var(--nc-surface-elevated)] px-2.5 py-1.5">
           <span className="h-2.5 w-2.5 shrink-0 rounded-full" style={{ backgroundColor: colors[index % colors.length] }} />
           <span className="min-w-0 flex-1 truncate text-[12px] font-semibold text-[var(--ink)]">{item.nome}</span>
           <span className="text-[11px] tabular-nums text-[var(--muted)]">{formatPercent(percent(item.valor, total))}</span>
@@ -311,7 +311,7 @@ function InsightCard({ insight }: { insight: Insight }) {
         {style.label}
       </span>
       <p className="mt-1.5 text-[13px] font-semibold text-[var(--ink)]">{insight.title}</p>
-      <p className="mt-0.5 text-[12px] leading-5 text-[#4a4f58]">{insight.text}</p>
+      <p className="mt-0.5 text-[12px] leading-5 text-[var(--muted)]">{insight.text}</p>
     </li>
   );
 }
@@ -360,7 +360,7 @@ function SortableTable<T extends { key: string | number }>({
     <div className="overflow-x-auto">
       <table className="min-w-full border-collapse">
         <thead>
-          <tr className="bg-[#f8fafc] text-left text-[11px] uppercase tracking-[0.14em] text-[var(--muted)]">
+          <tr className="bg-[var(--nc-surface-elevated)] text-left text-[11px] uppercase tracking-[0.14em] text-[var(--muted)]">
             {columns.map((column) => (
               <th key={column.key} className={`px-4 py-3 ${column.align === 'right' ? 'text-right' : ''}`}>
                 {column.sortValue ? (
@@ -398,7 +398,7 @@ function SortableTable<T extends { key: string | number }>({
 }
 
 const SECONDARY_ACTION =
-  'inline-flex h-9 items-center justify-center rounded-full border border-[var(--line)] bg-white px-3.5 text-[12px] font-semibold text-[var(--ink)] transition hover:border-[var(--accent)] hover:text-[var(--accent)]';
+  'inline-flex h-9 items-center justify-center rounded-full border border-[var(--line)] bg-[var(--nc-card)] px-3.5 text-[12px] font-semibold text-[var(--ink)] transition hover:border-[var(--accent)] hover:text-[var(--accent)]';
 const PRIMARY_ACTION =
   'inline-flex h-9 items-center justify-center rounded-full bg-[var(--accent)] px-3.5 text-[12px] font-semibold text-white transition hover:opacity-90';
 
@@ -1076,7 +1076,7 @@ export default function ReportsModuleManagement({ empresaNome, empresaCnpj }: Re
           </p>
         ) : null}
 
-        <div className="mt-4 grid gap-3 rounded-[18px] border border-[var(--line)] bg-[#fafafa] p-3 sm:grid-cols-2 lg:grid-cols-[1fr_1fr_auto] print:hidden">
+        <div className="mt-4 grid gap-3 rounded-[18px] border border-[var(--line)] bg-[var(--nc-surface-elevated)] p-3 sm:grid-cols-2 lg:grid-cols-[1fr_1fr_auto] print:hidden">
           <label className="admin-field">
             Filial (bens por local / responsável)
             <select className="admin-select" value={filialId} onChange={(event) => setFilialId(event.target.value)}>

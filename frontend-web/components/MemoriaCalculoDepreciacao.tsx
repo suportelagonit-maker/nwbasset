@@ -108,7 +108,7 @@ export default function MemoriaCalculoDepreciacao({ bemId }: { bemId: number }) 
           <h3 className="mt-1.5 text-lg font-semibold text-[var(--ink)]">Depreciação mês a mês</h3>
         </div>
 
-        <div className="flex gap-1.5 rounded-full border border-[var(--line)] bg-white p-1">
+        <div className="flex gap-1.5 rounded-full border border-[var(--line)] bg-[var(--nc-card)] p-1">
           {[
             { valor: 'fiscal', rotulo: 'Fiscal' },
             { valor: 'contabil', rotulo: 'Societária' },
@@ -131,7 +131,7 @@ export default function MemoriaCalculoDepreciacao({ bemId }: { bemId: number }) 
       {erro ? <p className="mt-5 text-[13px] font-medium text-[var(--rose)]">{erro}</p> : null}
 
       {!carregando && dados && !dados.depreciavel ? (
-        <p className="mt-5 rounded-2xl border border-[var(--line)] bg-[#fafafa] px-4 py-4 text-sm leading-6 text-[var(--muted)]">
+        <p className="mt-5 rounded-2xl border border-[var(--line)] bg-[var(--nc-surface-elevated)] px-4 py-4 text-sm leading-6 text-[var(--muted)]">
           {dados.motivo ?? 'Este bem não deprecia.'}
         </p>
       ) : null}
@@ -139,7 +139,7 @@ export default function MemoriaCalculoDepreciacao({ bemId }: { bemId: number }) 
       {!carregando && dados?.depreciavel ? (
         <>
           <div className="mt-5 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
-            <div className="rounded-2xl border border-[var(--line)] bg-[#fafafa] px-4 py-3.5">
+            <div className="rounded-2xl border border-[var(--line)] bg-[var(--nc-surface-elevated)] px-4 py-3.5">
               <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-[var(--muted)]">Regra aplicada</p>
               <p className="mt-1.5 text-sm font-semibold text-[var(--ink)]">{dados.regra.nome ?? 'Padrão'}</p>
               <p className="mt-0.5 text-[11px] leading-4 text-[var(--muted)]">
@@ -148,7 +148,7 @@ export default function MemoriaCalculoDepreciacao({ bemId }: { bemId: number }) 
               </p>
             </div>
 
-            <div className="rounded-2xl border border-[var(--line)] bg-[#fafafa] px-4 py-3.5">
+            <div className="rounded-2xl border border-[var(--line)] bg-[var(--nc-surface-elevated)] px-4 py-3.5">
               <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-[var(--muted)]">Método e taxa</p>
               <p className="mt-1.5 text-sm font-semibold text-[var(--ink)]">
                 {METODOS[dados.regra.metodo ?? ''] ?? dados.regra.metodo}
@@ -159,7 +159,7 @@ export default function MemoriaCalculoDepreciacao({ bemId }: { bemId: number }) 
               </p>
             </div>
 
-            <div className="rounded-2xl border border-[var(--line)] bg-[#fafafa] px-4 py-3.5">
+            <div className="rounded-2xl border border-[var(--line)] bg-[var(--nc-surface-elevated)] px-4 py-3.5">
               <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-[var(--muted)]">Base depreciável</p>
               <p className="mt-1.5 text-sm font-semibold text-[var(--ink)]">{moeda(dados.valor_depreciavel)}</p>
               <p className="mt-0.5 text-[11px] leading-4 text-[var(--muted)]">
@@ -167,7 +167,7 @@ export default function MemoriaCalculoDepreciacao({ bemId }: { bemId: number }) 
               </p>
             </div>
 
-            <div className="rounded-2xl border border-[var(--line)] bg-[#fafafa] px-4 py-3.5">
+            <div className="rounded-2xl border border-[var(--line)] bg-[var(--nc-surface-elevated)] px-4 py-3.5">
               <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-[var(--muted)]">Início</p>
               <p className="mt-1.5 text-sm font-semibold text-[var(--ink)]">
                 {dados.inicio ? dados.inicio.slice(0, 7).split('-').reverse().join('/') : '—'}
@@ -207,7 +207,7 @@ export default function MemoriaCalculoDepreciacao({ bemId }: { bemId: number }) 
             <button
               type="button"
               onClick={() => setMostrarTudo((atual) => !atual)}
-              className="mt-3 inline-flex h-9 items-center justify-center rounded-full border border-[var(--line)] bg-white px-4 text-[12px] font-semibold text-[var(--ink)] transition hover:border-[var(--accent)] hover:text-[var(--accent-deep)]"
+              className="mt-3 inline-flex h-9 items-center justify-center rounded-full border border-[var(--line)] bg-[var(--nc-card)] px-4 text-[12px] font-semibold text-[var(--ink)] transition hover:border-[var(--accent)] hover:text-[var(--accent-deep)]"
             >
               {mostrarTudo ? 'Mostrar só os 12 primeiros meses' : `Ver as ${parcelas.length} competências`}
             </button>

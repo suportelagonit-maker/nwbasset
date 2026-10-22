@@ -46,7 +46,7 @@ export default function PatrimonioEtiquetaCard({
 
   return (
     <article
-      className={`flex h-[112px] w-[250px] overflow-hidden rounded-[12px] border border-[#d2d7e1] bg-white px-3 py-2 shadow-[0_8px_18px_rgba(15,23,42,0.06)] ${className}`.trim()}
+      className={`flex h-[112px] w-[250px] overflow-hidden rounded-[12px] border border-[#d2d7e1] bg-[var(--nc-card)] px-3 py-2 shadow-[0_8px_18px_rgba(15,23,42,0.06)] ${className}`.trim()}
     >
       <div className="flex w-[52%] flex-col justify-center border-r border-[rgba(15,23,42,0.08)] pr-3">
         {currentLogoSrc ? (
@@ -57,7 +57,7 @@ export default function PatrimonioEtiquetaCard({
             loading="eager"
           />
         ) : (
-          <div className="flex flex-col justify-center leading-none text-[#101828]">
+          <div className="flex flex-col justify-center leading-none text-[var(--ink)]">
             <span className="text-[15px] font-black uppercase tracking-[-0.08em]">{wordmark[0] ?? 'nwb'}</span>
             <span className="-mt-0.5 text-[15px] font-black uppercase tracking-[-0.08em]">{wordmark[1] ?? 'asset'}</span>
           </div>
@@ -66,14 +66,14 @@ export default function PatrimonioEtiquetaCard({
 
       <div className="flex w-[48%] flex-col justify-between pl-3">
         <div className="text-right">
-          <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-[#101828]">patrimonio</p>
+          <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-[var(--ink)]">patrimonio</p>
         </div>
 
         <div className="overflow-hidden">
           <PatrimonioBarcode value={barcodeValue} className="h-[38px] w-full" height={36} width={1.1} />
         </div>
 
-        <p className="text-right text-[22px] font-black leading-none tracking-[0.08em] text-[#101828]">
+        <p className="text-right text-[22px] font-black leading-none tracking-[0.08em] text-[var(--ink)]">
           {numeroPlaqueta}
         </p>
       </div>

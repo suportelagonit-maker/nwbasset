@@ -218,7 +218,7 @@ export default function ActiveEmpresaLogoPanel({
           <h3 className="mt-2 text-lg font-semibold text-[var(--ink)]">{empresaNome ?? 'Empresa ativa'}</h3>
           {empresaCnpj ? <p className="mt-1 text-sm text-[var(--muted)]">{formatCnpj(empresaCnpj)}</p> : null}
         </div>
-        <div className="flex h-16 w-24 shrink-0 items-center justify-center overflow-hidden rounded-[18px] border border-[var(--line)] bg-white px-3">
+        <div className="flex h-16 w-24 shrink-0 items-center justify-center overflow-hidden rounded-[18px] border border-[var(--line)] bg-[var(--nc-card)] px-3">
           {currentLogoSrc ? (
             <img
               src={currentLogoSrc}
@@ -234,7 +234,7 @@ export default function ActiveEmpresaLogoPanel({
         </div>
       </div>
 
-      <div className="mt-4 rounded-[18px] border border-dashed border-[var(--line)] bg-[#fcfdff] p-4">
+      <div className="mt-4 rounded-[18px] border border-dashed border-[var(--line)] bg-[var(--nc-surface-elevated)] p-4">
         <p className="text-[13px] leading-6 text-[var(--muted)]">
           Este logo aparece no topo do sistema para a empresa selecionada e também pode ser usado na etiqueta patrimonial.
         </p>

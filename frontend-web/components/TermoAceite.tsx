@@ -67,7 +67,7 @@ export default function TermoAceite({ userName }: { userName?: string | null }) 
 
   return (
     <div className="flex min-h-screen flex-col bg-[var(--workspace-bg)]">
-      <header className="border-b border-[var(--line)] bg-white">
+      <header className="border-b border-[var(--line)] bg-[var(--nc-card)]">
         <div className="mx-auto flex max-w-[960px] flex-wrap items-center justify-between gap-3 px-4 py-4 md:px-6">
           <div className="min-w-0">
             <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[var(--accent-deep)]">Primeiro acesso · leitura obrigatória</p>
@@ -79,7 +79,7 @@ export default function TermoAceite({ userName }: { userName?: string | null }) 
             </p>
           </div>
           <form action="/api/auth/logout" method="post">
-            <button type="submit" className="inline-flex h-9 items-center rounded-full border border-[var(--line)] bg-white px-3.5 text-[12px] font-semibold text-[var(--rose)] transition hover:border-[var(--rose)]">
+            <button type="submit" className="inline-flex h-9 items-center rounded-full border border-[var(--line)] bg-[var(--nc-card)] px-3.5 text-[12px] font-semibold text-[var(--rose)] transition hover:border-[var(--rose)]">
               Não aceito · sair
             </button>
           </form>
@@ -93,7 +93,7 @@ export default function TermoAceite({ userName }: { userName?: string | null }) 
 
         <div
           ref={areaRef}
-          className="termo-area max-h-[calc(100dvh-300px)] min-h-[320px] overflow-y-auto rounded-[22px] border border-[var(--line)] bg-[#f4f6f9] p-2 md:p-4"
+          className="termo-area max-h-[calc(100dvh-300px)] min-h-[320px] overflow-y-auto rounded-[22px] border border-[var(--line)] bg-[var(--nc-surface-elevated)] p-2 md:p-4"
           aria-busy={!termo}
         >
           {termo ? (
@@ -103,7 +103,7 @@ export default function TermoAceite({ userName }: { userName?: string | null }) 
           )}
         </div>
 
-        <div className="mt-4 rounded-[20px] border border-[var(--line)] bg-white px-4 py-4 md:px-6">
+        <div className="mt-4 rounded-[20px] border border-[var(--line)] bg-[var(--nc-card)] px-4 py-4 md:px-6">
           {!lidoAteOFim ? (
             <p className="mb-3 text-[12px] font-medium text-[var(--accent-deep)]">Role o documento até o fim para liberar o aceite.</p>
           ) : null}

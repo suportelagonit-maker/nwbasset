@@ -66,7 +66,7 @@ function Topico({
   onToggle: () => void;
 }) {
   return (
-    <article id={topico.id} className="scroll-mt-40 rounded-[20px] border border-[var(--line)] bg-white">
+    <article id={topico.id} className="scroll-mt-40 rounded-[20px] border border-[var(--line)] bg-[var(--nc-card)]">
       <h3 className="m-0">
         <button
           type="button"
@@ -78,7 +78,7 @@ function Topico({
           <span
             className={[
               'mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-full border text-[var(--accent-deep)] transition',
-              aberto ? 'rotate-90 border-[var(--accent)] bg-[var(--accent-soft)]' : 'border-[var(--line)] bg-[#fafafa]',
+              aberto ? 'rotate-90 border-[var(--accent)] bg-[var(--accent-soft)]' : 'border-[var(--line)] bg-[var(--nc-surface-elevated)]',
             ].join(' ')}
             aria-hidden="true"
           >
@@ -106,7 +106,7 @@ function Topico({
                 target="_blank"
                 rel="noreferrer"
                 title="Abrir a captura em tamanho real"
-                className="block overflow-hidden rounded-[16px] border border-[var(--line)] bg-[#f4f6f9]"
+                className="block overflow-hidden rounded-[16px] border border-[var(--line)] bg-[var(--nc-surface-elevated)]"
               >
                 <Image
                   src={topico.imagem}
@@ -154,7 +154,7 @@ function Topico({
           {topico.dicas?.length ? (
             <div className="mt-4 rounded-[14px] border border-[rgba(var(--accent-rgb),0.3)] bg-[rgba(var(--accent-rgb),0.08)] px-3.5 py-3">
               <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-[var(--accent-deep)]">Dicas</p>
-              <ul className="mt-1.5 list-disc space-y-1 pl-4 text-[13px] leading-5 text-[#4a4f58]">
+              <ul className="mt-1.5 list-disc space-y-1 pl-4 text-[13px] leading-5 text-[var(--muted)]">
                 {topico.dicas.map((dica) => (
                   <li key={dica}>
                     <Destaque texto={dica} termo={termo} />
@@ -249,7 +249,7 @@ export default function CentralAjuda() {
   return (
     <div className="min-h-screen bg-[var(--workspace-bg)]">
       {/* Cabeçalho fixo: identidade, busca e voltar */}
-      <header className="sticky top-0 z-30 border-b border-[var(--line)] bg-[rgba(255,255,255,0.96)] backdrop-blur">
+      <header className="sticky top-0 z-30 border-b border-[var(--line)] bg-[var(--bg-panel)] backdrop-blur">
         <div className="mx-auto flex max-w-[1240px] flex-wrap items-center gap-3 px-4 py-3 md:px-6">
           <Link href={INICIO_HREF} prefetch={false} className="flex shrink-0 items-center gap-3">
             <Image src="/logoasset.png" alt="NWB Asset" width={150} height={40} priority className="h-auto w-[110px] object-contain md:w-[140px]" />
@@ -269,7 +269,7 @@ export default function CentralAjuda() {
               value={termo}
               onChange={(event) => setTermo(event.target.value)}
               placeholder="Pesquisar: plaqueta, inventário, PDF, senha..."
-              className="h-11 w-full rounded-full border border-[var(--line)] bg-white pl-10 pr-4 text-[14px] text-[var(--ink)] outline-none transition focus:border-[rgba(var(--accent-rgb),0.6)] focus:shadow-[0_0_0_3px_rgba(var(--accent-rgb),0.12)]"
+              className="h-11 w-full rounded-full border border-[var(--line)] bg-[var(--nc-card)] pl-10 pr-4 text-[14px] text-[var(--ink)] outline-none transition focus:border-[rgba(var(--accent-rgb),0.6)] focus:shadow-[0_0_0_3px_rgba(var(--accent-rgb),0.12)]"
             />
           </label>
 
@@ -288,7 +288,7 @@ export default function CentralAjuda() {
 
       <main className="mx-auto max-w-[1240px] px-4 py-6 md:px-6 md:py-8">
         {/* Abertura */}
-        <section className="rounded-[24px] border border-[var(--line)] bg-white px-5 py-6 md:px-8 md:py-8">
+        <section className="rounded-[24px] border border-[var(--line)] bg-[var(--nc-card)] px-5 py-6 md:px-8 md:py-8">
           <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[var(--accent-deep)]">Central de Ajuda · NWB Asset</p>
           <h1 className="mt-2 font-[family-name:var(--font-heading)] text-[1.7rem] font-semibold tracking-[-0.04em] text-[var(--ink)] md:text-[2.2rem]">
             Passo a passo de todas as funcionalidades
@@ -301,7 +301,7 @@ export default function CentralAjuda() {
               <a
                 key={secao.id}
                 href={`#secao-${secao.id}`}
-                className="inline-flex items-center gap-2 rounded-full border border-[var(--line)] bg-[#fafafa] px-3.5 py-2 text-[12.5px] font-semibold text-[var(--ink)] transition hover:border-[var(--accent)] hover:text-[var(--accent-deep)]"
+                className="inline-flex items-center gap-2 rounded-full border border-[var(--line)] bg-[var(--nc-surface-elevated)] px-3.5 py-2 text-[12.5px] font-semibold text-[var(--ink)] transition hover:border-[var(--accent)] hover:text-[var(--accent-deep)]"
               >
                 <span className="text-[var(--accent-deep)] [&>svg]:h-4 [&>svg]:w-4">{renderAdminIcon(secao.icone)}</span>
                 {secao.titulo}
@@ -325,10 +325,10 @@ export default function CentralAjuda() {
             )}
           </p>
           <div className="flex gap-2">
-            <button type="button" onClick={expandirTudo} className="inline-flex h-8 items-center rounded-full border border-[var(--line)] bg-white px-3 text-[12px] font-semibold text-[var(--ink)] transition hover:border-[var(--accent)] hover:text-[var(--accent-deep)]">
+            <button type="button" onClick={expandirTudo} className="inline-flex h-8 items-center rounded-full border border-[var(--line)] bg-[var(--nc-card)] px-3 text-[12px] font-semibold text-[var(--ink)] transition hover:border-[var(--accent)] hover:text-[var(--accent-deep)]">
               Expandir tudo
             </button>
-            <button type="button" onClick={recolherTudo} className="inline-flex h-8 items-center rounded-full border border-[var(--line)] bg-white px-3 text-[12px] font-semibold text-[var(--ink)] transition hover:border-[var(--accent)] hover:text-[var(--accent-deep)]">
+            <button type="button" onClick={recolherTudo} className="inline-flex h-8 items-center rounded-full border border-[var(--line)] bg-[var(--nc-card)] px-3 text-[12px] font-semibold text-[var(--ink)] transition hover:border-[var(--accent)] hover:text-[var(--accent-deep)]">
               Recolher tudo
             </button>
           </div>
@@ -363,7 +363,7 @@ export default function CentralAjuda() {
             ))}
           </div>
         ) : (
-          <div className="mt-4 rounded-[20px] border border-dashed border-[var(--line)] bg-white px-6 py-12 text-center">
+          <div className="mt-4 rounded-[20px] border border-dashed border-[var(--line)] bg-[var(--nc-card)] px-6 py-12 text-center">
             <p className="text-[15px] font-semibold text-[var(--ink)]">Nenhum tópico encontrado para “{termo.trim()}”.</p>
             <p className="mt-1 text-[13px] text-[var(--muted)]">Tente outra palavra (ex.: etiqueta, transferência, relatório, senha).</p>
           </div>

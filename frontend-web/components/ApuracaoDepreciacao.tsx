@@ -179,7 +179,7 @@ export default function ApuracaoDepreciacao({ empresaId }: { empresaId: number |
           type="button"
           onClick={() => void aplicarTabela()}
           disabled={ocupado}
-          className="inline-flex h-10 shrink-0 items-center justify-center rounded-full border border-[var(--line)] bg-white px-4 text-[13px] font-semibold text-[var(--ink)] transition hover:border-[var(--accent)] hover:text-[var(--accent-deep)] disabled:opacity-60"
+          className="inline-flex h-10 shrink-0 items-center justify-center rounded-full border border-[var(--line)] bg-[var(--nc-card)] px-4 text-[13px] font-semibold text-[var(--ink)] transition hover:border-[var(--accent)] hover:text-[var(--accent-deep)] disabled:opacity-60"
         >
           Carregar tabela da Receita
         </button>
@@ -220,7 +220,7 @@ export default function ApuracaoDepreciacao({ empresaId }: { empresaId: number |
             type="button"
             onClick={() => void fechar()}
             disabled={ocupado}
-            className="inline-flex h-10 flex-1 items-center justify-center rounded-full border border-[var(--line)] bg-white px-4 text-[13px] font-semibold text-[var(--ink)] transition hover:border-[var(--accent)] hover:text-[var(--accent-deep)] disabled:opacity-60"
+            className="inline-flex h-10 flex-1 items-center justify-center rounded-full border border-[var(--line)] bg-[var(--nc-card)] px-4 text-[13px] font-semibold text-[var(--ink)] transition hover:border-[var(--accent)] hover:text-[var(--accent-deep)] disabled:opacity-60"
           >
             Fechar mês
           </button>
@@ -237,7 +237,7 @@ export default function ApuracaoDepreciacao({ empresaId }: { empresaId: number |
             {fechados.slice(0, 8).map((item) => (
               <div
                 key={item.id}
-                className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-[var(--line)] bg-[#fafafa] px-4 py-3"
+                className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-[var(--line)] bg-[var(--nc-surface-elevated)] px-4 py-3"
               >
                 <div className="min-w-0">
                   <p className="text-sm font-semibold text-[var(--ink)]">
@@ -255,7 +255,7 @@ export default function ApuracaoDepreciacao({ empresaId }: { empresaId: number |
                   type="button"
                   onClick={() => void reabrir(item)}
                   disabled={ocupado}
-                  className="inline-flex h-8 items-center justify-center rounded-full border border-[var(--line)] bg-white px-3 text-[12px] font-semibold text-[var(--ink)] transition hover:border-[var(--accent)] hover:text-[var(--accent-deep)] disabled:opacity-60"
+                  className="inline-flex h-8 items-center justify-center rounded-full border border-[var(--line)] bg-[var(--nc-card)] px-3 text-[12px] font-semibold text-[var(--ink)] transition hover:border-[var(--accent)] hover:text-[var(--accent-deep)] disabled:opacity-60"
                 >
                   Reabrir
                 </button>

@@ -52,7 +52,7 @@ export default function SystemConfirmDialog({
           </span>
         </div>
 
-        <div className="mt-3 rounded-[18px] border border-[var(--line)] bg-[#fafafa] px-3 py-3">
+        <div className="mt-3 rounded-[18px] border border-[var(--line)] bg-[var(--nc-surface-elevated)] px-3 py-3">
           <p className="text-[12px] leading-5 text-[var(--muted)]">
             {tone === 'danger'
               ? 'Esta acao altera permanentemente o estado atual do registro.'
@@ -66,7 +66,7 @@ export default function SystemConfirmDialog({
             type="button"
             onClick={onCancel}
             disabled={busy}
-            className="inline-flex h-10 items-center justify-center rounded-full border border-[var(--line)] bg-white px-4 text-sm font-semibold text-[var(--ink)] transition hover:border-[var(--blue)] hover:text-[var(--blue)] disabled:cursor-not-allowed disabled:opacity-70"
+            className="inline-flex h-10 items-center justify-center rounded-full border border-[var(--line)] bg-[var(--nc-card)] px-4 text-sm font-semibold text-[var(--ink)] transition hover:border-[var(--blue)] hover:text-[var(--blue)] disabled:cursor-not-allowed disabled:opacity-70"
           >
             {cancelLabel}
           </button>

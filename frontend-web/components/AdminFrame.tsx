@@ -80,7 +80,7 @@ export default function AdminFrame({
           collapsed ? 'md:grid-cols-[92px_minmax(0,1fr)]' : 'md:grid-cols-[320px_minmax(0,1fr)]',
         ].join(' ')}
       >
-        <div className="admin-sidebar-column hidden h-full bg-white md:block">
+        <div className="admin-sidebar-column hidden h-full bg-[var(--nc-card)] md:block">
           <AdminSidebar collapsed={collapsed} onToggle={toggleSidebar} showEmpresasMenu={showEmpresasMenu} />
         </div>
 

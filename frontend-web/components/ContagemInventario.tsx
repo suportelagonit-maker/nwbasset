@@ -456,7 +456,7 @@ export default function ContagemInventario({ inventarioId }: { inventarioId: num
 
         {resumo ? (
           <>
-            <div className="mt-4 h-2.5 w-full overflow-hidden rounded-full bg-[#eef2f7]">
+            <div className="mt-4 h-2.5 w-full overflow-hidden rounded-full bg-[var(--nc-surface-interactive)]">
               <div
                 className="h-full rounded-full bg-[var(--accent)] transition-[width]"
                 style={{ width: `${Math.min(100, resumo.percentual)}%` }}
@@ -520,7 +520,7 @@ export default function ContagemInventario({ inventarioId }: { inventarioId: num
             Ler etiqueta
           </button>
         ) : (
-          <p className="mt-4 rounded-2xl border border-[var(--line)] bg-[#fafafa] px-4 py-3.5 text-[13px] text-[var(--muted)]">
+          <p className="mt-4 rounded-2xl border border-[var(--line)] bg-[var(--nc-surface-elevated)] px-4 py-3.5 text-[13px] text-[var(--muted)]">
             Este inventário foi finalizado. A conciliação já foi gerada.
           </p>
         )}
@@ -542,7 +542,7 @@ export default function ContagemInventario({ inventarioId }: { inventarioId: num
             />
             <button
               type="submit"
-              className="inline-flex h-11 shrink-0 items-center justify-center rounded-full border border-[var(--line)] bg-white px-4 text-[13px] font-semibold text-[var(--ink)] transition hover:border-[var(--accent)]"
+              className="inline-flex h-11 shrink-0 items-center justify-center rounded-full border border-[var(--line)] bg-[var(--nc-card)] px-4 text-[13px] font-semibold text-[var(--ink)] transition hover:border-[var(--accent)]"
             >
               Contar
             </button>
@@ -556,7 +556,7 @@ export default function ContagemInventario({ inventarioId }: { inventarioId: num
             className={`mt-3 inline-flex h-10 w-full items-center justify-center gap-2 rounded-full border px-4 text-[13px] font-semibold transition ${
               nfcLigado
                 ? 'border-[var(--accent)] bg-[var(--accent-soft)] text-[var(--accent-deep)]'
-                : 'border-[var(--line)] bg-white text-[var(--ink)] hover:border-[var(--accent)]'
+                : 'border-[var(--line)] bg-[var(--nc-card)] text-[var(--ink)] hover:border-[var(--accent)]'
             }`}
           >
             <svg aria-hidden="true" className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
@@ -569,7 +569,7 @@ export default function ContagemInventario({ inventarioId }: { inventarioId: num
         {erro ? <p className="mt-3 text-[13px] font-medium text-[var(--rose)]">{erro}</p> : null}
 
         {!finalizado && resumo && resumo.encontrados === 0 && locais.length > 0 ? (
-          <details className="mt-4 rounded-2xl border border-[var(--line)] bg-[#fafafa] px-4 py-3">
+          <details className="mt-4 rounded-2xl border border-[var(--line)] bg-[var(--nc-surface-elevated)] px-4 py-3">
             <summary className="cursor-pointer text-[13px] font-semibold text-[var(--ink)]">
               Contar só alguns locais {tipo === 'ROTATIVO' ? '(rotativo ativo)' : '(inventário rotativo)'}
             </summary>
@@ -600,7 +600,7 @@ export default function ContagemInventario({ inventarioId }: { inventarioId: num
               type="button"
               onClick={() => void salvarEscopo()}
               disabled={enviando}
-              className="mt-3 inline-flex h-9 items-center justify-center rounded-full border border-[var(--line)] bg-white px-4 text-[12px] font-semibold text-[var(--ink)] transition hover:border-[var(--accent)] disabled:opacity-60"
+              className="mt-3 inline-flex h-9 items-center justify-center rounded-full border border-[var(--line)] bg-[var(--nc-card)] px-4 text-[12px] font-semibold text-[var(--ink)] transition hover:border-[var(--accent)] disabled:opacity-60"
             >
               {escopo.length === 0 ? 'Contar a filial inteira' : `Contar só ${escopo.length} local(is)`}
             </button>
@@ -615,7 +615,7 @@ export default function ContagemInventario({ inventarioId }: { inventarioId: num
             {historico.slice(0, 12).map((leitura, indice) => (
               <div
                 key={`${leitura.origem_id ?? leitura.codigo}-${indice}`}
-                className="flex flex-wrap items-center justify-between gap-2 rounded-2xl border border-[var(--line)] bg-[#fafafa] px-4 py-3"
+                className="flex flex-wrap items-center justify-between gap-2 rounded-2xl border border-[var(--line)] bg-[var(--nc-surface-elevated)] px-4 py-3"
               >
                 <div className="min-w-0">
                   <p className="text-sm font-semibold text-[var(--ink)]">
@@ -653,7 +653,7 @@ export default function ContagemInventario({ inventarioId }: { inventarioId: num
           ) : null}
           <div className="mt-3 grid gap-2">
             {pendentes.map((item) => (
-              <div key={item.id} className="rounded-2xl border border-[var(--line)] bg-[#fafafa] px-4 py-3">
+              <div key={item.id} className="rounded-2xl border border-[var(--line)] bg-[var(--nc-surface-elevated)] px-4 py-3">
                 <p className="text-sm font-semibold text-[var(--ink)]">{item.numero_tombo ?? 'Sem tombo'}</p>
                 <p className="mt-0.5 truncate text-[12px] text-[var(--muted)]">
                   {item.descricao}
@@ -666,7 +666,7 @@ export default function ContagemInventario({ inventarioId }: { inventarioId: num
             <button
               type="button"
               onClick={() => setPaginaPendentes((atual) => atual + 1)}
-              className="mt-3 inline-flex h-9 w-full items-center justify-center rounded-full border border-[var(--line)] bg-white px-4 text-[12px] font-semibold text-[var(--ink)] transition hover:border-[var(--accent)]"
+              className="mt-3 inline-flex h-9 w-full items-center justify-center rounded-full border border-[var(--line)] bg-[var(--nc-card)] px-4 text-[12px] font-semibold text-[var(--ink)] transition hover:border-[var(--accent)]"
             >
               Ver mais {paginacao.total - pendentes.length} pendentes
             </button>
@@ -679,7 +679,7 @@ export default function ContagemInventario({ inventarioId }: { inventarioId: num
           type="button"
           onClick={() => void finalizar()}
           disabled={enviando}
-          className="inline-flex h-11 items-center justify-center rounded-full border border-[var(--line)] bg-white px-5 text-[13px] font-semibold text-[var(--ink)] transition hover:border-[var(--accent)] hover:text-[var(--accent-deep)] disabled:opacity-60"
+          className="inline-flex h-11 items-center justify-center rounded-full border border-[var(--line)] bg-[var(--nc-card)] px-5 text-[13px] font-semibold text-[var(--ink)] transition hover:border-[var(--accent)] hover:text-[var(--accent-deep)] disabled:opacity-60"
         >
           {enviando ? 'Processando…' : 'Finalizar contagem e conciliar'}
         </button>

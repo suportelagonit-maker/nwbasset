@@ -28,7 +28,7 @@ export default function FontesConsultaButton() {
       <button
         type="button"
         onClick={() => setOpen(true)}
-        className="inline-flex h-9 items-center justify-center rounded-full border border-[var(--line)] bg-white px-3 text-[12px] font-semibold text-[var(--ink)] transition hover:border-[var(--accent)] hover:text-[var(--accent)]"
+        className="inline-flex h-9 items-center justify-center rounded-full border border-[var(--line)] bg-[var(--nc-card)] px-3 text-[12px] font-semibold text-[var(--ink)] transition hover:border-[var(--accent)] hover:text-[var(--accent)]"
       >
         Fontes de Consulta
       </button>
@@ -47,7 +47,7 @@ export default function FontesConsultaButton() {
               <button
                 type="button"
                 onClick={() => setOpen(false)}
-                className="inline-flex h-9 items-center justify-center rounded-full border border-[var(--line)] bg-white px-4 text-[13px] font-semibold text-[var(--ink)] transition hover:border-[var(--accent)] hover:text-[var(--accent)]"
+                className="inline-flex h-9 items-center justify-center rounded-full border border-[var(--line)] bg-[var(--nc-card)] px-4 text-[13px] font-semibold text-[var(--ink)] transition hover:border-[var(--accent)] hover:text-[var(--accent)]"
               >
                 Fechar
               </button>
@@ -55,7 +55,7 @@ export default function FontesConsultaButton() {
 
             <div className="mt-3 grid gap-2.5">
               {FONTES.map((fonte) => (
-                <article key={fonte.url} className="rounded-[14px] border border-[var(--line)] bg-[#fafafa] p-3">
+                <article key={fonte.url} className="rounded-[14px] border border-[var(--line)] bg-[var(--nc-surface-elevated)] p-3">
                   <p className="text-[13px] font-semibold text-[var(--ink)]">{fonte.titulo}</p>
                   <p className="mt-1 text-[12px] leading-5 text-[var(--muted)]">{fonte.descricao}</p>
                   <a

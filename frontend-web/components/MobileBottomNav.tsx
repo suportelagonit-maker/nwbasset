@@ -132,7 +132,7 @@ export default function MobileBottomNav({
           role="dialog"
           aria-modal="true"
           aria-label={openGroupEntry ? openGroupEntry.group.label : 'Menu'}
-          className="mobile-sheet fixed inset-x-0 z-[69] flex max-h-[calc(100dvh-96px)] flex-col rounded-t-[26px] border border-b-0 border-[rgba(17,24,39,0.08)] bg-white shadow-[0_-18px_48px_rgba(15,23,42,0.18)] md:hidden"
+          className="mobile-sheet fixed inset-x-0 z-[69] flex max-h-[calc(100dvh-96px)] flex-col rounded-t-[26px] border border-b-0 border-[var(--line)] bg-[var(--nc-card)] shadow-[0_-18px_48px_rgba(15,23,42,0.18)] md:hidden"
         >
           <div className="flex shrink-0 justify-center pt-2.5">
             <span className="h-1.5 w-12 rounded-full bg-[rgba(17,24,39,0.12)]" />
@@ -165,7 +165,7 @@ export default function MobileBottomNav({
             ) : (
               <div className="space-y-5">
                 {canSwitchEmpresa ? (
-                  <section className="rounded-[20px] border border-[var(--line)] bg-[#fafafa] p-3">
+                  <section className="rounded-[20px] border border-[var(--line)] bg-[var(--nc-surface-elevated)] p-3">
                     <EmpresaContextHeader
                       isSuperAdmin={isSuperAdmin}
                       empresas={empresas}
@@ -181,7 +181,7 @@ export default function MobileBottomNav({
 
                 <section>
                   <p className="px-1 text-[10px] font-semibold uppercase tracking-[0.18em] text-[var(--muted)]">Conta</p>
-                  <div className="mt-2 overflow-hidden rounded-[20px] border border-[var(--line)] bg-white">
+                  <div className="mt-2 overflow-hidden rounded-[20px] border border-[var(--line)] bg-[var(--nc-card)]">
                     <div className="flex items-center gap-3 border-b border-[var(--line)] px-4 py-3">
                       <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[#111827] text-sm font-semibold text-white">
                         {userInitial}
@@ -237,7 +237,7 @@ export default function MobileBottomNav({
       ) : null}
 
       <nav aria-label="Navegação principal" className="mobile-bottom-nav fixed inset-x-0 bottom-0 z-[70] md:hidden">
-        <div className="relative flex items-stretch justify-between border-t border-[rgba(17,24,39,0.08)] bg-[rgba(255,255,255,0.96)] px-1 pb-[env(safe-area-inset-bottom)] backdrop-blur-md">
+        <div className="relative flex items-stretch justify-between border-t border-[var(--line)] bg-[var(--bg-panel)] px-1 pb-[env(safe-area-inset-bottom)] backdrop-blur-md">
           {BAR_GROUPS.slice(0, 2).map((key) => (
             <GroupTab
               key={key}
@@ -266,7 +266,7 @@ export default function MobileBottomNav({
             <span
               className={[
                 'text-[10px] font-semibold leading-3',
-                dashboardActive && !sheetOpen ? 'text-[var(--accent-deep)]' : 'text-[#5b616d]',
+                dashboardActive && !sheetOpen ? 'text-[var(--accent-deep)]' : 'text-[var(--muted)]',
               ].join(' ')}
             >
               Painel
@@ -342,7 +342,7 @@ function TabButton({
       aria-current={active ? 'page' : undefined}
       className={[
         'flex min-h-[60px] min-w-0 flex-1 flex-col items-center justify-center gap-1 px-1 pb-1.5 pt-2 text-[10px] font-semibold leading-3 transition',
-        highlighted ? 'text-[var(--accent-deep)]' : 'text-[#5b616d]',
+        highlighted ? 'text-[var(--accent-deep)]' : 'text-[var(--muted)]',
       ].join(' ')}
     >
       <span
@@ -374,13 +374,13 @@ function GroupList({ items, pathname }: { items: AdminNavItem[]; pathname: strin
                 'flex items-center gap-3 rounded-[18px] border px-3.5 py-3 transition',
                 active
                   ? 'border-transparent bg-[var(--accent)] text-white shadow-[0_10px_24px_rgba(var(--accent-rgb),0.22)]'
-                  : 'border-[var(--line)] bg-white text-[var(--ink)] active:bg-[rgba(17,24,39,0.04)]',
+                  : 'border-[var(--line)] bg-[var(--nc-card)] text-[var(--ink)] active:bg-[rgba(17,24,39,0.04)]',
               ].join(' ')}
             >
               <span
                 className={[
                   'flex h-10 w-10 shrink-0 items-center justify-center rounded-[14px] [&>svg]:h-[22px] [&>svg]:w-[22px]',
-                  active ? 'bg-white/20 text-white' : 'bg-[var(--accent-soft)] text-[var(--accent-deep)]',
+                  active ? 'bg-[var(--nc-card)]/20 text-white' : 'bg-[var(--accent-soft)] text-[var(--accent-deep)]',
                 ].join(' ')}
               >
                 {renderAdminIcon(item.icon)}
@@ -422,13 +422,13 @@ function GroupGrid({ group, items, pathname }: { group: AdminNavGroup; items: Ad
                 'flex min-h-[84px] flex-col items-center justify-center gap-1.5 rounded-[18px] border px-1.5 py-2.5 text-center transition',
                 active
                   ? 'border-transparent bg-[var(--accent)] text-white shadow-[0_10px_24px_rgba(var(--accent-rgb),0.22)]'
-                  : 'border-[var(--line)] bg-white text-[var(--ink)] active:bg-[rgba(17,24,39,0.04)]',
+                  : 'border-[var(--line)] bg-[var(--nc-card)] text-[var(--ink)] active:bg-[rgba(17,24,39,0.04)]',
               ].join(' ')}
             >
               <span
                 className={[
                   'flex h-9 w-9 items-center justify-center rounded-full [&>svg]:h-[20px] [&>svg]:w-[20px]',
-                  active ? 'bg-white/20 text-white' : 'bg-[var(--accent-soft)] text-[var(--accent-deep)]',
+                  active ? 'bg-[var(--nc-card)]/20 text-white' : 'bg-[var(--accent-soft)] text-[var(--accent-deep)]',
                 ].join(' ')}
               >
                 {renderAdminIcon(item.icon)}

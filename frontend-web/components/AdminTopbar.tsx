@@ -38,7 +38,7 @@ function HelpButton() {
       prefetch={false}
       aria-label="Central de Ajuda"
       title="Central de Ajuda"
-      className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-[var(--line)] bg-white text-[var(--ink)] transition hover:border-[var(--accent)] hover:text-[var(--accent-deep)] sm:h-11 sm:w-11"
+      className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-[var(--line)] bg-[var(--nc-card)] text-[var(--ink)] transition hover:border-[var(--accent)] hover:text-[var(--accent-deep)] sm:h-11 sm:w-11"
     >
       <svg aria-hidden="true" className="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
         <circle cx="12" cy="12" r="9" />

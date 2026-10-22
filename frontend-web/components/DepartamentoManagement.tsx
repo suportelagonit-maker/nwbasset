@@ -383,7 +383,7 @@ export default function DepartamentoManagement({ empresaId }: { empresaId: numbe
             <button
               type="button"
               onClick={() => void Promise.all([loadDepartamentos(), loadFiliais(), loadUnidades()])}
-              className="inline-flex h-10 items-center justify-center rounded-full border border-[var(--line)] bg-white px-4.5 text-[13px] font-semibold text-[var(--ink)] transition hover:border-[var(--accent)] hover:text-[var(--accent)]"
+              className="inline-flex h-10 items-center justify-center rounded-full border border-[var(--line)] bg-[var(--nc-card)] px-4.5 text-[13px] font-semibold text-[var(--ink)] transition hover:border-[var(--accent)] hover:text-[var(--accent)]"
             >
               Atualizar
             </button>
@@ -392,7 +392,7 @@ export default function DepartamentoManagement({ empresaId }: { empresaId: numbe
           <div className="overflow-x-auto">
             <table className="min-w-full border-collapse">
               <thead>
-                <tr className="bg-[#f8fafc] text-left text-xs uppercase tracking-[0.16em] text-[var(--muted)]">
+                <tr className="bg-[var(--nc-surface-elevated)] text-left text-xs uppercase tracking-[0.16em] text-[var(--muted)]">
                   <th className="px-4 py-4">Departamento</th>
                   <th className="px-4 py-4">Código</th>
                   <th className="px-4 py-4">Unidade</th>
@@ -438,13 +438,13 @@ export default function DepartamentoManagement({ empresaId }: { empresaId: numbe
                       </td>
                       <td className="px-4 py-4">
                         <div className="flex items-center justify-end gap-2">
-                          <button type="button" onClick={() => openViewModal(departamento)} className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-[var(--line)] bg-white text-[var(--ink)] transition hover:border-[var(--accent)] hover:text-[var(--accent)]" aria-label="Visualizar departamento" title="Visualizar departamento">
+                          <button type="button" onClick={() => openViewModal(departamento)} className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-[var(--line)] bg-[var(--nc-card)] text-[var(--ink)] transition hover:border-[var(--accent)] hover:text-[var(--accent)]" aria-label="Visualizar departamento" title="Visualizar departamento">
                             <EyeIcon />
                           </button>
-                          <button type="button" onClick={() => openEditModal(departamento)} className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-[var(--line)] bg-white text-[var(--ink)] transition hover:border-[var(--accent)] hover:text-[var(--accent)]" aria-label="Editar departamento" title="Editar departamento">
+                          <button type="button" onClick={() => openEditModal(departamento)} className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-[var(--line)] bg-[var(--nc-card)] text-[var(--ink)] transition hover:border-[var(--accent)] hover:text-[var(--accent)]" aria-label="Editar departamento" title="Editar departamento">
                             <PencilIcon />
                           </button>
-                          <button type="button" onClick={() => void handleDelete(departamento)} className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-[rgba(190,18,60,0.15)] bg-white text-[var(--rose)] transition hover:border-[rgba(190,18,60,0.35)] hover:bg-[rgba(190,18,60,0.06)]" aria-label="Excluir departamento" title="Excluir departamento">
+                          <button type="button" onClick={() => void handleDelete(departamento)} className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-[rgba(190,18,60,0.15)] bg-[var(--nc-card)] text-[var(--rose)] transition hover:border-[rgba(190,18,60,0.35)] hover:bg-[rgba(190,18,60,0.06)]" aria-label="Excluir departamento" title="Excluir departamento">
                             <TrashIcon />
                           </button>
                         </div>

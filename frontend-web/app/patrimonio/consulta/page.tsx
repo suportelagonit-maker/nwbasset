@@ -77,7 +77,7 @@ export default async function PatrimonioConsultaPage({
       <div className="auth-art-orb auth-art-orb--one" aria-hidden="true" />
       <div className="auth-art-orb auth-art-orb--two" aria-hidden="true" />
 
-      <div className="relative z-[1] w-full max-w-3xl rounded-[32px] border border-[rgba(var(--accent-rgb),0.12)] bg-white/92 p-6 shadow-[0_30px_80px_rgba(15,23,42,0.10)] backdrop-blur">
+      <div className="relative z-[1] w-full max-w-3xl rounded-[32px] border border-[rgba(var(--accent-rgb),0.12)] bg-[var(--nc-card)]/92 p-6 shadow-[0_30px_80px_rgba(15,23,42,0.10)] backdrop-blur">
         <div className="mb-6 flex items-center justify-between gap-4">
           <Image src="/logoasset.png" alt="NWB Asset" width={180} height={54} className="h-auto w-[140px] object-contain md:w-[180px]" priority />
           <span className="inline-flex rounded-full border border-[rgba(var(--accent-rgb),0.28)] bg-[#fff8ec] px-3 py-1 text-xs font-semibold uppercase tracking-[0.2em] text-[var(--accent-deep)]">
@@ -90,7 +90,7 @@ export default async function PatrimonioConsultaPage({
         </div>
 
         {!payload ? (
-          <section className="rounded-[26px] border border-[var(--line)] bg-white p-8">
+          <section className="rounded-[26px] border border-[var(--line)] bg-[var(--nc-card)] p-8">
             <h1 className="text-2xl font-semibold tracking-tight text-[var(--ink)] md:text-3xl">
               {codigo ? 'Plaqueta não encontrada' : 'Consulte um bem pela etiqueta'}
             </h1>
@@ -102,7 +102,7 @@ export default async function PatrimonioConsultaPage({
           </section>
         ) : (
           <section className="space-y-5">
-            <div className="rounded-[26px] border border-[var(--line)] bg-white p-6">
+            <div className="rounded-[26px] border border-[var(--line)] bg-[var(--nc-card)] p-6">
               <p className="text-[11px] font-semibold uppercase tracking-[0.26em] text-[var(--muted)]">Patrimonio</p>
               <h1 className="mt-3 text-3xl font-semibold tracking-tight text-[var(--ink)]">{payload.data.bem.descricao}</h1>
               <div className="mt-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
@@ -126,7 +126,7 @@ export default async function PatrimonioConsultaPage({
             </div>
 
             <div className="grid gap-5 md:grid-cols-2">
-              <div className="rounded-[26px] border border-[var(--line)] bg-white p-6">
+              <div className="rounded-[26px] border border-[var(--line)] bg-[var(--nc-card)] p-6">
                 <p className="text-[11px] uppercase tracking-[0.24em] text-[var(--muted)]">Estrutura</p>
                 <div className="mt-4 space-y-3 text-sm text-[var(--ink)]">
                   <p><span className="font-semibold">Empresa:</span> {payload.data.empresa.nome_fantasia ?? 'Não informada'}</p>
@@ -134,7 +134,7 @@ export default async function PatrimonioConsultaPage({
                   <p><span className="font-semibold">Local:</span> {payload.data.local.nome ?? 'Não informado'}</p>
                 </div>
               </div>
-              <div className="rounded-[26px] border border-[var(--line)] bg-white p-6">
+              <div className="rounded-[26px] border border-[var(--line)] bg-[var(--nc-card)] p-6">
                 <p className="text-[11px] uppercase tracking-[0.24em] text-[var(--muted)]">Detalhes</p>
                 <div className="mt-4 space-y-3 text-sm text-[var(--ink)]">
                   <p><span className="font-semibold">Categoria:</span> {payload.data.bem.categoria ?? 'Não informada'}</p>
@@ -148,7 +148,7 @@ export default async function PatrimonioConsultaPage({
         )}
 
         <div className="mt-6 flex justify-end">
-          <Link href="/login" className="inline-flex rounded-full border border-[var(--line)] bg-white px-5 py-2.5 text-sm font-semibold text-[var(--ink)] transition hover:border-[var(--accent)] hover:text-[var(--accent-deep)]">
+          <Link href="/login" className="inline-flex rounded-full border border-[var(--line)] bg-[var(--nc-card)] px-5 py-2.5 text-sm font-semibold text-[var(--ink)] transition hover:border-[var(--accent)] hover:text-[var(--accent-deep)]">
             Ir para o sistema
           </Link>
         </div>

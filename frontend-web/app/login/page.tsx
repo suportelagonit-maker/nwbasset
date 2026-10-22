@@ -50,7 +50,7 @@ export default async function LoginPage() {
               className="h-auto w-[180px] object-contain md:w-[220px]"
             />
           </div>
-          <span className="inline-flex rounded-full border border-[rgba(var(--accent-rgb),0.22)] bg-white/78 px-3 py-1 text-xs font-semibold uppercase tracking-[0.22em] text-[var(--accent-deep)]">
+          <span className="inline-flex rounded-full border border-[rgba(var(--accent-rgb),0.22)] bg-[var(--nc-card)]/78 px-3 py-1 text-xs font-semibold uppercase tracking-[0.22em] text-[var(--accent-deep)]">
             ERP Patrimonial SaaS
           </span>
           <h1 className="mt-5 font-[family-name:var(--font-heading)] text-3xl font-semibold tracking-tight sm:text-4xl md:text-6xl">

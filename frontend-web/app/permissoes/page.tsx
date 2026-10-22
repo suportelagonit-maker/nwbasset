@@ -98,7 +98,7 @@ export default async function PermissoesPage() {
                 {items.map((permission) => (
                   <label
                     key={`${role}-${permission}`}
-                    className="flex items-start gap-2 rounded-xl border border-[var(--line)] bg-[#f8fafc] px-2.5 py-2"
+                    className="flex items-start gap-2 rounded-xl border border-[var(--line)] bg-[var(--nc-surface-elevated)] px-2.5 py-2"
                   >
                     <input
                       type="checkbox"

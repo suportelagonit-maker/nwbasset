@@ -33,7 +33,7 @@ function TermoViewer({ termo, onClose }: { termo: TermoUsoData; onClose: () => v
           <p className="truncate text-[14px] font-semibold">{termo.titulo}</p>
         </div>
         <div className="flex shrink-0 items-center gap-2">
-          <button type="button" onClick={() => window.print()} className="inline-flex h-9 items-center rounded-full border border-white/25 px-3.5 text-[12px] font-semibold text-white transition hover:bg-white/10">
+          <button type="button" onClick={() => window.print()} className="inline-flex h-9 items-center rounded-full border border-white/25 px-3.5 text-[12px] font-semibold text-white transition hover:bg-[var(--nc-card)]/10">
             Imprimir / salvar PDF
           </button>
           <button type="button" onClick={onClose} className="inline-flex h-9 items-center rounded-full bg-[var(--accent)] px-3.5 text-[12px] font-semibold text-white transition hover:opacity-90">

@@ -194,9 +194,9 @@ export default function EmpresaModal({
           <div className="admin-modal-block">
             {step === 1 ? (
               <div className="admin-modal-form-grid md:grid-cols-2 xl:grid-cols-6">
-                <div className="rounded-[18px] border border-[var(--line)] bg-[#fcfdff] p-3 md:col-span-2 xl:col-span-2 xl:row-span-3">
+                <div className="rounded-[18px] border border-[var(--line)] bg-[var(--nc-surface-elevated)] p-3 md:col-span-2 xl:col-span-2 xl:row-span-3">
                   <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[var(--muted)]">Logo da empresa</p>
-                  <div className="mt-3 flex min-h-[148px] items-center justify-center overflow-hidden rounded-[16px] border border-dashed border-[var(--line)] bg-white p-3">
+                  <div className="mt-3 flex min-h-[148px] items-center justify-center overflow-hidden rounded-[16px] border border-dashed border-[var(--line)] bg-[var(--nc-card)] p-3">
                     {logoPreviewUrl ? (
                       <Image
                         src={logoPreviewUrl}
@@ -332,7 +332,7 @@ export default function EmpresaModal({
                   Estado
                   <input type="text" value={enderecoForm.estado} onChange={(event) => onEnderecoChange('estado', event.target.value)} disabled={isReadOnly} className="admin-input" />
                 </label>
-                <div className="rounded-[16px] border border-dashed border-[var(--line)] bg-white px-3 py-3 text-[12px] leading-5 text-[var(--muted)] md:col-span-2">
+                <div className="rounded-[16px] border border-dashed border-[var(--line)] bg-[var(--nc-card)] px-3 py-3 text-[12px] leading-5 text-[var(--muted)] md:col-span-2">
                   Esta etapa de endereco foi adicionada ao popup conforme o fluxo visual solicitado. O backend atual continua preservado.
                 </div>
               </div>

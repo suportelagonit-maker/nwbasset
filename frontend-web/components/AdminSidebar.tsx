@@ -346,13 +346,13 @@ export default function AdminSidebar({
               : 'gap-3 px-4 py-[11px] text-[0.9rem]',
           active
             ? 'bg-[var(--accent)] text-white shadow-[0_10px_24px_rgba(var(--accent-rgb),0.22)]'
-            : 'text-[#212734] hover:bg-[rgba(17,24,39,0.04)]',
+            : 'text-[var(--ink)] hover:bg-[rgba(17,24,39,0.04)]',
         ].join(' ')}
       >
         <span
           className={[
             'shrink-0 [&>svg]:h-[26px] [&>svg]:w-[26px]',
-            active ? 'text-white' : 'text-[#202632]',
+            active ? 'text-white' : 'text-[var(--ink)]',
           ].join(' ')}
         >
           {renderAdminIcon(item.icon)}
@@ -516,8 +516,8 @@ export default function AdminSidebar({
   ]);
 
   return (
-    <aside className="admin-sidebar-surface flex min-h-screen flex-col overflow-visible border-r border-[rgba(17,24,39,0.08)] bg-white">
-      <div className={['flex items-center border-b border-[rgba(17,24,39,0.08)] py-5', collapsed ? 'justify-center px-3' : 'gap-3 px-6'].join(' ')}>
+    <aside className="admin-sidebar-surface flex min-h-screen flex-col overflow-visible border-r border-[var(--line)] bg-[var(--nc-card)]">
+      <div className={['flex items-center border-b border-[var(--line)] py-5', collapsed ? 'justify-center px-3' : 'gap-3 px-6'].join(' ')}>
         <button
           type="button"
           onClick={onToggle}
@@ -559,13 +559,13 @@ export default function AdminSidebar({
                     'flex w-full justify-center rounded-2xl px-0 py-3 font-medium transition',
                     item.active
                       ? 'bg-[var(--accent)] text-white shadow-[0_10px_24px_rgba(var(--accent-rgb),0.22)]'
-                      : 'text-[#212734] hover:bg-[rgba(17,24,39,0.04)]',
+                      : 'text-[var(--ink)] hover:bg-[rgba(17,24,39,0.04)]',
                   ].join(' ')}
                 >
                   <span
                     className={[
                       'shrink-0 [&>svg]:h-[26px] [&>svg]:w-[26px]',
-                      item.active ? 'text-white' : 'text-[#202632]',
+                      item.active ? 'text-white' : 'text-[var(--ink)]',
                     ].join(' ')}
                   >
                     {renderAdminIcon(item.icon)}
@@ -574,7 +574,7 @@ export default function AdminSidebar({
 
                 <span
                   className={[
-                    'pointer-events-none absolute left-[calc(100%+10px)] top-1/2 z-50 hidden -translate-y-1/2 whitespace-nowrap rounded-xl border border-[rgba(17,24,39,0.14)] bg-white px-3 py-1.5 text-[12px] font-semibold text-[#202632] shadow-[0_10px_24px_rgba(15,23,42,0.16)]',
+                    'pointer-events-none absolute left-[calc(100%+10px)] top-1/2 z-50 hidden -translate-y-1/2 whitespace-nowrap rounded-xl border border-[var(--line)] bg-[var(--nc-card)] px-3 py-1.5 text-[12px] font-semibold text-[var(--ink)] shadow-[0_10px_24px_rgba(15,23,42,0.16)]',
                     'group-hover:inline-flex group-focus-within:inline-flex',
                   ].join(' ')}
                 >
@@ -582,7 +582,7 @@ export default function AdminSidebar({
                 </span>
                 <span
                   className={[
-                    'pointer-events-none absolute left-[calc(100%+6px)] top-1/2 z-50 hidden h-2.5 w-2.5 -translate-y-1/2 rotate-45 border-b border-l border-[rgba(17,24,39,0.14)] bg-white',
+                    'pointer-events-none absolute left-[calc(100%+6px)] top-1/2 z-50 hidden h-2.5 w-2.5 -translate-y-1/2 rotate-45 border-b border-l border-[var(--line)] bg-[var(--nc-card)]',
                     'group-hover:block group-focus-within:block',
                   ].join(' ')}
                 />
@@ -609,15 +609,15 @@ export default function AdminSidebar({
                   className={[
                     'flex w-full items-center justify-between gap-3 rounded-2xl px-3.5 py-2.5 text-left font-medium transition',
                     corporateHighlighted
-                      ? 'bg-[var(--accent)] text-[#111827] shadow-[0_10px_24px_rgba(var(--accent-rgb),0.22)]'
-                      : 'text-[#212734] hover:bg-[rgba(17,24,39,0.04)]',
+                      ? 'bg-[var(--accent)] text-[var(--ink)] shadow-[0_10px_24px_rgba(var(--accent-rgb),0.22)]'
+                      : 'text-[var(--ink)] hover:bg-[rgba(17,24,39,0.04)]',
                   ].join(' ')}
                 >
                   <span className="flex items-center gap-3">
                     <span
                       className={[
                         'shrink-0 [&>svg]:h-[24px] [&>svg]:w-[24px]',
-                        corporateHighlighted ? 'text-[#111827]' : 'text-[#202632]',
+                        corporateHighlighted ? 'text-[var(--ink)]' : 'text-[var(--ink)]',
                       ].join(' ')}
                     >
                       {renderAdminIcon('building')}
@@ -637,8 +637,8 @@ export default function AdminSidebar({
                 </button>
 
                 {corporativoOpen ? (
-                  <div className="absolute left-[calc(100%+10px)] top-0 z-40 w-[280px] rounded-2xl border border-[rgba(17,24,39,0.12)] bg-white p-2 shadow-[0_18px_36px_rgba(15,23,42,0.14)]">
-                    <div className="absolute -left-1.5 top-5 h-3 w-3 rotate-45 border-b border-l border-[rgba(17,24,39,0.12)] bg-white" />
+                  <div className="absolute left-[calc(100%+10px)] top-0 z-40 w-[280px] rounded-2xl border border-[var(--line)] bg-[var(--nc-card)] p-2 shadow-[0_18px_36px_rgba(15,23,42,0.14)]">
+                    <div className="absolute -left-1.5 top-5 h-3 w-3 rotate-45 border-b border-l border-[var(--line)] bg-[var(--nc-card)]" />
                     <div className="space-y-1">
                       {corporateItems.map((item) => renderItem(item, true))}
                     </div>
@@ -663,15 +663,15 @@ export default function AdminSidebar({
                   className={[
                     'flex w-full items-center justify-between gap-3 rounded-2xl px-3.5 py-2.5 text-left font-medium transition',
                     assetsHighlighted
-                      ? 'bg-[var(--accent)] text-[#111827] shadow-[0_10px_24px_rgba(var(--accent-rgb),0.22)]'
-                      : 'text-[#212734] hover:bg-[rgba(17,24,39,0.04)]',
+                      ? 'bg-[var(--accent)] text-[var(--ink)] shadow-[0_10px_24px_rgba(var(--accent-rgb),0.22)]'
+                      : 'text-[var(--ink)] hover:bg-[rgba(17,24,39,0.04)]',
                   ].join(' ')}
                 >
                   <span className="flex items-center gap-3">
                     <span
                       className={[
                         'shrink-0 [&>svg]:h-[24px] [&>svg]:w-[24px]',
-                        assetsHighlighted ? 'text-[#111827]' : 'text-[#202632]',
+                        assetsHighlighted ? 'text-[var(--ink)]' : 'text-[var(--ink)]',
                       ].join(' ')}
                     >
                       {renderAdminIcon('cube')}
@@ -691,8 +691,8 @@ export default function AdminSidebar({
                 </button>
 
                 {ativosOpen ? (
-                  <div className="absolute left-[calc(100%+10px)] top-0 z-40 w-[280px] rounded-2xl border border-[rgba(17,24,39,0.12)] bg-white p-2 shadow-[0_18px_36px_rgba(15,23,42,0.14)]">
-                    <div className="absolute -left-1.5 top-5 h-3 w-3 rotate-45 border-b border-l border-[rgba(17,24,39,0.12)] bg-white" />
+                  <div className="absolute left-[calc(100%+10px)] top-0 z-40 w-[280px] rounded-2xl border border-[var(--line)] bg-[var(--nc-card)] p-2 shadow-[0_18px_36px_rgba(15,23,42,0.14)]">
+                    <div className="absolute -left-1.5 top-5 h-3 w-3 rotate-45 border-b border-l border-[var(--line)] bg-[var(--nc-card)]" />
                     <div className="space-y-1">
                       {assetsItems.map((item) => renderItem(item, true))}
                     </div>
@@ -717,15 +717,15 @@ export default function AdminSidebar({
                   className={[
                     'flex w-full items-center justify-between gap-3 rounded-2xl px-3.5 py-2.5 text-left font-medium transition',
                     inventoryHighlighted
-                      ? 'bg-[var(--accent)] text-[#111827] shadow-[0_10px_24px_rgba(var(--accent-rgb),0.22)]'
-                      : 'text-[#212734] hover:bg-[rgba(17,24,39,0.04)]',
+                      ? 'bg-[var(--accent)] text-[var(--ink)] shadow-[0_10px_24px_rgba(var(--accent-rgb),0.22)]'
+                      : 'text-[var(--ink)] hover:bg-[rgba(17,24,39,0.04)]',
                   ].join(' ')}
                 >
                   <span className="flex items-center gap-3">
                     <span
                       className={[
                         'shrink-0 [&>svg]:h-[24px] [&>svg]:w-[24px]',
-                        inventoryHighlighted ? 'text-[#111827]' : 'text-[#202632]',
+                        inventoryHighlighted ? 'text-[var(--ink)]' : 'text-[var(--ink)]',
                       ].join(' ')}
                     >
                       {renderAdminIcon('clipboard')}
@@ -745,8 +745,8 @@ export default function AdminSidebar({
                 </button>
 
                 {inventarioOpen ? (
-                  <div className="absolute left-[calc(100%+10px)] top-0 z-40 w-[280px] rounded-2xl border border-[rgba(17,24,39,0.12)] bg-white p-2 shadow-[0_18px_36px_rgba(15,23,42,0.14)]">
-                    <div className="absolute -left-1.5 top-5 h-3 w-3 rotate-45 border-b border-l border-[rgba(17,24,39,0.12)] bg-white" />
+                  <div className="absolute left-[calc(100%+10px)] top-0 z-40 w-[280px] rounded-2xl border border-[var(--line)] bg-[var(--nc-card)] p-2 shadow-[0_18px_36px_rgba(15,23,42,0.14)]">
+                    <div className="absolute -left-1.5 top-5 h-3 w-3 rotate-45 border-b border-l border-[var(--line)] bg-[var(--nc-card)]" />
                     <div className="space-y-1">
                       {inventoryItems.map((item) => renderItem(item, true))}
                     </div>
@@ -771,15 +771,15 @@ export default function AdminSidebar({
                   className={[
                     'flex w-full items-center justify-between gap-3 rounded-2xl px-3.5 py-2.5 text-left font-medium transition',
                     depreciationHighlighted
-                      ? 'bg-[var(--accent)] text-[#111827] shadow-[0_10px_24px_rgba(var(--accent-rgb),0.22)]'
-                      : 'text-[#212734] hover:bg-[rgba(17,24,39,0.04)]',
+                      ? 'bg-[var(--accent)] text-[var(--ink)] shadow-[0_10px_24px_rgba(var(--accent-rgb),0.22)]'
+                      : 'text-[var(--ink)] hover:bg-[rgba(17,24,39,0.04)]',
                   ].join(' ')}
                 >
                   <span className="flex items-center gap-3">
                     <span
                       className={[
                         'shrink-0 [&>svg]:h-[24px] [&>svg]:w-[24px]',
-                        depreciationHighlighted ? 'text-[#111827]' : 'text-[#202632]',
+                        depreciationHighlighted ? 'text-[var(--ink)]' : 'text-[var(--ink)]',
                       ].join(' ')}
                     >
                       {renderAdminIcon('trend')}
@@ -799,8 +799,8 @@ export default function AdminSidebar({
                 </button>
 
                 {depreciacaoOpen ? (
-                  <div className="absolute left-[calc(100%+10px)] top-0 z-40 w-[280px] rounded-2xl border border-[rgba(17,24,39,0.12)] bg-white p-2 shadow-[0_18px_36px_rgba(15,23,42,0.14)]">
-                    <div className="absolute -left-1.5 top-5 h-3 w-3 rotate-45 border-b border-l border-[rgba(17,24,39,0.12)] bg-white" />
+                  <div className="absolute left-[calc(100%+10px)] top-0 z-40 w-[280px] rounded-2xl border border-[var(--line)] bg-[var(--nc-card)] p-2 shadow-[0_18px_36px_rgba(15,23,42,0.14)]">
+                    <div className="absolute -left-1.5 top-5 h-3 w-3 rotate-45 border-b border-l border-[var(--line)] bg-[var(--nc-card)]" />
                     <div className="space-y-1">
                       {depreciationItems.map((item) => renderItem(item, true))}
                     </div>
@@ -825,15 +825,15 @@ export default function AdminSidebar({
                   className={[
                     'flex w-full items-center justify-between gap-3 rounded-2xl px-3.5 py-2.5 text-left font-medium transition',
                     movementsHighlighted
-                      ? 'bg-[var(--accent)] text-[#111827] shadow-[0_10px_24px_rgba(var(--accent-rgb),0.22)]'
-                      : 'text-[#212734] hover:bg-[rgba(17,24,39,0.04)]',
+                      ? 'bg-[var(--accent)] text-[var(--ink)] shadow-[0_10px_24px_rgba(var(--accent-rgb),0.22)]'
+                      : 'text-[var(--ink)] hover:bg-[rgba(17,24,39,0.04)]',
                   ].join(' ')}
                 >
                   <span className="flex items-center gap-3">
                     <span
                       className={[
                         'shrink-0 [&>svg]:h-[24px] [&>svg]:w-[24px]',
-                        movementsHighlighted ? 'text-[#111827]' : 'text-[#202632]',
+                        movementsHighlighted ? 'text-[var(--ink)]' : 'text-[var(--ink)]',
                       ].join(' ')}
                     >
                       {renderAdminIcon('swap')}
@@ -853,8 +853,8 @@ export default function AdminSidebar({
                 </button>
 
                 {movimentacoesOpen ? (
-                  <div className="absolute left-[calc(100%+10px)] top-0 z-40 w-[280px] rounded-2xl border border-[rgba(17,24,39,0.12)] bg-white p-2 shadow-[0_18px_36px_rgba(15,23,42,0.14)]">
-                    <div className="absolute -left-1.5 top-5 h-3 w-3 rotate-45 border-b border-l border-[rgba(17,24,39,0.12)] bg-white" />
+                  <div className="absolute left-[calc(100%+10px)] top-0 z-40 w-[280px] rounded-2xl border border-[var(--line)] bg-[var(--nc-card)] p-2 shadow-[0_18px_36px_rgba(15,23,42,0.14)]">
+                    <div className="absolute -left-1.5 top-5 h-3 w-3 rotate-45 border-b border-l border-[var(--line)] bg-[var(--nc-card)]" />
                     <div className="space-y-1">
                       {movementItems.map((item) => renderItem(item, true))}
                     </div>
@@ -879,15 +879,15 @@ export default function AdminSidebar({
                   className={[
                     'flex w-full items-center justify-between gap-3 rounded-2xl px-3.5 py-2.5 text-left font-medium transition',
                     reportsHighlighted
-                      ? 'bg-[var(--accent)] text-[#111827] shadow-[0_10px_24px_rgba(var(--accent-rgb),0.22)]'
-                      : 'text-[#212734] hover:bg-[rgba(17,24,39,0.04)]',
+                      ? 'bg-[var(--accent)] text-[var(--ink)] shadow-[0_10px_24px_rgba(var(--accent-rgb),0.22)]'
+                      : 'text-[var(--ink)] hover:bg-[rgba(17,24,39,0.04)]',
                   ].join(' ')}
                 >
                   <span className="flex items-center gap-3">
                     <span
                       className={[
                         'shrink-0 [&>svg]:h-[24px] [&>svg]:w-[24px]',
-                        reportsHighlighted ? 'text-[#111827]' : 'text-[#202632]',
+                        reportsHighlighted ? 'text-[var(--ink)]' : 'text-[var(--ink)]',
                       ].join(' ')}
                     >
                       {renderAdminIcon('report')}
@@ -907,8 +907,8 @@ export default function AdminSidebar({
                 </button>
 
                 {relatoriosOpen ? (
-                  <div className="absolute left-[calc(100%+10px)] top-0 z-40 w-[280px] rounded-2xl border border-[rgba(17,24,39,0.12)] bg-white p-2 shadow-[0_18px_36px_rgba(15,23,42,0.14)]">
-                    <div className="absolute -left-1.5 top-5 h-3 w-3 rotate-45 border-b border-l border-[rgba(17,24,39,0.12)] bg-white" />
+                  <div className="absolute left-[calc(100%+10px)] top-0 z-40 w-[280px] rounded-2xl border border-[var(--line)] bg-[var(--nc-card)] p-2 shadow-[0_18px_36px_rgba(15,23,42,0.14)]">
+                    <div className="absolute -left-1.5 top-5 h-3 w-3 rotate-45 border-b border-l border-[var(--line)] bg-[var(--nc-card)]" />
                     <div className="space-y-1">
                       {reportsItems.map((item) => renderItem(item, true))}
                     </div>
@@ -933,15 +933,15 @@ export default function AdminSidebar({
                   className={[
                     'flex w-full items-center justify-between gap-3 rounded-2xl px-3.5 py-2.5 text-left font-medium transition',
                     administrationHighlighted
-                      ? 'bg-[var(--accent)] text-[#111827] shadow-[0_10px_24px_rgba(var(--accent-rgb),0.22)]'
-                      : 'text-[#212734] hover:bg-[rgba(17,24,39,0.04)]',
+                      ? 'bg-[var(--accent)] text-[var(--ink)] shadow-[0_10px_24px_rgba(var(--accent-rgb),0.22)]'
+                      : 'text-[var(--ink)] hover:bg-[rgba(17,24,39,0.04)]',
                   ].join(' ')}
                 >
                   <span className="flex items-center gap-3">
                     <span
                       className={[
                         'shrink-0 [&>svg]:h-[24px] [&>svg]:w-[24px]',
-                        administrationHighlighted ? 'text-[#111827]' : 'text-[#202632]',
+                        administrationHighlighted ? 'text-[var(--ink)]' : 'text-[var(--ink)]',
                       ].join(' ')}
                     >
                       {renderAdminIcon('users')}
@@ -961,8 +961,8 @@ export default function AdminSidebar({
                 </button>
 
                 {administracaoOpen ? (
-                  <div className="absolute left-[calc(100%+10px)] top-0 z-40 w-[280px] rounded-2xl border border-[rgba(17,24,39,0.12)] bg-white p-2 shadow-[0_18px_36px_rgba(15,23,42,0.14)]">
-                    <div className="absolute -left-1.5 top-5 h-3 w-3 rotate-45 border-b border-l border-[rgba(17,24,39,0.12)] bg-white" />
+                  <div className="absolute left-[calc(100%+10px)] top-0 z-40 w-[280px] rounded-2xl border border-[var(--line)] bg-[var(--nc-card)] p-2 shadow-[0_18px_36px_rgba(15,23,42,0.14)]">
+                    <div className="absolute -left-1.5 top-5 h-3 w-3 rotate-45 border-b border-l border-[var(--line)] bg-[var(--nc-card)]" />
                     <div className="space-y-1">
                       {administrationItems.map((item) => renderItem(item, true))}
                     </div>

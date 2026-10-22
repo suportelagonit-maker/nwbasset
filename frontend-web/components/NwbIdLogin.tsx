@@ -131,7 +131,7 @@ function NwbIdLoginContent({ config }: { config: NwbIdConfig }) {
 
   return (
     <div className="panel-surface w-full max-w-md rounded-[28px] p-6 md:p-7">
-      <span className="inline-flex rounded-full border border-[rgba(var(--accent-rgb),0.22)] bg-white/80 px-3 py-1 text-xs font-semibold uppercase tracking-[0.2em] text-[var(--accent-deep)]">
+      <span className="inline-flex rounded-full border border-[rgba(var(--accent-rgb),0.22)] bg-[var(--nc-card)]/80 px-3 py-1 text-xs font-semibold uppercase tracking-[0.2em] text-[var(--accent-deep)]">
         Crachá único da equipe
       </span>
       <h1 className="mt-4 font-[family-name:var(--font-heading)] text-3xl font-semibold tracking-tight">Entrar com NWB ID</h1>
@@ -146,7 +146,7 @@ function NwbIdLoginContent({ config }: { config: NwbIdConfig }) {
       ) : null}
 
       {estado === 'voltando' ? (
-        <p className="mt-6 inline-flex h-12 w-full items-center justify-center rounded-full border border-[var(--line)] bg-white/80 text-sm font-semibold text-[var(--muted)]">
+        <p className="mt-6 inline-flex h-12 w-full items-center justify-center rounded-full border border-[var(--line)] bg-[var(--nc-card)]/80 text-sm font-semibold text-[var(--muted)]">
           Confirmando sua entrada…
         </p>
       ) : (

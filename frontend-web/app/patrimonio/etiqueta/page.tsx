@@ -60,7 +60,7 @@ export default async function PatrimonioEtiquetaPage({
   if (!payload) {
     return (
       <main className="auth-art-page flex min-h-screen items-center justify-center px-4 py-10">
-        <div className="relative z-[1] w-full max-w-2xl rounded-[32px] border border-[rgba(var(--accent-rgb),0.12)] bg-white p-8 text-center shadow-[0_30px_80px_rgba(15,23,42,0.10)]">
+        <div className="relative z-[1] w-full max-w-2xl rounded-[32px] border border-[rgba(var(--accent-rgb),0.12)] bg-[var(--nc-card)] p-8 text-center shadow-[0_30px_80px_rgba(15,23,42,0.10)]">
           <Image src="/logoasset.png" alt="NWB Asset" width={180} height={54} className="mx-auto h-auto w-[180px] object-contain" priority />
           <h1 className="mt-6 text-3xl font-semibold tracking-tight text-[var(--ink)]">Etiqueta não encontrada</h1>
           <p className="mt-3 text-sm leading-7 text-[var(--muted)]">
@@ -75,8 +75,8 @@ export default async function PatrimonioEtiquetaPage({
   const empresaLogoSrc = payload.data.empresa.logo_url;
 
   return (
-    <main className="min-h-screen bg-[#f5f7fb] px-4 py-8 print:bg-white print:px-0 print:py-0">
-      <div className="mx-auto max-w-6xl rounded-[32px] border border-[rgba(15,23,42,0.08)] bg-white p-6 shadow-[0_24px_72px_rgba(15,23,42,0.08)] print:rounded-none print:border-0 print:p-0 print:shadow-none">
+    <main className="min-h-screen bg-[var(--nc-surface-elevated)] px-4 py-8 print:bg-[var(--nc-card)] print:px-0 print:py-0">
+      <div className="mx-auto max-w-6xl rounded-[32px] border border-[rgba(15,23,42,0.08)] bg-[var(--nc-card)] p-6 shadow-[0_24px_72px_rgba(15,23,42,0.08)] print:rounded-none print:border-0 print:p-0 print:shadow-none">
         <header className="mb-6 flex items-start justify-between gap-4 print:hidden">
           <div>
             <p className="text-[11px] font-semibold uppercase tracking-[0.26em] text-[var(--muted)]">Etiqueta patrimonial</p>
@@ -91,7 +91,7 @@ export default async function PatrimonioEtiquetaPage({
           <EtiquetaPrintActions consultaHref={`/patrimonio/consulta?codigo=${encodeURIComponent(codigo)}`} />
         </header>
 
-        <section className="mb-6 grid gap-4 rounded-[24px] border border-[var(--line)] bg-[#fbfcfe] p-5 md:grid-cols-4 print:hidden">
+        <section className="mb-6 grid gap-4 rounded-[24px] border border-[var(--line)] bg-[var(--nc-surface-elevated)] p-5 md:grid-cols-4 print:hidden">
           <div>
             <p className="text-[11px] uppercase tracking-[0.22em] text-[var(--muted)]">Empresa</p>
             <p className="mt-2 text-sm font-semibold text-[var(--ink)]">{payload.data.empresa.nome_fantasia ?? 'Não informada'}</p>

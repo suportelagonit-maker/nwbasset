@@ -414,7 +414,7 @@ export default function DepreciacaoUnifiedManagement({ empresaId }: DepreciacaoU
             <button
               type="button"
               onClick={() => void carregarDados()}
-              className="inline-flex h-10 items-center justify-center rounded-full border border-[var(--line)] bg-white px-4.5 text-[13px] font-semibold text-[var(--ink)] transition hover:border-[var(--accent)] hover:text-[var(--accent)]"
+              className="inline-flex h-10 items-center justify-center rounded-full border border-[var(--line)] bg-[var(--nc-card)] px-4.5 text-[13px] font-semibold text-[var(--ink)] transition hover:border-[var(--accent)] hover:text-[var(--accent)]"
             >
               Atualizar
             </button>

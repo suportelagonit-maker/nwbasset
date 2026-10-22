@@ -170,7 +170,7 @@ export default function LoginForm() {
   return (
     <form onSubmit={handleSubmit} className="panel-surface w-full max-w-md rounded-[28px] p-6 md:p-7">
       <div>
-        <span className="inline-flex rounded-full border border-[rgba(var(--accent-rgb),0.22)] bg-white/80 px-3 py-1 text-xs font-semibold uppercase tracking-[0.2em] text-[var(--accent-deep)]">
+        <span className="inline-flex rounded-full border border-[rgba(var(--accent-rgb),0.22)] bg-[var(--nc-card)]/80 px-3 py-1 text-xs font-semibold uppercase tracking-[0.2em] text-[var(--accent-deep)]">
           Login multiempresa
         </span>
         <h1 className="mt-4 font-[family-name:var(--font-heading)] text-3xl font-semibold tracking-tight">
@@ -188,7 +188,7 @@ export default function LoginForm() {
             type="email"
             value={form.email}
             onChange={(event) => setForm((current) => ({ ...current, email: event.target.value }))}
-            className="h-12 rounded-2xl border border-[var(--line)] bg-white/90 px-4 text-[var(--ink)] outline-none"
+            className="h-12 rounded-2xl border border-[var(--line)] bg-[var(--nc-card)]/90 px-4 text-[var(--ink)] outline-none"
           />
         </label>
 
@@ -198,7 +198,7 @@ export default function LoginForm() {
             type="password"
             value={form.password}
             onChange={(event) => setForm((current) => ({ ...current, password: event.target.value }))}
-            className="h-12 rounded-2xl border border-[var(--line)] bg-white/90 px-4 text-[var(--ink)] outline-none"
+            className="h-12 rounded-2xl border border-[var(--line)] bg-[var(--nc-card)]/90 px-4 text-[var(--ink)] outline-none"
           />
         </label>
       </div>
@@ -208,7 +208,7 @@ export default function LoginForm() {
           <span>Validacao humana</span>
           <div
             ref={captchaContainerRef}
-            className="min-h-[66px] rounded-2xl border border-[var(--line)] bg-white/90 p-2"
+            className="min-h-[66px] rounded-2xl border border-[var(--line)] bg-[var(--nc-card)]/90 p-2"
           />
           {captchaError ? <p className="text-xs text-[var(--rose)]">{captchaError}</p> : null}
         </div>

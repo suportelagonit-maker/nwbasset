@@ -31,7 +31,7 @@ export default function GraficoBensLocal({ data }: GraficoBensLocalProps) {
 
       <div className="grid gap-1.5 self-center">
         {data.map((entry, index) => (
-          <div key={entry.local_id} className="flex items-center gap-2.5 rounded-[12px] border border-[rgba(17,24,39,0.08)] bg-[#fafafa] px-2.5 py-2">
+          <div key={entry.local_id} className="flex items-center gap-2.5 rounded-[12px] border border-[var(--line)] bg-[var(--nc-surface-elevated)] px-2.5 py-2">
             <span className="h-3 w-3 rounded-full" style={{ backgroundColor: COLORS[index % COLORS.length] }} />
             <div className="min-w-0">
               <p className="truncate text-[13px] font-semibold text-[var(--ink)]">{entry.local ?? 'Sem local'}</p>

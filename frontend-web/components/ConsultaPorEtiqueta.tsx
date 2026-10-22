@@ -32,7 +32,7 @@ export default function ConsultaPorEtiqueta({ abrirLeitor = false, codigoAtual =
   }
 
   return (
-    <div className="rounded-[26px] border border-[var(--line)] bg-white p-4 md:p-5">
+    <div className="rounded-[26px] border border-[var(--line)] bg-[var(--nc-card)] p-4 md:p-5">
       <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-[var(--muted)]">Localizar um bem</p>
 
       <div className="mt-3 flex flex-col gap-2 sm:flex-row">
@@ -59,9 +59,9 @@ export default function ConsultaPorEtiqueta({ abrirLeitor = false, codigoAtual =
             value={codigo}
             onChange={(evento) => setCodigo(evento.target.value)}
             placeholder="ou digite o código da plaqueta"
-            className="h-11 min-w-0 flex-1 rounded-full border border-[var(--line)] bg-white px-4 text-[14px] text-[var(--ink)] outline-none transition focus:border-[rgba(var(--accent-rgb),0.6)]"
+            className="h-11 min-w-0 flex-1 rounded-full border border-[var(--line)] bg-[var(--nc-card)] px-4 text-[14px] text-[var(--ink)] outline-none transition focus:border-[rgba(var(--accent-rgb),0.6)]"
           />
-          <button type="submit" className="inline-flex h-11 items-center rounded-full border border-[var(--line)] bg-white px-4 text-[13px] font-semibold text-[var(--ink)] transition hover:border-[var(--accent)]">
+          <button type="submit" className="inline-flex h-11 items-center rounded-full border border-[var(--line)] bg-[var(--nc-card)] px-4 text-[13px] font-semibold text-[var(--ink)] transition hover:border-[var(--accent)]">
             Buscar
           </button>
         </form>

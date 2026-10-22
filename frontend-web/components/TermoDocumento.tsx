@@ -14,7 +14,7 @@ export { CarimboAceite };
  */
 export default function TermoDocumento({ termo, aceite }: { termo: TermoUsoData; aceite?: TermoAceite | null }) {
   return (
-    <article className="termo-documento rounded-[20px] border border-[var(--line)] bg-white">
+    <article className="termo-documento rounded-[20px] border border-[var(--line)] bg-[var(--nc-card)]">
       <header className="flex flex-wrap items-start justify-between gap-4 border-b border-[var(--line)] px-5 py-5 md:px-8">
         <div className="min-w-0">
           <Image src="/logoasset.png" alt="NWB Asset" width={150} height={40} className="h-auto w-[120px] object-contain" />
@@ -29,7 +29,7 @@ export default function TermoDocumento({ termo, aceite }: { termo: TermoUsoData;
       </header>
 
       <div
-        className="termo-conteudo px-5 py-5 text-[14px] leading-7 text-[#2b3038] md:px-8 md:py-7"
+        className="termo-conteudo px-5 py-5 text-[14px] leading-7 text-[var(--ink)] md:px-8 md:py-7"
         // O HTML vem do próprio backend (resources/termos), não de entrada de usuário.
         dangerouslySetInnerHTML={{ __html: termo.conteudo_html }}
       />

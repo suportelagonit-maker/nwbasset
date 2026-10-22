@@ -1,50 +1,29 @@
-import AdminFrame from '@/components/AdminFrame';
+import CascaNwbAsset from '@/components/CascaNwbAsset';
 import { getAuthSession } from '@/lib/auth-session';
-import { isMasterCompanyName } from '@/lib/empresa-context';
 
 type AdminShellProps = {
-  title: string;
-  subtitle: string;
-  children: React.ReactNode;
+  // title/subtitle/minimalTopbar seguem na assinatura por compatibilidade com as
+  // paginas que ainda os passam; a casca do DS tem o proprio cabecalho.
+  title?: string;
+  subtitle?: string;
   minimalTopbar?: boolean;
+  children: React.ReactNode;
 };
 
-export default async function AdminShell({ title, subtitle, children, minimalTopbar = false }: AdminShellProps) {
+export default async function AdminShell({ children }: AdminShellProps) {
   const session = await getAuthSession();
-  const userInitial = (session.userName ?? session.userEmail ?? 'W').trim().charAt(0).toUpperCase();
   const empresaNome = session.dashboardScope === 'geral' ? 'Painel geral' : session.empresaNome;
-  const empresaCnpj = session.dashboardScope === 'geral' ? null : session.empresaCnpj;
-  const empresaLogoUrl =
-    session.dashboardScope === 'geral'
-      ? null
-      : session.empresaLogoUrl ??
-        session.empresas.find((empresa) => empresa.id === session.empresaId)?.logo_url ??
-        null;
-  const showEmpresasMenu =
-    session.dashboardScope === 'geral'
-      ? session.isSuperAdmin
-      : isMasterCompanyName(session.empresaNome);
+  const podeTrocarEmpresa = session.isSuperAdmin || (session.empresas?.length ?? 0) > 1;
 
   return (
-    <AdminFrame
-      title={title}
-      subtitle={subtitle}
-      minimalTopbar={minimalTopbar}
-      userInitial={userInitial}
+    <CascaNwbAsset
       userName={session.userName}
       userEmail={session.userEmail}
       empresaNome={empresaNome}
-      empresaCnpj={empresaCnpj}
-      empresaLogoUrl={empresaLogoUrl}
-      isSuperAdmin={session.isSuperAdmin}
-      empresas={session.empresas}
-      empresaAtualId={session.empresaId}
-      dashboardScope={session.dashboardScope}
-      showEmpresasMenu={showEmpresasMenu}
+      podeTrocarEmpresa={podeTrocarEmpresa}
+      podePermissoes={session.isSuperAdmin}
     >
       {children}
-    </AdminFrame>
+    </CascaNwbAsset>
   );
 }
-
-

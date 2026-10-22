@@ -263,16 +263,16 @@ export default function AvisosPush() {
       {carregando ? <p className="mt-5 text-sm text-[var(--muted)]">Carregando…</p> : null}
 
       {!carregando && !suportado ? (
-        <p className="mt-5 rounded-2xl border border-[var(--line)] bg-[#fafafa] px-4 py-4 text-sm leading-6 text-[var(--muted)]">
+        <p className="mt-5 rounded-2xl border border-[var(--line)] bg-[var(--nc-surface-elevated)] px-4 py-4 text-sm leading-6 text-[var(--muted)]">
           Este navegador não envia avisos. No iPhone, só funciona com o NWB Asset instalado na tela de início
           (Compartilhar › Adicionar à Tela de Início).
         </p>
       ) : null}
 
       {!carregando && suportado && estado && !estado.configurado ? (
-        <p className="mt-5 rounded-2xl border border-[var(--line)] bg-[#fafafa] px-4 py-4 text-sm leading-6 text-[var(--muted)]">
+        <p className="mt-5 rounded-2xl border border-[var(--line)] bg-[var(--nc-surface-elevated)] px-4 py-4 text-sm leading-6 text-[var(--muted)]">
           Os avisos ainda não foram habilitados neste servidor. Um administrador precisa gerar as chaves de envio
-          (<code className="rounded bg-white px-1 py-0.5 text-[12px]">php artisan push:chaves</code>) e reiniciar o sistema.
+          (<code className="rounded bg-[var(--nc-card)] px-1 py-0.5 text-[12px]">php artisan push:chaves</code>) e reiniciar o sistema.
         </p>
       ) : null}
 
@@ -285,7 +285,7 @@ export default function AvisosPush() {
                   type="button"
                   onClick={() => void desligar()}
                   disabled={ocupado}
-                  className="inline-flex h-10 items-center justify-center rounded-full border border-[var(--line)] bg-white px-4 text-[13px] font-semibold text-[var(--ink)] transition hover:border-[var(--accent)] hover:text-[var(--accent-deep)] disabled:opacity-60"
+                  className="inline-flex h-10 items-center justify-center rounded-full border border-[var(--line)] bg-[var(--nc-card)] px-4 text-[13px] font-semibold text-[var(--ink)] transition hover:border-[var(--accent)] hover:text-[var(--accent-deep)] disabled:opacity-60"
                 >
                   Desligar neste aparelho
                 </button>
@@ -293,7 +293,7 @@ export default function AvisosPush() {
                   type="button"
                   onClick={() => void testar()}
                   disabled={ocupado}
-                  className="inline-flex h-10 items-center justify-center rounded-full border border-[var(--line)] bg-white px-4 text-[13px] font-semibold text-[var(--ink)] transition hover:border-[var(--accent)] hover:text-[var(--accent-deep)] disabled:opacity-60"
+                  className="inline-flex h-10 items-center justify-center rounded-full border border-[var(--line)] bg-[var(--nc-card)] px-4 text-[13px] font-semibold text-[var(--ink)] transition hover:border-[var(--accent)] hover:text-[var(--accent-deep)] disabled:opacity-60"
                 >
                   Enviar aviso de teste
                 </button>
@@ -330,7 +330,7 @@ export default function AvisosPush() {
               {estado.assuntos.map((assunto) => (
                 <label
                   key={assunto.chave}
-                  className="flex cursor-pointer items-start gap-3 rounded-2xl border border-[var(--line)] bg-[#fafafa] px-4 py-3.5"
+                  className="flex cursor-pointer items-start gap-3 rounded-2xl border border-[var(--line)] bg-[var(--nc-surface-elevated)] px-4 py-3.5"
                 >
                   <input
                     type="checkbox"

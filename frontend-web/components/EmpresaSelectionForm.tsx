@@ -132,7 +132,7 @@ export default function EmpresaSelectionForm() {
     <form onSubmit={handleSubmit} className="panel-surface relative w-full max-w-md rounded-[28px] p-6 md:p-7">
       <Link
         href="/api/auth/logout"
-        className="absolute right-5 top-5 inline-flex h-10 w-10 items-center justify-center rounded-full border border-[rgba(var(--accent-rgb),0.18)] bg-white text-[var(--accent-deep)] transition hover:border-[rgba(var(--accent-rgb),0.38)] hover:bg-[rgba(var(--accent-rgb),0.08)]"
+        className="absolute right-5 top-5 inline-flex h-10 w-10 items-center justify-center rounded-full border border-[rgba(var(--accent-rgb),0.18)] bg-[var(--nc-card)] text-[var(--accent-deep)] transition hover:border-[rgba(var(--accent-rgb),0.38)] hover:bg-[rgba(var(--accent-rgb),0.08)]"
         aria-label="Sair do sistema"
         title="Sair do sistema"
       >
@@ -153,7 +153,7 @@ export default function EmpresaSelectionForm() {
             className="h-auto w-[168px] object-contain"
           />
         </div>
-        <span className="inline-flex rounded-full border border-[rgba(var(--accent-rgb),0.22)] bg-white/80 px-3 py-1 text-xs font-semibold uppercase tracking-[0.2em] text-[var(--accent-deep)]">
+        <span className="inline-flex rounded-full border border-[rgba(var(--accent-rgb),0.22)] bg-[var(--nc-card)]/80 px-3 py-1 text-xs font-semibold uppercase tracking-[0.2em] text-[var(--accent-deep)]">
           Selecionar empresa
         </span>
         <h1 className="mt-4 font-[family-name:var(--font-heading)] text-3xl font-semibold tracking-tight">
@@ -166,7 +166,7 @@ export default function EmpresaSelectionForm() {
         </p>
       </div>
 
-      <div className="mt-5 rounded-[22px] border border-[var(--line)] bg-[#fafafa] px-4 py-3">
+      <div className="mt-5 rounded-[22px] border border-[var(--line)] bg-[var(--nc-surface-elevated)] px-4 py-3">
         <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[var(--muted)]">Usuário autenticado</p>
         <p className="mt-2 text-[14px] font-semibold text-[var(--ink)]">{userName || userEmail || 'Usuário'}</p>
         {userEmail ? <p className="mt-1 text-[12px] text-[var(--muted)]">{userEmail}</p> : null}

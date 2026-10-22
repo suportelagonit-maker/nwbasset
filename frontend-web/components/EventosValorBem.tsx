@@ -144,7 +144,7 @@ export default function EventosValorBem({ bemId, onMudou }: { bemId: number; onM
       </div>
 
       {abrindo ? (
-        <div className="mt-4 grid gap-3 rounded-2xl border border-[var(--line)] bg-[#fafafa] p-4 sm:grid-cols-2">
+        <div className="mt-4 grid gap-3 rounded-2xl border border-[var(--line)] bg-[var(--nc-surface-elevated)] p-4 sm:grid-cols-2">
           <label className="admin-field">
             Tipo
             <select value={tipo} onChange={(e) => setTipo(e.target.value)} className="admin-input">
@@ -189,7 +189,7 @@ export default function EventosValorBem({ bemId, onMudou }: { bemId: number; onM
       {!carregando && eventos.length > 0 ? (
         <div className="mt-4 grid gap-2">
           {eventos.map((e) => (
-            <div key={e.id} className="flex flex-wrap items-center justify-between gap-2 rounded-2xl border border-[var(--line)] bg-[#fafafa] px-4 py-3">
+            <div key={e.id} className="flex flex-wrap items-center justify-between gap-2 rounded-2xl border border-[var(--line)] bg-[var(--nc-surface-elevated)] px-4 py-3">
               <div className="min-w-0">
                 <p className="text-sm font-semibold text-[var(--ink)]">
                   {e.rotulo} · {moeda(e.valor)}
@@ -203,7 +203,7 @@ export default function EventosValorBem({ bemId, onMudou }: { bemId: number; onM
               <button
                 type="button"
                 onClick={() => void remover(e.id)}
-                className="inline-flex h-8 items-center rounded-full border border-[var(--line)] bg-white px-3 text-[12px] font-semibold text-[var(--rose)] transition hover:border-[var(--rose)]"
+                className="inline-flex h-8 items-center rounded-full border border-[var(--line)] bg-[var(--nc-card)] px-3 text-[12px] font-semibold text-[var(--rose)] transition hover:border-[var(--rose)]"
               >
                 Remover
               </button>

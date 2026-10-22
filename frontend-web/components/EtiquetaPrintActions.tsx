@@ -11,7 +11,7 @@ export default function EtiquetaPrintActions({ consultaHref }: EtiquetaPrintActi
     <div className="flex items-center gap-3">
       <Link
         href={consultaHref}
-        className="inline-flex h-11 items-center justify-center rounded-full border border-[var(--line)] bg-white px-5 text-sm font-semibold text-[var(--ink)] transition hover:border-[var(--accent)] hover:text-[var(--accent-deep)]"
+        className="inline-flex h-11 items-center justify-center rounded-full border border-[var(--line)] bg-[var(--nc-card)] px-5 text-sm font-semibold text-[var(--ink)] transition hover:border-[var(--accent)] hover:text-[var(--accent-deep)]"
       >
         Abrir consulta
       </Link>

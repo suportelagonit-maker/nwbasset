@@ -50,7 +50,7 @@ export default function UserMenu({ initial, userName, userEmail }: UserMenuProps
       </button>
 
       {open ? (
-        <div className="absolute right-0 top-[calc(100%+10px)] z-50 w-64 max-w-[calc(100vw-24px)] rounded-2xl border border-[rgba(17,24,39,0.08)] bg-white p-2 shadow-[0_18px_38px_rgba(17,24,39,0.12)]">
+        <div className="absolute right-0 top-[calc(100%+10px)] z-50 w-64 max-w-[calc(100vw-24px)] rounded-2xl border border-[var(--line)] bg-[var(--nc-card)] p-2 shadow-[0_18px_38px_rgba(17,24,39,0.12)]">
           <div className="rounded-xl px-3 py-3">
             <p className="truncate text-sm font-semibold text-[var(--ink)]">{userName ?? 'Usuário autenticado'}</p>
             <p className="mt-1 truncate text-xs text-[var(--muted)]">{userEmail ?? 'Conta ativa'}</p>

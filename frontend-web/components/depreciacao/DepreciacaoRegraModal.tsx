@@ -63,7 +63,7 @@ export default function DepreciacaoRegraModal({
           <button
             type="button"
             onClick={onClose}
-            className="inline-flex h-9 items-center justify-center rounded-full border border-[var(--line)] bg-white px-4 text-[13px] font-semibold text-[var(--ink)] transition hover:border-[var(--accent)] hover:text-[var(--accent)]"
+            className="inline-flex h-9 items-center justify-center rounded-full border border-[var(--line)] bg-[var(--nc-card)] px-4 text-[13px] font-semibold text-[var(--ink)] transition hover:border-[var(--accent)] hover:text-[var(--accent)]"
           >
             Fechar
           </button>
@@ -287,20 +287,20 @@ export default function DepreciacaoRegraModal({
           </div>
         ) : null}
 
-        <section className="mt-3 rounded-[16px] border border-[var(--line)] bg-[#fafafa] p-3">
+        <section className="mt-3 rounded-[16px] border border-[var(--line)] bg-[var(--nc-surface-elevated)] p-3">
           <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[var(--muted)]">Preview da regra contabil</p>
           <div className="mt-2.5 grid gap-2 sm:grid-cols-3">
-            <div className="rounded-[12px] border border-[var(--line)] bg-white px-3 py-2">
+            <div className="rounded-[12px] border border-[var(--line)] bg-[var(--nc-card)] px-3 py-2">
               <p className="text-[10px] font-semibold uppercase tracking-[0.14em] text-[var(--muted)]">Taxa anual</p>
               <p className="mt-1 text-[15px] font-semibold text-[var(--ink)]">{formatarTaxaPreview(form.depreciavel ? taxaPreview : '0')}</p>
             </div>
-            <div className="rounded-[12px] border border-[var(--line)] bg-white px-3 py-2">
+            <div className="rounded-[12px] border border-[var(--line)] bg-[var(--nc-card)] px-3 py-2">
               <p className="text-[10px] font-semibold uppercase tracking-[0.14em] text-[var(--muted)]">Tempo de depreciacao</p>
               <p className="mt-1 text-[15px] font-semibold text-[var(--ink)]">
                 {form.depreciavel && Number.isFinite(vidaUtilNumero) && vidaUtilNumero > 0 ? `${vidaUtilNumero} anos` : 'Nao depreciavel'}
               </p>
             </div>
-            <div className="rounded-[12px] border border-[var(--line)] bg-white px-3 py-2">
+            <div className="rounded-[12px] border border-[var(--line)] bg-[var(--nc-card)] px-3 py-2">
               <p className="text-[10px] font-semibold uppercase tracking-[0.14em] text-[var(--muted)]">Valor residual</p>
               <p className="mt-1 text-[15px] font-semibold text-[var(--ink)]">{Number.isFinite(residualPreview) ? `${residualPreview.toFixed(4)}%` : '-'}</p>
             </div>
@@ -311,7 +311,7 @@ export default function DepreciacaoRegraModal({
           <button
             type="button"
             onClick={onClose}
-            className="inline-flex h-9 items-center justify-center rounded-full border border-[var(--line)] bg-white px-4 text-[13px] font-semibold text-[var(--ink)] transition hover:border-[var(--accent)] hover:text-[var(--accent)]"
+            className="inline-flex h-9 items-center justify-center rounded-full border border-[var(--line)] bg-[var(--nc-card)] px-4 text-[13px] font-semibold text-[var(--ink)] transition hover:border-[var(--accent)] hover:text-[var(--accent)]"
             disabled={saving}
           >
             Cancelar
